@@ -1,3 +1,11 @@
+import 'package:alamoadac_website/viewMobile/AddPostsPage/AddAllPost/add_post.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddAuctionsPageDesktop/add_auctions_desktop.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddEducationalDesktop/add_educational_desktop.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddProfessionsDesktop/add_professions_desktop.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddRealEstateDesktop/add_real_estates_desktop.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddRestaurantDesktop/add_restaurant_desktop.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddSalonsDesktop/add_salons_desktop.dart';
+import 'package:alamoadac_website/viewsDeskTop/homeDeskTop/DetailsPostDeskTop/add_comment_desktok.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,6 +37,8 @@ import '../AuthDeskTop/login_screen_desktop.dart';
 import '../SettingsDeskTop/show_packages_desktop.dart';
 import '../SidePopup.dart';
 import '../homeDeskTop/top_section_desktop.dart';
+import 'AddCarDesktop/add_car_desktop.dart';
+import 'AddUsedFurnitureDesktop/add_used_desktop.dart';
 
 class AddListDeskTop extends StatelessWidget {
   const AddListDeskTop({Key? key}) : super(key: key);
@@ -119,6 +129,7 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddUsedDesktop());
           break;
         case 3:
           addpostCarController
@@ -126,6 +137,8 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddCarDesktop());
+
           break;
         case 4:
           addpostProfessionController
@@ -133,6 +146,7 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAddProfession.value = true;
+          Get.to(() => AddProfessionsDesktop());
           break;
         case 6:
           addpostcontrollerrealestate
@@ -140,6 +154,8 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddRealEstatesDesktop());
+
           break;
         case 8:
           addpostcontrollerauction
@@ -147,6 +163,10 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddAuctionsDesktop(
+                onConfirm: (DateTime startDateTime, DateTime endDateTime) {},
+              ));
+
           break;
         case 9:
         case 10:
@@ -156,6 +176,7 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAddAllPost.value = true;
+          Get.to(() => AddPostAll());
           break;
         case 14:
           addpostrestaurantcontroller
@@ -163,6 +184,8 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddRestaurantDesktop());
+
           break;
         case 15:
           addpostcontrollercompany
@@ -170,6 +193,8 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddCommentDesktop());
+
           break;
         case 17:
           addpostcontrollereducational
@@ -177,6 +202,8 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddEducationalDesktop());
+
           break;
         case 23:
           addpostsalonscontroller
@@ -184,6 +211,8 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAdd.value = true;
+          Get.to(() => AddSalonsDesktop());
+
           break;
         default:
           addpostcontrollerall

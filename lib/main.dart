@@ -39,28 +39,33 @@ Future<void> main() async {
   Get.put(appServices);
   Get.put(ChangeLanguageController());
 
-  // استخدام الاستراتيجيّة الافتراضيّة لبناء سجل التنقل
+  // استخدام الاستراتيجية الافتراضية لبناء سجل التنقل
   setUrlStrategy(PathUrlStrategy());
 
-  // التعامل مع زرّ "رجوع" في المتصفح
+  // التعامل مع زر "رجوع" في المتصفح
   html.window.onPopState.listen((event) {
-    // إذا كان هناك Snackbar مفتوح، نغلقه أولاً
     if (Get.isSnackbarOpen) {
-      Get.back();
+      Get.back(); // إغلاق Snackbar
       return;
     }
 
-    // إذا كان بالإمكان الرجوع داخل التطبيق
     if (Get.key.currentState?.canPop() == true) {
       Get.back();
     } else {
-      // خلاف ذلك، إعادة التوجيه دوماً إلى واجهة '/Decider'
-      Get.offAllNamed('/Decider');
+      // عرض رسالة بدلًا من الرجوع إلى /Decider مباشرة
+      Get.snackbar(
+        'تنبيه',
+        'لا يوجد صفحات أخرى للرجوع إليها',
+        backgroundColor: Colors.orange.shade200,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+      // إبقاء العنوان على /Decider فقط للترتيب
       html.window.history.replaceState({}, '', '/Decider');
     }
   });
 
-  // قفل التدوير بوضع Portrait
+  // قفل التدوير على الوضع العمودي فقط
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -76,7 +81,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final langCtrl = Get.find<ChangeLanguageController>();
 
-    // إخفاء شريط النظام وضبط لون شريط الحالة
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(statusBarColor: ModeColor.mode),
@@ -107,7 +111,7 @@ class MyApp extends StatelessWidget {
             GetPage(name: '/add-post', page: () => AddListDeskTop()),
             GetPage(name: '/search', page: () => SearchScreenDesktop()),
 
-            // مسارات الموبايل
+            // صفحات الموبايل
             GetPage(name: '/mobile', page: () => const HomeScreen()),
             GetPage(name: '/post-mobile/:id', page: () => PostDetails()),
             GetPage(name: '/store-mobile/:id', page: () => StoreDetails()),
@@ -120,7 +124,6 @@ class MyApp extends StatelessWidget {
           ],
           theme: ThemeData(primarySwatch: ModeColor.mode),
           builder: (context, child) {
-            // توحيد TextScaleFactor على 0.9
             final mq = MediaQuery.of(context);
             return MediaQuery(
               data: mq.copyWith(textScaleFactor: 0.9),
@@ -128,7 +131,6 @@ class MyApp extends StatelessWidget {
             );
           },
           routingCallback: (routing) {
-            // عند كل تنقل داخلي، استبدال آخر مدخل في التاريخ
             if (routing != null && !routing.isBack!) {
               html.window.history.replaceState({}, '', Get.currentRoute);
             }

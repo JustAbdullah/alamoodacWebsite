@@ -8,6 +8,8 @@ import '../../../core/constant/images_path.dart';
 import '../../controllers/LoadingController.dart';
 import '../../controllers/ThemeController.dart';
 import '../../controllers/home_controller.dart';
+import '../../controllers/subscriptionController.dart';
+import '../../core/localization/changelanguage.dart';
 import '../Auth/login_screen.dart';
 
 class Menu extends StatelessWidget {
@@ -390,6 +392,16 @@ class Menu extends StatelessWidget {
                             duration: const Duration(seconds: 3),
                           );
                         } else {
+                          final subController =
+                              Get.put(SubscriptionController());
+
+                          subController.fetchUserSubscriptions(
+                              Get.find<LoadingController>().currentUser?.id ??
+                                  0,
+                              Get.find<ChangeLanguageController>()
+                                  .currentLocale
+                                  .value
+                                  .languageCode);
                           controller.isChosedAddPost();
                           Get.offNamed(
                             '/add-post-mobile', // المسار مع المعلمة الديناميكية

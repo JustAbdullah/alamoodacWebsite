@@ -22,7 +22,7 @@ class SubCategoriesPage extends StatelessWidget {
   // نقل التهيئة إلى الحقول لتجنّب استدعاءها داخل build
   final ThemeController _themeController = Get.find();
   final HomeController _homeController = Get.find();
-  final Searchcontroller _searchController = Get.put(Searchcontroller());
+  final Searchcontroller _searchController = Get.find<Searchcontroller>();
 
   @override
   Widget build(BuildContext context) {
@@ -158,31 +158,35 @@ class SubCategoriesPage extends StatelessWidget {
 
   Widget _buildFilterButton() {
     final isDark = _themeController.isDarkMode.value;
-    return TextButton.icon(
-      onPressed: () => _searchController.searchingBox.value = true,
-      style: TextButton.styleFrom(
-        backgroundColor: AppColors.backgroundColorIconBack(isDark),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+    return Row(
+      children: [
+        TextButton.icon(
+          onPressed: () => _searchController.searchingBox.value = true,
+          style: TextButton.styleFrom(
+            backgroundColor: AppColors.backgroundColorIconBack(isDark),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
+            elevation: 2,
+            shadowColor: Colors.black26,
+          ),
+          icon: Icon(
+            Icons.sort_rounded,
+            color: Colors.white,
+            size: 22.w,
+          ),
+          label: Text(
+            "الـفلترة الخـاصة".tr,
+            style: TextStyle(
+              fontFamily: AppTextStyles.DinarOne,
+              color: Colors.white,
+              fontSize: 17.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 5.h),
-        elevation: 2,
-        shadowColor: Colors.black26,
-      ),
-      icon: Icon(
-        Icons.sort_rounded,
-        color: Colors.white,
-        size: 22.w,
-      ),
-      label: Text(
-        "الـفلترة الخـاصة".tr,
-        style: TextStyle(
-          fontFamily: AppTextStyles.DinarOne,
-          color: Colors.white,
-          fontSize: 17.sp,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      ],
     );
   }
 }

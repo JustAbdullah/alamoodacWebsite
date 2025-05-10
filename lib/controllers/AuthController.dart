@@ -7,12 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/constant/appcolors.dart';
 import '../core/data/model/user.dart';
+import '../core/localization/changelanguage.dart';
 import '../viewMobile/Auth/ans_que_forget.dart';
 import '../viewMobile/Auth/login_screen.dart';
 import '../viewMobile/Auth/new_password.dart';
 import '../viewsDeskTop/AuthDeskTop/ans_que_forget_destkop.dart';
 import '../viewsDeskTop/AuthDeskTop/new_password_desktop.dart';
 import 'LoadingController.dart';
+import 'subscriptionController.dart';
 
 class AuthController extends GetxController {
   RxBool isGoFromWeb = false.obs;
@@ -205,6 +207,14 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 3),
       );
+      final subController = Get.put(SubscriptionController());
+
+      subController.fetchUserSubscriptions(
+          Get.find<LoadingController>().currentUser?.id ?? 0,
+          Get.find<ChangeLanguageController>()
+              .currentLocale
+              .value
+              .languageCode);
     } else {
       var error = jsonDecode(response.body);
       message.value = error['error'] ?? 'فشلت العملية'.tr;
@@ -772,6 +782,14 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 3),
       );
+      final subController = Get.put(SubscriptionController());
+
+      subController.fetchUserSubscriptions(
+          Get.find<LoadingController>().currentUser?.id ?? 0,
+          Get.find<ChangeLanguageController>()
+              .currentLocale
+              .value
+              .languageCode);
     } else {
       var error = jsonDecode(response.body);
       message.value = error['error'] ?? 'فشلت العملية'.tr;

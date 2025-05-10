@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'controllers/home_controller.dart';
+import 'controllers/searchController.dart';
 import 'core/constant/app_text_styles.dart';
 import 'core/constant/appcolors.dart';
 
@@ -23,9 +24,10 @@ class _LoadTheWebState extends State<LoadTheWeb> {
 
     // 1) جلب البيانات مرة واحدة
     Get.find<HomeController>().initializeData();
+    Get.find<Searchcontroller>().onInit();
 
     // 2) بعد 10 ثوانٍ انتقل لأي حال
-    Timer(const Duration(seconds: 7), () {
+    Timer(const Duration(seconds: 3), () {
       Get.offAllNamed('/Decider');
     });
   }

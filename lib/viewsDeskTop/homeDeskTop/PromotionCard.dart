@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/LoadingController.dart';
+import '../../controllers/subscriptionController.dart';
+import '../../core/localization/changelanguage.dart';
 import '../SettingsDeskTop/show_ask_promoted_desktop.dart';
 import '../SettingsDeskTop/show_packages_desktop.dart';
 import '../SidePopup.dart';
@@ -155,6 +158,14 @@ class _InfoCardState extends State<_InfoCard> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
+                        final subController = Get.put(SubscriptionController());
+
+                        subController.fetchUserSubscriptions(
+                            Get.find<LoadingController>().currentUser?.id ?? 0,
+                            Get.find<ChangeLanguageController>()
+                                .currentLocale
+                                .value
+                                .languageCode);
                         Get.toNamed(
                           '/add-post',
                         );

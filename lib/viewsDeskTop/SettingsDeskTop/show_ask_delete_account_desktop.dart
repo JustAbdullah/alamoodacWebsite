@@ -19,43 +19,43 @@ class ShowAskDeleteAccountDeskTopPage extends StatelessWidget {
     final Settingscontroller settingsController = Get.find();
 
     return Obx(
-      () => AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: _buildDestructiveDialog(
-              themeController, context, settingsController)),
+      () => Scaffold(
+        body: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: _buildDestructiveDialog(
+                themeController, context, settingsController)),
+      ),
     );
   }
 
   Widget _buildDestructiveDialog(ThemeController themeController,
       BuildContext context, Settingscontroller controller) {
-    return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: AppColors.backgroundColor(themeController.isDarkMode.value),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 15,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 25.h),
-          child: Column(
-            children: [
-              _buildDialogHeader(themeController, controller),
-              SizedBox(height: 30.h),
-              _buildWarningIllustration(),
-              SizedBox(height: 25.h),
-              _buildConsequencesList(),
-              SizedBox(height: 35.h),
-              _buildActionButtons(themeController, controller),
-            ],
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(
+        color: AppColors.backgroundColor(themeController.isDarkMode.value),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 15,
+            spreadRadius: 5,
           ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 25.h),
+        child: Column(
+          children: [
+            _buildDialogHeader(themeController, controller),
+            SizedBox(height: 30.h),
+            _buildWarningIllustration(),
+            SizedBox(height: 25.h),
+            _buildConsequencesList(),
+            SizedBox(height: 35.h),
+            _buildActionButtons(themeController, controller),
+          ],
         ),
       ),
     );
