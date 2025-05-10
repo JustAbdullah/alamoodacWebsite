@@ -1,0 +1,1152 @@
+const Map<String, String> enUS = {
+  "إنتظر قليلاً...": "Please wait a moment...",
+  "تسجيل الدخول": "Login",
+  "مرحـــبا بك..": "Welcome..",
+  "قم بملاء الحقول لمواصلة تسجيل الدخول":
+      "Please fill out the fields to continue logging in",
+  "اسم المستخدم": "Username",
+  "أدخل اسم المستخدم": "Enter username",
+  "الرجاء إدخال اسم المستخدم": "Please enter the username",
+  "الأسم المدخل:": "Entered name:",
+  "العودة": "Back",
+  "كلمة المرور": "Password",
+  "أدخل كلمة المرور": "Enter password",
+  "الرجاء إدخال كلمة المرور": "Please enter password",
+  "ليس لديك حســاب؟ أنشى واحد الان": "Don't have an account? Create one now",
+  "الــتالي": "Next",
+  "الدخول": "Login",
+  "المتابعة كزائر": "Continue as guest",
+  "قراءة شروط واحكام على مودك": "Read terms and conditions on 'Ala Modac'",
+  "الرجاء الإنتظار..": "Please wait..",
+  "إنشاء حساب جديد": "Create a new account",
+  "قم بملاء الحقول لمواصلة إنشاء الحســاب":
+      "Please fill out the fields to continue creating your account",
+  "لديك حســاب؟ قم بتسجيل الدخول الان": "Already have an account? Log in now",
+  "الإنشاء": "Create",
+  "الرئيسية": "Home",
+  "على مودك": "Ala Modac",
+  "أحدث العروض": "Latest Offers",
+  "السعر:": "Price:",
+  "الأكثر مشاهدة": "Most viewed",
+  "الاقسام الرئيسية": "Main Categories",
+  "العربية": "Arabic",
+  "/ الاقسام الفرعية": "/ Subcategories",
+  "الكل": "All",
+  "غير متوفر": "Unavailable",
+  "التفاصيل العامة": "General Details",
+  "معلومات الحساب": "Account Information",
+  "أسم الحسـاب": "Account Name",
+  "رقم الهاتف": "Phone Number",
+  "غير مدخل": "Not entered",
+  "حالة الباقة": "Package Status",
+  "إختيار العملة": "Select Currency",
+  "قم رجاءًا بإختيار العملة المرادة": "Please select your desired currency",
+  "الدينار العراقي": "Iraqi Dinar",
+  "الدولار الامريكي": "US Dollar",
+  "إختيار اللغة": "Select Language",
+  "قم رجاءًا بإختيار اللغة المرادة": "Please select your desired language",
+  "اللغة العربية": "Arabic",
+  "اللغة الإنجليزية": "English",
+  "اللغة التركية": "Turkish",
+  "اللغة الكردية": "Kurdish",
+  "الموقع الجغرافي": "Geolocation",
+  "الباقات": "Packages",
+  "القوانين والشروط والاحكام": "Terms, Conditions, and Policies",
+  "إختيار المسار": "Select Path",
+  "قم رجاءًا بإختيار المسار المراد": "Please select your desired path",
+  "على مودك العراق": "Ala Modac Iraq",
+  "على مودك تركيا": "Ala Modac Turkey",
+  "الإعدادت": "Settings",
+  "اللغة": "Language",
+  "العملة": "Currency",
+  "المسار": "Path",
+  "الشروط والقوانين": "Terms and Conditions",
+  "حذف الحساب": "Delete Account",
+  "تسجيل الخروج": "Log out",
+  "إنشاء منشور": "Create Post",
+  "اختر قسم من الأقسام التالية": "Select a category from the following",
+  "قم بملاء الحقول لمواصلة إنشاء المنشور":
+      "Please fill out the fields to continue creating the post",
+  "إدخال الأقسام الفرعية": "Enter subcategories",
+  "اختر القسم الفرعي": "Select subcategory",
+  "اختر القسم الفرعي الثاني": "Select second subcategory",
+  "المنطقة والمكان": "Area and Location",
+  "المكان": "Location",
+  "أدخل المكان او موقعك بشكل صحيح مثال: بغداد-شرق دجلة":
+      "Enter your location correctly, e.g., Baghdad - East of Tigris",
+  "العنوان": "Title",
+  "أدخل عنوان المنشور مثال: للبيع سيارة":
+      "Enter post title, e.g., Car for sale",
+  "السعر": "Price",
+  "أدخل السعر": "Enter price",
+  "النوع": "Type",
+  "أدخل نوع السيارة مثل:تويوتا": "Enter car type, e.g., Toyota",
+  "سنة الصنع": "Year of Manufacture",
+  "أدخل سنة الصنع مثال: 2015": "Enter manufacturing year, e.g., 2015",
+  "الــكليومترات": "Kilometers",
+  "ادخل عدد الكليومترات مثال:200,000": "Enter kilometers, e.g., 200,000",
+  "الكليومترات": "Kilometers",
+  "حالة السيارة": "Car Condition",
+  "جديد": "New",
+  "مستعمل": "Used",
+  "مستعمل بِشدة": "Heavily used",
+  "الموديل": "Model",
+  "ادخل موديل السيارة مثال: راف فور": "Enter car model, e.g., RAV4",
+  "نوع الوقود": "Fuel Type",
+  "هجين": "Hybrid",
+  "كهربائي": "Electric",
+  "بنزين": "Gasoline",
+  "ديزل": "Diesel",
+  "نوع ناقل الحركة": "Transmission Type",
+  "أوتوماتيكي": "Automatic",
+  "يدوي": "Manual",
+  "متغير بإستمرار": "Continuously Variable",
+  "شبة أوتوماتيكي": "Semi-Automatic",
+  "سعة المحرك": "Engine Capacity",
+  "0-1000 سي سي": "0-1000cc",
+  "1000-1600 سي سي": "1000-1600cc",
+  "1600-2500 سي سي": "1600-2500cc",
+  "2500-4000 سي سي": "2500-4000cc",
+  "4000+ سي سي": "4000+cc",
+  "5000+ سي سي": "5000+cc",
+  "عدد المقاعد": "Seats",
+  "4 مقاعد": "4",
+  "5 مقاعد": "5",
+  "6 مقاعد": "6",
+  "6 أكثر من": "More than 6",
+  "اللون الخارجي للسيارة": "Car Exterior Color",
+  "أدخل اللون الخارجي السيارة مثل:ابيض": "Enter exterior color, e.g., White",
+  "اللون الخارجي": "Exterior color",
+  "اللون الداخلي للسيارة": "Car Interior Color",
+  "أدخل اللون الداخلي السيارة مثل:ابيض": "Enter interior color, e.g., White",
+  "اللون الداخلي": "Interior color",
+  "نوع الهيكل": "Body Type",
+  "أدخل نوع الهيكل مثال: اس يو في": "Enter body type, e.g., SUV",
+  "حالة الهيكل": "Body Condition",
+  "ممتاز دون حوادث": "Excellent, no accidents",
+  "جيد بحوادث طفيفة": "Good, minor accidents",
+  "سيئ": "Bad",
+  "التفاصيل الإضافية": "Additional Details",
+  "أدخل التفاصيل الإضافية مثل مزايا السيارة وخصائصها":
+      "Enter additional details, e.g., car features",
+  "الصور": "Images",
+  "إضافة صور للسيارة": "Add car images",
+  "ملاحظة:عند إضافة الصور تجنب إختيار الصورة التي بالطول او الصورة منخفضة الجودة":
+      "Note: When adding images, avoid selecting portrait images or low-quality images",
+  "لم يتم إختيار اي صورة": "No image selected",
+  "إنهاء الإضافة": "Finish addition",
+  "إضــافة المــنشور": "Add Post",
+  "عملية التحقق من الصور وترجمة بيانات المنشور إلى اللغات المختلفة تستغرق بعض من الوقت..الرجاء الإنتظار وإبقاء الإتصال على الانترنت ":
+      "The process of verifying images and translating post data to different languages takes some time... please wait and keep the internet connection active",
+  "الإضافة / فرص العمل": "Add Job",
+  "أدخل عنوان المنشور مثال: المسمى الوظيفة":
+      "Enter post title, e.g., Job title",
+  "ادخل التفاصيل الإضافية": "Enter additional details",
+  "الحالة": "Status",
+  "طريقة البيع": "Selling Method",
+  "أدخل عنوان المنشور": "Enter post title",
+  "الإضافة / أثاث مستعمل": "Add / Used Furniture",
+  "الإضافة / الآلات والمعدات": "Add / Machinery and Equipment",
+  "الإضافة / المهن والحرف": "Add / Professions and Crafts",
+  "إضافة صور": "Add Images",
+  "الخبرة": "Experience",
+  "ادخل سنين الخبرة": "Enter years of experience",
+  "العمر": "Age",
+  "ادخل عمرك": "Enter your age",
+  "الاسم الكامل": "Full Name",
+  "ادخل أسمك بالكامل": "Enter your full name",
+  "الإضافة / المنتجات المنزلية": "Add / Household Products",
+  "الإضافة / العروض والصفقات": "Add / Offers and Deals",
+  "الإضافة / الإعلانات الرسمية": "Add / Official Ads",
+  "معلوماتي": "Info",
+  "البحث": "Search",
+  "إضافة منشور": "Add Post",
+  "ناشر المنشور": "Post Publisher",
+  //////////////////////////////////////////////////////////////...................../
+
+  "عندما تقوم بإختيار لغة ما سيتم تخصيص جميع الواجهات باللغة المختارة":
+      "When you choose a language, all interfaces will be customized in the selected language",
+  "عندما تختار العملة سيتم تخصيص الواجهات بالعملة المختارة,,مع العلم بإن اللغة الأساسية للتطبيق هي الدينار":
+      "When you choose the currency, interfaces will be customized in the selected currency, noting that the application's default language is Dinar",
+  "آلية تأمين و توثيق الحساب": "Account Security and Verification Mechanism",
+  "عملية تأمين وتوثيق الحــساب تساعدك على حماية حسابك  بالإضافة إلى ذلك إمكانية التواصل معك عند نشر المنشورات":
+      "Securing and verifying your account helps protect it, as well as allowing others to contact you when you publish posts",
+  "التوثيق الان": "Verify Now",
+  "يتم أخذ موقعك الجغرافي تلقائيًا وبدقة عالية":
+      "Your location is automatically detected with high accuracy",
+  "لم يتم إدخال الموقع الجغرافي بعد":
+      "The geographic location has not been entered yet",
+  "يرجى تفعيل خدمة الموقع الجغرافي": "Please enable the location service",
+  "خطأ": "Error",
+  "أخذ الموقع الجغرافي": "Get Location",
+  "تفعيل التنبيهات": "Enable Notifications",
+  "الان تمتع بوصول الإشعارات الحديثة إليك عند إضافة العروض والصفقات الخاصة":
+      "Now enjoy receiving the latest notifications when offers and special deals are added",
+  "أضغط على زر تفعيل الإشعارات والبدء الان":
+      "Press the enable notifications button and start now",
+  "ليس لديك الإذن": "You do not have permission",
+  "لاتستطيع القيام بهذه العملية قم بتسجيل دخولك اولاً":
+      "You cannot perform this action. Please log in first",
+  "تـــفعيل الإشعارات": "Enable Notifications",
+  "ملاحظة هذه الخاصية للحسابات المشتركة في الباقات الخاصة":
+      "Note: This feature is for accounts subscribed to special packages",
+  "الخـطوة الاولى إضافة رقم للتواصل": "Step 1: Add a Contact Number",
+  "إضافة رقم يتيح فرصة التواصل معك عند نشر المنشورات":
+      "Adding a number allows others to contact you when you publish posts",
+  "سيظهر رقمك الخاص عندما تقوم بنشر منشور ما حتى يستطيع المستخدمين التواصل معك":
+      "Your private number will appear when you publish a post so users can contact you",
+  "أدخل مفتاح الدولة متبوعًا برقم الهاتف مثال: 00964":
+      "Enter the country code followed by the phone number, e.g., 00964",
+  "الرجاء إدخال رقم الهاتف": "Please enter the phone number",
+  "التــالي": "Next",
+  "الخـطوة الثانية إضافة وسيلة الامان": "Step 2: Add a Security Measure",
+  "قم بإدخال أسئلة الأمان الخاصة بك": "Enter your security questions",
+  "السؤال الأول": "First Question",
+  "أدخل هنا سؤال يخصك لتأمين الحساب":
+      "Enter a personal question here to secure the account",
+  "الرجاء إدخال  سؤال الأمان": "Please enter the security question",
+  "إجابة السؤال الأول": "First Question Answer",
+  "أدخل هنا إجابة السؤال الأول":
+      "Enter the answer to the first security question here",
+  "الرجاء إدخال جواب سؤال الأمان":
+      "Please enter the answer to the security question",
+  "السؤال الثاني": "Second question",
+  "الرجاء إدخال سؤال الأمان": "Please enter the second security question",
+  "إجابة السؤال الثاني": "Answer to the second question",
+  "أدخل هنا إجابة السؤال الثاني":
+      "Enter the answer to the second security question here",
+  "الرجاء إدخال جواب سؤال الأمان ":
+      "Please enter the answer to the second security question",
+  "الحفظ": "Save",
+  "إنشاء متجر إلكتروني": "Create an online store",
+  "من المزايا الجديدة المُقدمة حيث نتيح لك كمستخدم إنشاء متجر في قسم المول الإلكتروني":
+      "A new feature that allows you to create a store in the e-mall section",
+  "أبدا الان بإنشاء متجرك": "Start creating your store now",
+  "بدء الإنشاء الان": "Start creation now",
+  "مرحلة إنشاء حساب المتجر": "Store account creation phase",
+  "قم بملا البيانات التالية": "Fill in the following information",
+  "أسم المتجر": "Store name",
+  "أدخل هنا أسم متجرك الخاص": "Enter your store name here",
+  "وصف المتجر": "Store description",
+  "أدخل هنا وصف متجرك الخاص": "Enter your store description here",
+  "صورة المتجر": "Store image",
+  "عندما تقوم بإختيار مسار ما سيتم تخصيص جميع الواجهات بالمسار المختار":
+      "When you select a path, all interfaces will be customized for the chosen path",
+  "على مودك سوريا": "Ala Modak Syria",
+  "التنبيهات": "Notifications",
+  "المتجر الإلكتروني": "E-store",
+  "توثيق الحساب": "Account verification",
+  "حذف الحــساب": "Delete account",
+  "إننا نقوم بإعطائك الحرية في أي وقت تشاء لحذف وتعطيل حسابك ولكن عليك مراعاة الشروط التالية":
+      "We give you the freedom to delete or disable your account at any time, but please consider the following conditions",
+  "لايمكن حذف حسابك او تعطيله بعد نشر اي منشور في اي قسم ما":
+      "You cannot delete or disable your account after posting in any section",
+  "عليك الضغط على زر حذف الحساب لبدء عملية الحذف":
+      "Click the delete account button to start the deletion process",
+  "بعد عملية حذف الحساب لن نستطيع  تسجيل الدخول مجددًا او المطالبة بإستعادة الحساب مهما كان السبب":
+      "After deleting your account, you will no longer be able to log in or recover the account for any reason",
+  "البدء الان بحذف الحساب": "Start account deletion now",
+  "بإمكانك تغير المسار لاحقًا كما تشاء":
+      "You can change the path later as you wish",
+  "فقدت كلمة المرور؟ قم بالإستعادة الان": "Forgot password? Recover it now",
+  "التحقق": "Verification",
+  "قم بملاء الحقول لمواصلة عملية إستعادة كلمة المرور الدخول":
+      "Fill in the fields to continue the password recovery process",
+  "أستعادة كلمة المرور": "Password recovery",
+  "اجب على الاسئلة التالية في الحقول المناسبة":
+      "Answer the following questions in the appropriate fields",
+  "التحقق والإستعادة": "Verification and recovery",
+  "قم بإدخال كلمة المرور الجديدة": "Enter the new password",
+  "الحفظ الان": "Save now",
+  "ليس هنالك بيانات لعرضها": "No data to display",
+  "قم بالبحث عن ماتريد عن طريق أدوات بحث مخصصة":
+      "Search for what you need using dedicated search tools",
+  "الــبحث": "Search",
+  "الــبحث الان": "Search now",
+  "أدخــل هنا أسم المنشور": "Enter the name of the post here",
+  "مشاهدة الأقسام": "View sections",
+  "إخفاء الأقسام": "Hide sections",
+  "المعــذرة البيانات حاليًا غير متاحة للعرض ..حاول مجددًا":
+      "Sorry, the data is currently unavailable.. Please try again",
+  "تفاصيل العرض": "Offer details",
+  "المعذرة قد لاتمتلك منشورات او هنالك خلل في جلب البيانات":
+      "Sorry, you may not have posts or there is an issue fetching the data",
+  "الــتعديل": "Edit",
+  "الحــذف": "Delete",
+  "لوحة التحكم الخـاصة بالمـستخدم": "User control panel",
+  "الـمعلومات الــعامة": "General information",
+  "المعلومات العامة حول لوحة التحكم الخـاصة بك عدد المنشورات,المشاهدات وإلخ..":
+      "General information about your control panel, including the number of posts, views, etc.",
+  "عدد المنشورات": "Number of posts",
+  "إجمالي المشاهدات": "Total views",
+  "هذا رقم عدد منشوراتك التى قمت بإنشاءها":
+      "This is the number of posts you have created",
+  "هذا رقم عدد إجمالي مشاهدات منشوراتك":
+      "This is the total number of views for your posts",
+  "قائمة منشوراتك": "Your posts list",
+  "قائمة منشوراتك الخاصة التى قمت بنشرها..يمكنك مشاهدة التفاصيل,التعديل والحذف":
+      "Your list of posts that you have published.. You can view details, edit, and delete",
+  ///////////////////////
+
+  'دولار': 'Dollar',
+  'دينار': 'Dinar',
+  "لوحة التحكم": "Dashboard",
+  "قائمة متاجرك": "Your Stores List",
+  "قائمة متاجرك المعتمدة والمنشورة في المنصة":
+      "The list of your approved and published stores on the platform",
+  "قائمة منشوراتك الخاصة التى قمت بنشرها..والحذف":
+      "The list of your private posts you have published..and deletion",
+  "هذا رقم متاجرك الذي قمت بإنشائها":
+      "This is the number of stores you have created",
+  "هذا رقم منشورات المزادات التى قمت بإنشائها":
+      "This is the number of auction posts you have created",
+  "عدد المتاجر": "Number of Stores",
+  "عدد المزادات": "Number of Auctions",
+  "المتاجر": "Stores",
+  "المنشورات": "Posts",
+  "الفلترة المتعمقة": "Advanced Filtering",
+  "إظهار الفلترة": "Show Filtering",
+  "إخفاء الفلترة": "Hide Filtering",
+  "اختر المدينة": "Choose City",
+  "اختر القسم الرئيسي": "Choose Main Category",
+  "بدء الفلترة": "Start Filtering",
+  "الفلترة حسب الموقع(جديد)": "Filtering by Location (New)",
+  "البحث عن موقعك": "Search for Your Location",
+  "الإضافة / خدمات الترويج": "Addition / Promotion Services",
+  "الإضافة / التوكيلات والجملة": "Addition / Agencies and Wholesale",
+  "الإضافة / العقارات": "Addition / Real Estate",
+  "الإضافة / الــسيارات": "Addition / Cars",
+  "الإضافة / سوق المستعمل": "Addition / Used Market",
+  "الإضافة / المول الإلكتروني": "Addition / Online Mall",
+  /////////////////////2-3..........///////
+
+  "ابدأ رحلتك الآن!": "Start your journey now!",
+  "أنشئ إعلانك في دقائق واستهدف جمهورك بكل سهولة":
+      "Create your ad in minutes and easily target your audience",
+  "أضف الصور والتفاصيل ليظهر إعلانك بأفضل شكل":
+      "Add photos and details to make your ad look its best",
+  "حقق أهدافك الآن وابدأ بزيادة أرباحك!":
+      "Achieve your goals now and start increasing your profits!",
+  "أحدث المنشورات": "Latest Posts",
+  "المنشورات الأكثر مشاهدة": "Most Viewed Posts",
+  "المنشورات الأعلى تقييم": "Highest Rated Posts",
+  "التقييم العام": "Overall Rating",
+  "أضف تقييمك": "Add Your Rating",
+  "معلومات حول الناشر": "Publisher Information",
+  "المزيد": "More",
+  "المزاد": "Auction",
+  "المزاد انتهى!": "Auction Ended!",
+  "المزاد غير متوفر.": "Auction Unavailable.",
+  "السعر الحالي": "Current Price",
+  "السعر الابتدائي": "Starting Price",
+  "بداية المزاد:": "Auction Start:",
+  "نهاية المزاد:": "Auction End:",
+  "حالة المزاد:": "Auction Status:",
+  "نشط": "Active",
+  "منتهي": "Ended",
+  "التعليقات والردود": "Comments and Replies",
+  "أضافة تعليق جديد": "Add New Comment",
+  "بدء المزايدة": "Start Bidding",
+  "تفاصيل المــنشور": "Post Details",
+  "بدء الفرز": "Start Sorting",
+  "صندوق البحث": "Search Box",
+  "حـدد القسم للفلترة": "Select Category for Filtering",
+  "حدد معايير البحث": "Set Search Criteria",
+  "نطاق السعر": "Price Range",
+  "السعر الأدنى": "Minimum Price",
+  "دينار عراقي": "Iraqi Dinar",
+  "السعر الأعلى": "Maximum Price",
+  "الفرز الان": "Sort Now",
+  "إختيار مظهر التطبيق": "Choose App Theme",
+  "أختر مظهر التطبيق المناسب لك من الخيارات التالية:":
+      "Choose the app theme that suits you from the following options:",
+  "الوضع العادي": "Normal Mode",
+  "فاتح": "Light",
+  "الوضع الليلي": "Night Mode",
+  "مظلم": "Dark",
+  "إختيار بيانات الناشر": "Select Publisher Data",
+  "ميزة جديدة ومقدمة تتيح لك حرية إختيار بيانات الناشر":
+      "A new feature that allows you to freely choose publisher data",
+  "ستظهر بيانات الناشر للمستخدمين عندما تقوم بنشر منشور ما..":
+      "Publisher data will be shown to users when you publish a post..",
+  "تتيح لك هذه الميزة إحترافية أكثر من ناحية إضافة شعار خاص بك ووصف مطول عنك-نشاطك بالإضافة إلى وسيلة تواصل مفضلة معك":
+      "This feature provides more professionalism in adding your logo, detailed description, and preferred contact method",
+  "الإعداد الـان": "Setup Now",
+  "مرحلة إنشاء بيانات الناشر-المتجر": "Publisher/Store Data Creation Stage",
+  "أسم الناشر-المتجر": "Publisher/Store Name",
+  "أدخل هنا أسم االذي سيظهر عند النشر":
+      "Enter the name that will appear when publishing",
+  "وصف الناشر-المتجر": "Publisher/Store Description",
+  "أدخل هنا وصف الناشر-المتجر مثال إذا كانت ناشر مختص في قسم معين وإلخ..":
+      "Enter publisher/store description (e.g., specialization in specific category)",
+  "رقم التواصل": "Contact Number",
+  "أدخل هنا رمز الدخول متبوعًا برقم الهاتف للأتصال في حال لديك رغبة":
+      "Enter country code followed by phone number (optional)",
+  "رقم الواتساب": "WhatsApp Number",
+  "أدخل هنا رمز الدخول متبوعًا برقم الهاتف المخصص للواتساب":
+      "Enter country code followed by WhatsApp number",
+  "صورة للناشر-المتجر": "Publisher/Store Image",
+  "إضافة صورة للناشر-المتجر": "Add Publisher/Store Image",
+  "ملاحظة صورة الناشر ليست إجبارية ولكن لإحترافية أعلى يمكنك إضافة صورة للناشر..":
+      "Note: Publisher image is not mandatory but recommended for better professionalism",
+  "تفاصيل الناشر": "Publisher Details",
+  "بدون اسم": "No Name",
+  "وصف الناشر": "Publisher Description",
+  "الموقع على الخريطة": "Location on Map",
+  "طرق التواصل": "Contact Methods",
+  "لا يوجد رقم تواصل متاح": "No Contact Number Available",
+  "اتصال": "Call",
+  "واتساب": "WhatsApp",
+  "لا يوجد منشورات متاحة حالياً": "No Posts Available Currently",
+  "منشورات الناشر": "Publisher Posts",
+  "بدون عنوان": "No Title",
+  "التاكيد": "Confirm",
+  "صفحة التخصيص": "Customization Page",
+  "اختر الدولة": "Choose Country",
+  "قم بإختيار الدولة المخصصة لك": "Select your designated country",
+  "العراق": "Iraq",
+  "سوريا": "Syria",
+  "تركيا": "Turkey",
+  "اختر اللغة": "Choose Language",
+  "قم بإختيار اللغة المخصصة لك": "Select your preferred language",
+  "التركية": "Turkish",
+  "الكردية": "Kurdish",
+  "الانجليزية": "English",
+  "الرجاء الإنتظار قليلاً": "Please Wait a Moment",
+  "كل ما تحتاجه في مكان واحد!": "Everything You Need in One Place!",
+  "التقط، شارك، وحقق التفاعل!": "Capture, Share, and Engage!",
+  "منشوراتك تثير الاهتمام!": "Your Posts Generate Interest!",
+  "استعرض أقسام متنوعة في تطبيقنا. خدمات، منتجات، وعروض خاصة. كل ما تحتاجه في مكان واحد.":
+      "Explore diverse categories in our app. Services, products, and special offers. All you need in one place.",
+  "التقط صورة، أضف التفاصيل، وانشرها بسهولة. مع أدوات تخصيص تمنحك أفضل طريقة لعرض منشورك.":
+      "Take a photo, add details, and publish easily. Customization tools provide the best way to showcase your post.",
+  "منشوراتك ستصل لأكبر عدد من الناس بسرعة، مع تفاعل متزايد ومشاهدات عالية في الوقت الفعلي.":
+      "Your posts will reach the largest audience quickly, with increasing interaction and real-time high views.",
+  "بيانات الناشر": "Publisher Data",
+  "مظهر التطبيق": "App Appearance",
+  ////////////////////
+  'جاري تحميل بيانات الناشر...': 'Loading publisher data...',
+  '⚠️ لا يوجد بيانات لهذا الناشر': '⚠️ There is no data for this publisher',
+  'لم يقم الناشر بإضافة معلومات شخصية بعد':
+      'The publisher has not added personal information yet',
+  "التعليق": "Comment",
+  "قم رجاءًا بملا الحقول للتعليق": "Please fill in the fields to comment",
+  "ادخل هنا التعليق": "Enter comment here",
+  'يرجى إدخال نص التعليق': 'Please enter the comment text',
+  "إضافة التعليق": "Add comment",
+  "المزايدة": "Bidding",
+  "قم رجاءًا بملا الحقول للمزايدة": "Please fill in the fields to bid",
+  "سعر المزايدة": "Bid price",
+  "ادخل سعر المزايدة": "Enter bid price",
+  "معلومات التواصل": "Contact information",
+  "ادخل معلومات التواصل": "Enter contact information",
+  'يرجى ملء جميع الحقول المطلوبة': 'Please fill in all required fields',
+  "إضافة مزايدة": "Add bid",
+  "ملاحظة مهمة جدًا:في حال لم تجد مدينتك في القائمة أختر خيار -غير مدخل- حيث إننا نراعي المدن الغير متوفرة بمرونة عالية":
+      "Very important note: If you do not find your city in the list, choose the option '-not entered-', as we handle unavailable cities with high flexibility",
+  "الإضافة / منتجات من المزرعة": "Add / Farm products",
+  "الإضافة / أفكار ومشاريع للتمويل": "Add / Ideas and projects for funding",
+  "الإضافة / المطاعم": "Add / Restaurants",
+  "اللغات": "Languages",
+  "أدخل اللغات التى تجيدها مثال ,الإنجليزية,التركية":
+      "Enter the languages you are proficient in, e.g., English, Turkish",
+  "قم بإضافة صور شخصية,شهادات,خبرات,cv":
+      "Add personal photos, certificates, experiences, CV",
+  "الإضافة / عمال يوميين": "Add / Daily workers",
+  "الإضافة / الخدمات التعليمية": "Add / Educational services",
+  "الإضافة / دليل الشركات": "Add / Company directory",
+  "معلومات  حول الناشر": "Information about the publisher",
+  "ليس هنالك تعليقات..ابدا التعليق الان":
+      "There are no comments... start commenting now.",
+  "بدون سعر": "Without price",
+
+  ///
+  "تنبيه": "Alert",
+  "لم يتم العثور على نتائج مطابقة..لذا سيتم إرجاع جميع المنشورات":
+      "No matching results found... Therefore all posts will be returned",
+  'أكمل ملفك الشخصي!': 'Complete your profile!',
+  'لتحسين تجربتك، ننصح بإكمال معلومات الناشر قبل إنشاء المنشور حتى يتمكن المستخدمون من التواصل معك بسهولة.':
+      'To enhance your experience, we recommend completing publisher information before creating a post so users can easily contact you.',
+  'إخفاء مؤقت': 'Temporarily Hide',
+  'إخفاء دائم': 'Permanently Hide',
+
+  //////////////////
+  'رقم المزاد:': 'Auction Number:',
+  "خيارات الفلترة": "Filtering Options",
+  "القسم الفرعي": "Subcategory",
+  "القسم الفرعي الثاني": "Second Subcategory",
+  "اختر المنطقة": "Select Region",
+  "الفترة الزمنية": "Time Period",
+  "الفـترة الزمـنية": "Time Range",
+  "أخر أربعة وعشرين ساعة": "Last 24 Hours",
+  "أخر أسبوع": "Last Week",
+  "أخر شهر": "Last Month",
+  "أخر سنة": "Last Year",
+  "كل الأوقات": "All Time",
+
+  "ملاحظة مهمة جدًا:في حال لم تجد مدينتك في القائمة أختر خيار -غير مدخل-  حيث إننا نراعي المدن الغير متوفرة بمرونة عالية ":
+      "Very Important Note: If you do not find your city in the list, select the option 'Not Entered' as we accommodate unavailable cities with high flexibility.",
+  "هل المنشور يحتوي على مبلغ مالي؟": "Does the post contain a monetary amount?",
+  "نــعم": "Yes",
+  "لا": "No",
+  'الأعلى مشاهدة': 'Most Viewed',
+  'الأقل مشاهدة': 'Least Viewed',
+  'الأعلى سعراً': 'Highest Price',
+  'الأقل سعراً': 'Lowest Price',
+  'الأحدث أولاً': 'Newest First',
+  'الأقدم أولاً': 'Oldest First',
+  'الأعلى تقييماً': 'Highest Rated',
+  'الأقل تقييماً': 'Lowest Rated',
+  ///////////////////////////////
+  "المول الإلكتروني": "Online Mall",
+  "سوق المستعمل": "Used Market",
+  "مركبات للبيع والايجار": "Vehicles for Sale and Rent",
+  "المهن والحرف": "Professions and Crafts",
+  "منتجات من البيت": "Homemade Products",
+  "عقارات للبيع والإيجار": "Real Estate for Sale and Rent",
+  "عروض وصفقات": "Offers and Deals",
+  "المزاد الإلكتروني": "Online Auction",
+  "متجر المنتجات العالمية": "Global Products Store",
+  "الإعلانات الرسمية": "Official Ads",
+  "سوق الجملة والتوكيلات": "Wholesale and Agencies Market",
+  "فرص عمل": "Job Opportunities",
+  "أفكار ومشاريع للتمويل": "Ideas and Projects for Funding",
+  "المطاعم": "Restaurants",
+  "دليل الشركات": "Companies Directory",
+  "منتجات من المرزعة": "Farm Products",
+  "الخدمات التعليمية": "Educational Services",
+  "عمال يوميين": "Day Laborers",
+  "خدمات الذكاء الاصطناعي": "Artificial Intelligence Services",
+  "الانشاءات مواد البناء": "Construction and Building Materials",
+  "الالات والمعدات": "Machines and Equipment",
+  "الزراعة والحيوان": "Agriculture and Livestock",
+  "الصالونات الصحية والرياضية": "Health and Fitness Salons",
+  "الحيوانات الأليفة": "Pets",
+  "بحث قريب": "Nearby Search",
+  "أخذ موقعك": "Get Your Location",
+  "لايمكنك البحـث! قم بفحص موقعك للحصول على المنشورات القريبة":
+      "You cannot search! Check your location for nearby posts",
+  "تمت عملية البحث عن المنشورات القريبة!": "Nearby posts search completed!",
+  "سيتم الان عرض المنـشورات القريبة من موقعك في حال وُجدت":
+      "Nearby posts from your location will now be displayed if available",
+  "لسبب ما لم تتم عملية البحث..!!حاول مجددًا":
+      "For some reason, the search failed..!! Try again",
+  "ترتيب حسب المشاهدات": "Sort by Views",
+  "ترتيب حسب السعر": "Sort by Price",
+  "ترتيب حسب التاريخ": "Sort by Date",
+  "ترتيب حسب التقييم": "Sort by Rating",
+  "الـفلترة الخـاصة": "Custom Filter",
+
+  ///////////////////2-17........../
+
+  'حتى تظهر معلوماتك عند نشر المنشورات.. يجب عليك إكمال معلومات الناشر':
+      'To ensure that your information appears when publishing posts, you must complete the publisher’s details.',
+  "عند اختيار العملة سيتم تخصيص الواجهات بالعملة المختارة، مع العلم بأن العملة الإفتراضية والاساسية  للتطبيق هي الدينار العراقي.":
+      "When selecting the currency, the interfaces will be tailored to the chosen currency, noting that the application’s default and primary currency is the Iraqi Dinar.",
+  "لايوجد محتوى بهذا القسـم": "There is no content in this section.",
+  'يمكنك المحاولة لاحقاً أو التحقق من اتصالك بالإنترنت':
+      "You can try again later or check your internet connection.",
+  'إعادة المحاولة': 'Retry',
+  "لا توجد تفاصيل متوفرة": "No details available.",
+  "لا توجد تفاصيل إضافية": "No additional details.",
+  'تم إنشاء الحساب بنجاح': 'Account created successfully.',
+  'تمت بنجاح': 'Completed successfully.',
+  'فشلت العملية': 'Operation failed.',
+  'قد يكون الاسم محجوز او كلمة المرور ضعيفة  هنالك خطا حاليًا حاول مجددًا باسم اخر وتاكد بإن كلمة المرور قوية':
+      'The username may be taken or the password is weak. There is currently an error; please try again with a different username and ensure that the password is strong.',
+  'جميع الحقول مطلوبة': 'All fields are required.',
+  'تم تسجيل الدخول بنجاح': 'Logged in successfully.',
+  'كلمة المرور او الاسم مدخل بطريقة خاطئة او كليهما تاكد وحاول مجددًا':
+      'The password or username is entered incorrectly, or both. Please check and try again.',
+  "تم حفظ موقعك الجغرافي في قاعدة البيانات بنجاح":
+      "Your geographical location has been successfully saved in the database.",
+  "لم يتم تخزين الموقع الجغرافي في قاعدة البيانات حاول مجددًا":
+      "The geographical location was not saved in the database. Please try again.",
+  'تم!': 'Done!',
+  'تم الان قم بإدخال إجابات الاسئلة التالية':
+      'Now, please enter the answers to the following questions.',
+  'خطا!': 'Error!',
+  'رقم الهاتف او الاسم غير صالحين': 'The phone number or name is invalid.',
+  'نجحت!': 'Success!',
+  'نجحت عملية التحقق من هويتك..قم بإستعادة كلمة المرور الان':
+      'Your identity verification was successful. Please reset your password now.',
+  'فشلت!': 'Failed!',
+  'البيانات التى أدخلتها غير صحيحة..حاول مجددًا بإستخدام بيانات صحيحة':
+      'The data you entered is incorrect. Please try again with correct information.',
+  'نجحت عملية إستعادة كلمة المرور بنجاح! قم بستجيل دخولك الان':
+      'The password recovery process was successful! Please log in now.',
+  'خطا! لم تستطع من إدخال كلمة مرور جديدة حاول مجددًا':
+      'Error! You could not enter a new password. Please try again.',
+  "لاتستطيع البحث!": "You cannot search!",
+  'يجب عليك إضافة موقعك الجغرافي للبحث عن المنشورات القريبة منك':
+      "You must add your geographical location to search for posts near you.",
+  "نجاح": "Success",
+  "تم الحصول على الموقع الجغرافي بنجاح":
+      "The geographical location was successfully obtained.",
+  "تم مسح الموقع الجغرافي": "The geographical location has been removed.",
+  "يرجى منح إذن الوصول إلى الموقع الجغرافي":
+      "Please grant permission to access your geographical location.",
+  'لقد تم بنجاح توثيق حسابك..شُكرا لاهتمامك بالأمان':
+      "Your account has been successfully verified. Thank you for your commitment to security.",
+  'خطا! في العملية': 'Error during the process.',
+  "نجحت العملية": "Operation succeeded.",
+  "تم إنشاء المنشور بنجاح": "The post was created successfully.",
+  "يرجى اختيار القسم الرئيسي": "Please choose the main category.",
+  "يرجى رفع الصور قبل إنشاء المنشور":
+      "Please upload images before creating the post.",
+  "يرجى إدخال العنوان": "Please enter the title.",
+  "خطا في الصورة حاول رفع صور أخرى بصيغة مختلفة":
+      "Image error. Please try uploading images in a different format.",
+  "خطا في العنوان": "Error in the title.",
+  "هنالك خطا في ترجمة العنوان وإضافته حاول مجددًا بوقت لاحق":
+      "There is an error in translating and adding the title. Please try again later.",
+  "تم إنشاء المنشور بنجاح وإعادة تعيين الحقول":
+      "The post was created successfully and the fields have been reset.",
+  "خطا في المحتويات": "Error in the contents.",
+  "خطا في ترجمة النصوص حاول مجددًا لاحقًا":
+      "Error in translating the texts. Please try again later.",
+  "نجحت العملية!": "Operation succeeded!",
+  "تم إضافة بيانات الناشر بنجاح": "Publisher information added successfully.",
+  "فشلت العملية!": "Operation failed!",
+  "فشلت عملية إضافة البيانات": "Failed to add the data.",
+  'غير مذكور': 'Not specified.',
+  "عملية التحقق من الصور وترجمة بيانات المنشور إلى اللغات المختلفة تستغرق بعض من الوقت..الرجاء الإنتظار وإبقاء الإتصال على الانترنت":
+      "The process of verifying images and translating post data into different languages takes some time. Please wait and maintain your internet connection.",
+  "اختر وقت انتهاء المزاد": "Choose the auction end time.",
+  "اختر نهاية المزاد": "Choose the auction end.",
+  "اختر بداية المزاد": "Choose the auction start.",
+  "اختر وقت بدء المزاد": "Choose the auction start time.",
+  "لا توجد منشورات متاحة حالياً": "No posts are currently available.",
+  "يمكنك المحاولة لاحقًا أو تحديث الصفحة":
+      "You can try again later or refresh the page.",
+  "ماركة السيارة": "Car brand",
+  ////////////////////
+
+  "لايوجد": "None",
+  "عدد الغرف": "Number of rooms",
+  "غرفة واحدة": "1",
+  "غرفتين": "2",
+  "ثلاثة غرف": "3",
+  "أربع غرف": "4",
+  "خمس غرف": "5",
+  "أكثر من خمس غرف": "More than five rooms",
+  "عدد الحمامات": "Number of bathrooms",
+  "واحد": "1",
+  "أثنين": "2",
+  "ثلاثة": "3",
+  "أكثر من ثلاثة": "More than three",
+  "عدد الطوابق": "Number of floors",
+  "طابق واحد": "One floors",
+  "طابقين": "Two floors",
+  "ثلاث طوابق": "Three floors",
+  "أكثر من ثلاث طوابق": "More than three floors",
+  "مساحة البناء": "Building area",
+  "أقل من 100 متر مربع": "Less than 100 sqm",
+  "من 100 إلى 200 متر مربع": "100 to 200 sqm",
+  "من 200 إلى 300 متر مربع": "200 to 300 sqm",
+  "أكثر من 300 متر مربع": "More than 300 sqm",
+  "مساحة الارض": "Land area",
+  "من 200 إلى 500 متر مربع": "200 to 500 sqm",
+  "أكثر من 500 متر مربع": "More than 500 sqm",
+  "سنة واحدة": "One year",
+  "سنتين": "Two years",
+  "ثلاث سنين": "Three years",
+  "أربعة سنين": "Four years",
+  "خمس سنين": "Five years",
+  "اكثر من خمس سنين": "More than five years",
+  "طريقة الدفع": "Payment method",
+  "كاش": "Cash",
+  "يوجد آلية تقسيط": "Installment plan available",
+  "عمر البناء": "Building Age",
+  //////////
+// العملات والإعدادات العامة
+  'الدولار الأمريكي': 'US Dollar',
+  "العملات المتاحة": "Available Currencies",
+  "محول العملات": "Currency Converter",
+  "العملة الحالية:": "Current Currency:",
+  "اختر اللغة المفضلة": "Choose Preferred Language",
+  "سيتم تطبيق اللغة المختارة على جميع عناصر التطبيق":
+      "The selected language will be applied to all app elements",
+  "Kurdî": "Kurdî",
+  "English": "English",
+
+  // خطوات التأمين
+  'خطوة ١ من ٣': 'Step 1 of 3',
+  "ربط رقم الهاتف": "Link Phone Number",
+  "استعادة الحساب عند فقدان كلمة المرور":
+      "Account Recovery When Losing Password",
+  "أسئلة أمان شخصية": "Personal Security Questions",
+  "طبقة حماية إضافية للعمليات الحساسة":
+      "Additional Security Layer for Sensitive Operations",
+  "ابدأ عملية التأمين": "Start Verification Process",
+  "ربط رقم الاستعادة": "Link Recovery Number",
+  "رقم خاص تستخدمه لإستعادة حسابك عند الحاجة":
+      "A special number used to recover your account when needed",
+  "مثال: +964 770 123 4567": "Example: +964 770 123 4567",
+  "رقم صحيح": "Valid Number",
+  "تأكد من صحة الرقم": "Verify the Number’s Validity",
+
+  // الباقات والاشتراكات
+  "الباقات المتاحة": "Available Packages",
+  "مميزة": "Premium",
+  "استثمارية": "Investment",
+  "تجارية": "Commercial",
+  "اقتصادية": "Economical",
+  "عادية": "Standard",
+  "تأكيد طـلب الإشتراك": "Confirm Subscription Request",
+  "هذا العرض يشمل جميع الأقسام": "This offer includes all sections",
+  "ملاحظة: يتم مراجعة طلب الإشتراك من طرف الإدارة وفي حال الموافقة سيتم إنشاء الباقة":
+      "Note: The subscription request will be reviewed by the administration. If approved, the package will be created",
+  "الطلب": "Request",
+  "إلغاء": "Cancel",
+
+  // بطاقة الناشر
+  "بطاقة الناشر الاحترافية": "Professional Publisher Card",
+  "بدء الإعداد": "Start Setup",
+  "يتطلب تسجيل الدخول": "Requires Login",
+  'يجب تسجيل الدخول لاستخدام هذه الميزة': 'You must log in to use this feature',
+  "ميزة احترافية جديدة": "New Professional Feature",
+  "عرض معلومات الناشر بشكل مميز مع إمكانيات تخصيص متقدمة":
+      "Display publisher information distinctively with advanced customization options",
+  "إضافة شعار خاص بك": "Add Your Own Logo",
+  "وصف تفصيلي عن النشاط": "Detailed Activity Description",
+  "وسائل تواصل متعددة": "Multiple Communication Channels",
+  "عرض الموقع الجغرافي": "Display Geographical Location",
+  "أوقات العمل المخصصة": "Custom Working Hours",
+
+  // إعدادات الحساب
+  'المعلومات': 'Information',
+  'التواصل': 'Communication',
+  'الموقع': 'Location',
+  'المراجعة': 'Review',
+  'السابق': 'Previous',
+  'تأكيد': 'Confirm',
+  'التالي': 'Next',
+  "اختر نوع الحساب المناسب": "Choose the Appropriate Account Type",
+  "حساب شخصي": "Personal Account",
+  "حساب تجاري": "Business Account",
+  'حساب شخصي خاص بك': 'Your personal account',
+  'مشاركة الإعلانات بسهولة': 'Easy ad sharing',
+  'إضافة معلومات التواصل': 'Add contact information',
+  'روابط لمواقع التواصل الإجتماعي': 'Social media links',
+  'معلومات أشمل حول النشاط التجاري':
+      'Comprehensive business activity information',
+  'أوقات العمل والخدمات المميزة': 'Working hours and premium services',
+  'صور أكثر للخدمات والمنشاة': 'More photos of services and facilities',
+  'اختر هذا النوع': 'Choose this type',
+
+  // معلومات الشركة
+  "نبذة الشركة": "Company Overview",
+  "وصف طبيعة عمل الشركة": "Description of Company's Nature of Work",
+  "تخصص الشركة": "Company Specialization",
+  "التخصص الرئيسي للشركة": "Main Company Specialization",
+  "أوقات العمل": "Working Hours",
+  "مثال: الأحد - الخميس: ٩ صباحًا - ٥ مساءً\nالجمعة: مغلق":
+      "Example: Sunday - Thursday: 9 AM - 5 PM\nFriday: Closed",
+  'يجب إدخال رقم الهاتف': 'Phone number must be entered',
+  'يجب إدخال رقم مكون من 10 أرقام': 'You must enter a 10-digit number',
+  "سيتم إضافة مفتاح العراق (+964) تلقائيًا":
+      "Iraq code (+964) will be added automatically",
+
+  // التواصل والموقع
+  "فيسبوك": "Facebook",
+  "انستجرام": "Instagram",
+  "لينكدإن": "LinkedIn",
+  "يوتيوب": "YouTube",
+  "الموقع الإلكتروني": "Website",
+  "صور الناشر-المتجر": "Publisher/Store Photos",
+  "إضافة صورة": "Add Photo",
+  "المزيد من الصور حول نشاطك التجاري":
+      "More photos about your business activity",
+  "لم يتم تحديد الموقع": "Location not specified",
+  "تحديد الموقع الحالي": "Detect Current Location",
+
+  // المراجعة النهائية
+  'نوع الحساب:': 'Account Type:',
+  'الاسم:': 'Name:',
+  'الوصف:': 'Description:',
+  'نبذة الشركة:': 'Company Overview:',
+  'تخصص الشركة:': 'Company Specialization:',
+  'أوقات العمل:': 'Working Hours:',
+  'رقم التواصل:': 'Contact Number:',
+  'فيسبوك:': 'Facebook:',
+  'انستجرام:': 'Instagram:',
+  'لينكدإن:': 'LinkedIn:',
+  'يوتيوب:': 'YouTube:',
+  'الموقع الإلكتروني:': 'Website:',
+  'الموقع الجغرافي:': 'Geographical Location:',
+  'غير محدد': 'Not specified',
+
+  // الإعدادات والمظهر
+  "الإعدادات العامة": "General Settings",
+  "المظهر": "Appearance",
+  "إدارة الحساب": "Account Management",
+  "القوانين": "Policies",
+  "الخروج": "Logout",
+  "مشاركة": "Share",
+
+  // تفاصيل المنشور
+  "تــفاصيل المــنشور": "Post Details",
+  'نشاط تجاري معتمد': 'Verified Business',
+  'مستخدم عادي': 'Regular User',
+  'نبذة عن النشاط': 'Activity Overview',
+  'لا توجد معلومات متاحة': 'No information available',
+  'التخصصات الرئيسية': 'Main Specializations',
+  'غير محددة': 'Not specified',
+  'أوقات العمل الرسمية': 'Official Working Hours',
+  'طرق التواصل المباشر': 'Direct Contact Methods',
+  'زيارة الموقع الرسمي': 'Visit Official Website',
+  'وسائل التواصل الاجتماعي': 'Social Media Channels',
+  'معرض صور النشاط التجاري': 'Business Activity Gallery',
+  'تعذر فتح الرابط': 'Failed to open link',
+  'التفاصيل': 'Details',
+  'التأكيد': 'Confirmation',
+
+  // إنشاء المنشور
+  'المعلومات الأساسية': 'Basic Information',
+  'يرجى اختيار الناشر': 'Please select a publisher',
+  "اختر اسم الناشر": "Choose Publisher Name",
+  "ملاحظة: في حال عدم وجود مدينتك اختر غير مدخل":
+      "Note: If your city is not listed, choose 'Not entered'",
+  'تفاصيل المنشور': 'Post Details',
+  'الصور المرفقة': 'Attached Images',
+  "إضافة صور للمنشور": "Add Images to Post",
+  "لم يتم اختيار أي صور": "No images selected",
+  'مراجعة المعلومات': 'Information Review',
+  'الناشر': 'Publisher',
+  'المدينة': 'City',
+  'المنطقة': 'Area',
+  'نشر الآن': 'Publish Now',
+
+  // النتائج
+  "تم التقديم بنجاح!": "Submitted Successfully!",
+  "تم رفع بيانات المنشور بنجاح. يخضع المنشور الآن لمراجعة فريقنا للتأكد من توافقه مع الشروط والأحكام. ستتم إشعارك فور الانتهاء من المراجعة.":
+      "The post data has been successfully uploaded. The post is now under review by our team to ensure compliance with terms and conditions. You will be notified once the review is complete.",
+  "متابعة": "Continue",
+
+////////////
+  //////////////// About Terms Privacy Page ///////////////
+  "المعلومات والسياسات": "Information & Policies",
+  "من نحن": "About Us",
+  "الشروط": "Terms",
+  "الخصوصية": "Privacy",
+
+  // About Us Content
+  "مرحبًا بكم في تطبيق على مودك": "Welcome to Alamoodac App",
+  "نحن فخورون بأن نقدم لكم أول تطبيق إعلانات مبوبة مدعوم تقنيًا من قبل عدة شركات رائدة في مجال الذكاء الاصطناعي. تم تأسيس هذا التطبيق من خلال ائتلاف ثلاث شركات رائدة في مجال التجارة الالكترونية والتطوير الرقمي.":
+      "We are proud to present the first AI-powered classifieds app, technically supported by leading AI companies. This app was established through a coalition of three pioneering companies in e-commerce and digital development.",
+
+  "رؤيتنا": "Our Vision",
+  "بفضل دعمنا التقني من عدة شركات عالمية مختصة في الذكاء الاصطناعي، نهدف إلى تقديم تجربة فريدة ومبتكرة للمستخدمين. يعتبر تطبيقنا أول تطبيق إعلانات مبوبة يعمل بالذكاء الاصطناعي، مما يتيح للمستخدمين الوصول إلى محتوى مخصص وذكي يلبي احتياجاتهم بشكل أفضل.":
+      "With technical support from global AI specialists, we aim to deliver a unique and innovative user experience. Our app is the first AI-driven classifieds platform, offering smart personalized content that better meets users' needs.",
+
+  "فريقنا": "Our Team",
+  "يضم فريقنا مجموعة من الخبراء في مجالات متعددة، مما يضمن تقديم أفضل الحلول والخدمات لعملائنا. نحن متحمسون للعمل معكم لنحقق معًا أهدافكم.":
+      "Our team comprises experts from diverse fields, ensuring top-notch solutions and services. We're excited to collaborate with you to achieve mutual goals.",
+
+  "اتصل بنا": "Contact Us",
+  "نحن هنا للاستماع إليكم ومساعدتكم في تحقيق طموحاتكم. تواصلوا معنا عبر [وسائل الاتصال].":
+      "We're here to listen and help you achieve your ambitions. Reach us via [contact channels].",
+
+  // Terms Content
+  "شروط وأحكام استخدام تطبيق على مودك": "Terms & Conditions of Use",
+  "مقدمة: مرحبًا بك في تطبيق على مودك. باستخدامك لهذا التطبيق، فإنك توافق على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على هذه الشروط، يرجى عدم استخدام التطبيق.":
+      "Introduction: Welcome to Alamoodac. By using this app, you agree to abide by these terms. If you disagree, please refrain from using the app.",
+
+  "1. تعريفات:": "1. Definitions:",
+  "• التطبيق: يشير إلى تطبيق على مودك المتاح على منصات التشغيل.\n• المستخدم: يشير إلى أي فرد يقوم بتحميل واستخدام التطبيق.\n• الإعلانات: تشير إلى الإعلانات المبوبة التي يتم نشرها عبر التطبيق.":
+      "• App: Refers to Alamoodac application available on platforms.\n• User: Any individual who downloads/uses the app.\n• Ads: Classified listings published through the app.",
+
+  "2. حقوق وواجبات المستخدم:": "2. User Rights & Obligations:",
+  "2.1. حقوق المستخدم:": "2.1. User Rights:",
+  "• يحق للمستخدم استخدام التطبيق بشكل قانوني ومناسب.\n• يحق للمستخدم نشر الإعلانات الخاصة به وفقًا للشروط المحددة.\n• يحق للمستخدم تلقي الدعم الفني والمساعدة من فريق الدعم.":
+      "• Right to use the app legally and appropriately.\n• Right to post ads per specified conditions.\n• Right to receive technical support.",
+
+  "2.2. واجبات المستخدم:": "2.2. User Obligations:",
+  "• يجب على المستخدم تقديم معلومات صحيحة ودقيقة عند التسجيل ونشر الإعلانات.\n• يحظر على المستخدم نشر أي محتوى غير قانوني أو مسيء أو يروج للعنف أو الكراهية.\n• يجب على المستخدم احترام حقوق الملكية الفكرية وعدم انتهاك حقوق الآخرين.":
+      "• Provide accurate information during registration.\n• Prohibited from posting illegal/offensive content.\n• Respect intellectual property rights.",
+
+  // Privacy Content
+  "سياسة الخصوصية لتطبيق على مودك": "Privacy Policy",
+  "مقدمة: نلتزم بحماية خصوصيتك. توضح هذه السياسة كيفية جمع واستخدام وحماية المعلومات الشخصية الخاصة بك عند استخدام تطبيق على مودك.":
+      "Introduction: We're committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.",
+
+  "1. المعلومات التي نجمعها:": "1. Information We Collect:",
+  "1.1. المعلومات الشخصية:": "1.1. Personal Information:",
+  "عند التسجيل في التطبيق، قد نجمع معلومات مثل الاسم، البريد الإلكتروني، رقم الهاتف، ومعلومات الحساب الأخرى.":
+      "During registration, we may collect: name, email, phone number, and account details.",
+
+  "1.2. المعلومات غير الشخصية:": "1.2. Non-Personal Information:",
+  "قد نقوم بجمع معلومات غير شخصية مثل نوع الجهاز، نظام التشغيل، عنوان IP، وبيانات الاستخدام لتحسين تجربة المستخدم.":
+      "We may collect device type, OS, IP address, and usage data to improve user experience.",
+
+  "2. كيفية استخدام المعلومات:": "2. How We Use Information:",
+  "نستخدم المعلومات التي نجمعها للأغراض التالية:\n• لتقديم خدمات التطبيق وتحسينها.\n• للتواصل معك بشأن حسابك أو الخدمات المقدمة.\n• لتحليل البيانات وفهم كيفية استخدام التطبيق.":
+      "We use collected information to:\n• Provide and improve services\n• Communicate about your account\n• Analyze app usage patterns",
+
+  //////////////// Delete Account Dialog ///////////////
+  "حذف الحساب الدائم": "Permanent Account Deletion",
+
+  // Consequences List
+  "كل البيانات سيتم حذفها بشكل نهائي": "All data will be permanently deleted",
+  "لا يمكن استرجاع الحساب بعد الحذف":
+      "Account cannot be recovered after deletion",
+  "سيتم إلغاء جميع الاشتراكات": "All subscriptions will be canceled",
+  "فقدان الوصول إلى الخدمات المرتبطة": "Loss of access to linked services",
+
+  // Buttons
+  "إلغاء الأمر": "Cancel",
+  "تأكيد الحذف النهائي": "Confirm Permanent Deletion",
+
+  // Snackbar Messages
+  "تم الحذف": "Deleted",
+  "تم حذف الحساب بشكل نهائي": "Account has been permanently deleted",
+
+  "المنشور الممول": "Promoted Post",
+  "وصل إلى جمهور أوسع وضاعف تفاعل منشوراتك":
+      "Reach wider audience & boost engagement",
+  "العرض العادي": "Standard Post",
+  "ظهور مميز في الصفحة الرئيسية": "Featured placement on homepage",
+  "ظهور عادي مع باقي المنشورات": "Regular visibility with other posts",
+  "x3 التفاعل": "3x Engagement",
+  "وضوح أعلى": "Higher Visibility",
+  "زيادة معدلات المشاهدة": "Increased view rates",
+  "جمهور أوسع": "Wider Audience",
+  "وصول لمتابعين جدد": "Access to new followers",
+  "تمويل مرن": "Flexible Budgeting",
+  "سهوله في الطلب وبشكل فوري": "Easy & instant ordering",
+  "مدة الترويج": "Promotion Duration",
+  "عالي ويصل لاسابيع او اشهر": "Up to weeks or months",
+  "اختر المنشور المطلوب": "Select Post",
+  "تقديم الطلب": "Submit Request",
+  "مراجعة الإدارة": "Admin Review",
+  "النتيجة": "Result",
+  "سيتم مراجعة طلبك خلال 24 ساعة وسيتم إشعارك بالنتيجة":
+      "Your request will be reviewed within 24 hours",
+  "اطلب الخدمة الآن": "Order Service Now",
+  "يرجى اختيار منشور أولاً": "Please select a post first",
+  "تم إرسال طلب الممول بنجاح": "Promotion request submitted successfully",
+  "تم بنجاح": "Success",
+  // General
+  "الإعدادات": "Settings",
+  "تمويل المنشورات": "Post Funding",
+  "سنة": "Year",
+  "شهر": "Month",
+  "اشترك الآن": "Subscribe Now",
+  "لمدة": "For a period of",
+  "اختر القسم": "Choose Section",
+  "ممول": "Sponsored",
+  "المنشورات الممولة": "Sponsored Posts",
+  "إنستجرام": "Instagram",
+
+  // Auth & Account
+  "مرحبًا بعودتك!": "Welcome back!",
+  "سجل الدخول لاستئناف رحلتك": "Log in to resume your journey",
+  "ليس لديك حساب؟ سجل الآن": "Don't have an account? Sign up now",
+  "نسيت كلمة المرور؟": "Forgot your password?",
+  "انضم إلينا بسهولة": "Join us easily",
+  "أنشئ حسابك في دقيقتين": "Create your account in two minutes",
+  "الخطوة الثانية: حماية الحساب": "Step Two: Account Protection",
+  "الخطوة الأولى: المعلومات الأساسية": "Step One: Basic Information",
+  "لديك حساب؟": "Have an account?",
+  "سجل الدخول الآن": "Log in now",
+  "بالاستمرار أنت توافق على الشروط والأحكام":
+      "By continuing, you agree to the Terms and Conditions",
+  "أسم حسابك الخاص؟": "Your account name?",
+  "مثال: أحمد محمد": "Example: Ahmed Mohamed",
+  "يجب ألا يقل الاسم عن 3 أحرف": "Name must be at least 3 characters",
+  "الاسم قصير جدًا (3 أحرف على الأقل)":
+      "Name is too short (minimum 3 characters)",
+  "مرحبًا": "Hello",
+  "اختر كلمة مرور قوية": "Choose a strong password",
+  "أدخل كلمة مرور قوية": "Enter a strong password",
+  "يجب ألا تقل كلمة المرور عن 4 أحرف": "Password must be at least 4 characters",
+  "كلمة المرور قصيرة جدًا (4 أحرف على الأقل)":
+      "Password is too short (minimum 4 characters)",
+  "يجب أن يحتوي الاسم على 3 أحرف على الأقل":
+      "Name must contain at least 3 characters",
+  "أنشئ الحساب": "Create Account",
+  "يجب أن تحتوي كلمة المرور على 4 أحرف على الأقل":
+      "Password must contain at least 4 characters",
+  "العودة لتعديل الاسم": "Go back to edit name",
+  "استكشف التطبيق كزائر": "Explore the app as a visitor",
+  "جاري إنشاء حسابك...": "Creating your account...",
+
+  // Posts & Services
+  "المنشور المطلوب": "Required Post",
+  "ملاحظة:تواصل من خلال ايقونة الواتساب العائمة لمعلومات أكثر":
+      "Note: Contact via floating WhatsApp icon for more info",
+  "إضافة منشور جديد": "Add New Post",
+  "الحي-المنطقة": "Neighborhood/Area",
+  "الوصف الشامل": "Comprehensive Description",
+  "الخدمات الإضافية": "Additional Services",
+  "خدمة التوصيل": "Delivery Service",
+  "مواعيد العمل": "Working Hours",
+  "الوصف المختصر": "Brief Description",
+  "تفاصيل اضافية": "Additional Details",
+  "الخدمات المميزة": "Premium Services",
+  "المرافق والخدمات المتاحة": "Available Facilities and Services",
+  "أنواع الاشتراكات": "Subscription Types",
+  "قسم خاص للسيدات": "Ladies Section",
+  "وصف تفصيلي": "Detailed Description",
+  "وصف مختصر": "Brief Description",
+  "أماكن الجلوس": "Seating Areas",
+  "أطلالات او اماكن الجلوس..مثل إطلالة خارجية وجود قسسم VIP خاص وإلخ..":
+      "Views or seating areas.. such as an outdoor view with a VIP section, etc..",
+  "قسم العائلات": "Families Section",
+  "يوجد": "Available",
+  "يوجد دفع الكتروني": "Electronic payment available",
+  "نعم": "Yes",
+  "هل يوجد خدمة توصيل": "Is there a delivery service?",
+  "نبذة عن المطعم": "About the Restaurant",
+  "ساعات النشاط": "Activity Hours",
+  "هل يحتوي المنشور على مبلغ مالي؟":
+      "Does the post contain a financial amount?",
+  "رقم الواتساب:": "WhatsApp Number:",
+  "إمكانية الإيجار": "Rent Possibility",
+  "قابل للايجار": "Available for Rent",
+  "ليس قابل للايجار": "Not Available for Rent",
+  "شبة جديد": "Like New",
+  "مستعمل عادي": "Regular Use",
+  "مستعمل بشدة": "Heavily Used",
+  "تقسيط": "Installments",
+  "بيع مفرق": "Retail Sale",
+  "حالة التأمين": "Insurance Status",
+  "مؤمن": "Insured",
+  "غير مؤمن": "Not Insured",
+  "بدء التأمين الآن": "Start Insurance Now",
+  "الاشتراك الحالي": "Current Subscription",
+  "بيـانات النـاشر": "Publisher Data",
+  "بيانات النــاشر الخاص بحــسابك وتعرض عند عرض المنشورات":
+      "Your account publisher data that appears when viewing posts",
+  "قائمة المنشورات": "Posts List",
+  "الاشتراك الآن": "Subscribe Now",
+  "يمكنك الاشتراك الآن للتمتع بمزايا إضافية":
+      "You can subscribe now to enjoy additional benefits",
+  "لايوجد اشتراك نشط": "No Active Subscription",
+  ////////
+  "خدمة الدفع الإلكتروني": "Electronic Payment Service",
+  "خطأ في الإدخال": "Input Error",
+  "الرجاء إدخال رقم هاتف صحيح": "Please enter a valid phone number",
+  "إضافة وسيلة الامان سيساعدك في عملية تامين حسابك وإمكانية إستعادته عند فقدانه":
+      "Adding a security method will help secure your account and enable recovery if lost",
+
+  ///////////
+
+  "تم جلب البيانات بنجاح": "Data retrieved successfully",
+  "الموقع غير متوفر": "Location unavailable",
+  "الاشتراك من خلال الاكواد": "Subscription via codes",
+  "خطوات التفعيل:": "Activation steps:",
+  "تفعيل الباقة باستخدام الكود": "Activate package using code",
+  "احصل على كود التفعيل من المصدر المعتمد":
+      "Get activation code from authorized source",
+  "أدخل الكود في الحقل المخصص أدناه": "Enter code in the field below",
+  "اضغط على زر التفعيل لإكمال العملية": "Click activate button to complete",
+  "تفعيل الآن": "Activate Now",
+  "مبروك!": "Congratulations!",
+  "تم توليد الكود": "Code generated",
+  "تم تفعيل الباقة بنجاح": "Package activated successfully",
+  "الأكواد المولدة": "Generated codes",
+  "رجوع": "Back",
+  "تم النسخ": "Copied",
+  "تم نسخ الكود إلى الحافظة": "Code copied to clipboard",
+  "لا توجد أكواد متاحة حالياً": "No codes available currently",
+  "تاريخ البدء": "Start date",
+  "تاريخ الانتهاء": "End date",
+  "الأقسام المختارة": "Selected sections",
+  "عدد الحسابات الفرعية": "Sub-accounts count",
+  "تجديد الاشتراك": "Renew subscription",
+  "عرض الأكواد": "View codes",
+  "توليد كود جديد": "Generate new code",
+  "يوم": "Day",
+  'ليس لديك باقة نشطة': 'You don\'t have an active package',
+  'يجب عليك الاشتراك في إحدى الباقات المدفوعة لإنشاء منشور':
+      'You must subscribe to one of the paid packages to create a post',
+  'لا يوجد باقات نشطة': 'There are no active packages',
+  'إما أن باقاتك قد انتهت أو أنك استنفدت عدد المنشورات المسموحة':
+      'Either your packages have expired or you have used up the allowed number of posts',
+  'غير مسموح': 'Not allowed',
+  'الباقة التي لديك لا تسمح بالنشر في هذا القسم':
+      'Your package does not allow posting in this section',
+  'الرجاء إختيار اللغة': 'Please choose a language',
+  'الإكمال الان': 'Complete Now',
+  'أدخل الاسم المعروض': 'Enter Display Name',
+  'وصف مختصر للنشاط': 'Brief Activity Description',
+  'تم الحفظ بنجاح': 'Saved Successfully',
+  'تم الإضافة في قائمة الطلب سيتم المراجعة':
+      'Added to Request List, Under Review',
+  'الباقة التى طلبتها:': 'The Package You Requested:',
+  'حسناً': 'OK',
+  'تم الطلب': 'Order Submitted',
+  'تم إرسال طلب الاشتراك بنجاح.': 'Subscription Request Sent Successfully',
+  'عذرًا، لا توجد منشورات لعرضها': 'Sorry, No Posts Available',
+  'يمكنك البدء بإنشاء منشور جديد الآن': 'You Can Start Creating a New Post Now',
+  'أدخل هنا أي تفاصيل إضافية تريد وضعها': 'Enter Any Additional Details Here',
+  'ادخل اسمك هنا': 'Enter Your Name Here',
+  'ادخل عمرك هنا': 'Enter Your Age Here',
+  'ادخل اللغات التي تجيدها هنا': 'Enter Languages You Speak Here',
+  'ادخل الأوقات المفضلة او المتفرغ فيها للعمل هنا او نشاطك':
+      'Enter Your Preferred/Available Working Hours Here',
+  'أدخل هنا خبراتك بشكل نصي ومختصر': 'Enter Your Experience Briefly Here',
+  'أدخل هنا نبذة شخصية عنك بشكل كامل': 'Enter Your Full Personal Bio Here',
+  'أدخل هنا الخدمات المميزة والخاصة بالمطعم':
+      'Enter Special Restaurant Services Here',
+  'أدخل هنا السعر الأبتدائي للمزاد': 'Enter Starting Auction Price Here',
+  "تفاصيل النــاشر": "Publisher Details",
+  "الناشرين": "Publishers",
+  "البحث عن ناشرين": "Search for Publishers",
+  "أدخل اسم الناشر": "Enter Publisher Name",
+  "تجاري": "Commercial",
+  "شخصي": "Personal",
+  "التخصص": "Specialization",
+  "نبذة": "Summary", "لا يوجد نتائج": "No results found",
+  "حاول تعديل معايير البحث الخاصة بك": "Try modifying your search criteria",
+  ////////////////////////
+  "لا توجد رسائل جديدة": "No new messages",
+  "تأكيد الحذف": "Confirm deletion",
+  "هل أنت متأكد من حذف هذه الرسالة؟":
+      "Are you sure you want to delete this message?",
+  "تفاصيل الرسالة": "Message details",
+  "حذف": "Delete",
+  "إغلاق": "Close",
+  "الرسائل والتنبيهات": "Messages and notifications",
+  "معرض الصور": "Image gallery",
+
+  "التصنيفات الرئيسية": "Main Categories",
+  "تصفح المنشورات التى تريدها من خلال التصنيف المرغوب":
+      "Browse the posts you want through the desired category",
+  "إعلاناتنا الحالية": "Our current ads",
+  "شاهد أحدث الإعلانات الخاصة والعروض الخاصة":
+      "View the latest private ads and special offers",
+  "المنشورات والبحث": "Posts and search",
+  "تصــفح المــنشورات وابحث من خلال صندوق البحث المتقدم":
+      "Browse the posts and search through the advanced search box",
+  "أنشئ منشور جديد": "Create a new post",
+  "ابدأ نشر إعلانك خلال دقائق": "Start publishing your ad in minutes",
+  "تمويل منشور": "Post funding",
+  "اختر الخطة لتعزيز وصولك": "Choose the plan to enhance your reach",
+  "اذهب": "Go",
+  "استعراض الباقات": "View packages",
+  "البحث المخصص": "Custom search",
+  "سجل دخولك": "Sign in",
+  "مرحباً": "Welcome",
+  ////////
+  'منصة الإعلانات المبوبة في العراق': 'Classified Ads Platform in Iraq',
+  'مطورة من طرف العاصمة للتسويق والبرمجة © 2025':
+      'Developed by Al-Asima for Marketing and Programming © 2025',
+  'عن المنصة': 'About the Platform',
+  'خدماتنا': 'Our Services',
+  'نشر منشور الآن': 'Post Now',
+  'تواصل معنا': 'Contact Us',
+  'لا يوجد محتوى حالياً': 'No content available at the moment',
+
+  "فلترة متقدمة": "Advanced Filtering",
+  "معايير البحث": "Search Criteria",
+  "إعلان ممول": "Sponsored Ad",
+  "إعلان جديد..!": "New Ad..!",
+  "عرض الخريطة": "Map View",
+  "سياسة الخصوصية": "Privacy Policy",
+
+  ///////////
+  ////////////////////////
+};
