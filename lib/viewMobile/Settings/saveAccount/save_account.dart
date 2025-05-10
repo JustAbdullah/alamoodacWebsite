@@ -47,7 +47,7 @@ class SaveAccount extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             controller.saveAccount.value = false;
-                            Get.offNamed(
+                            Get.toNamed(
                               '/settings-mobile/', // المسار مع المعلمة الديناميكية
                               // إرسال الكائن كامل
                             );

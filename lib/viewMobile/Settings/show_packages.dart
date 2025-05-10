@@ -45,7 +45,7 @@ class ShowPackages extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             controller.showPack.value = false;
-                            Get.offNamed(
+                            Get.toNamed(
                               '/settings-mobile/', // المسار مع المعلمة الديناميكية
                               // إرسال الكائن كامل
                             );

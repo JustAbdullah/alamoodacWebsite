@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -28,7 +27,7 @@ class ChosePusher extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         child: controller.showPusher.value
             ? Scaffold(
-        body: Container(
+                body: Container(
                   key: const ValueKey('pusher-container'),
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
@@ -53,11 +52,11 @@ class ChosePusher extends StatelessWidget {
                           children: [
                             // Header Section
                             _buildHeader(themeController, controller),
-              
+
                             // Feature Illustration
-              
+
                             SizedBox(height: 30.h),
-              
+
                             // Content Section
                             Expanded(
                               child: SingleChildScrollView(
@@ -74,7 +73,7 @@ class ChosePusher extends StatelessWidget {
                                       themeController: themeController,
                                     ),
                                     SizedBox(height: 20.h),
-              
+
                                     _buildFeatureList(
                                       themeController: themeController,
                                       items: [
@@ -86,7 +85,7 @@ class ChosePusher extends StatelessWidget {
                                       ],
                                     ),
                                     SizedBox(height: 40.h),
-              
+
                                     // Action Button
                                     Center(
                                       child: _buildSetupButton(
@@ -107,7 +106,7 @@ class ChosePusher extends StatelessWidget {
                     ),
                   ),
                 ),
-            )
+              )
             : const SizedBox.shrink(),
       ),
     );
@@ -116,17 +115,15 @@ class ChosePusher extends StatelessWidget {
   Widget _buildHeader(
       ThemeController themeController, Settingscontroller controller) {
     return Row(
-     
       children: [
         InkWell(
-          onTap: ()
-          { controller.showPusher.value = false;
-              Get.offNamed(
-    '/mobile', // المسار مع المعلمة الديناميكية
-  // إرسال الكائن كامل
-  );
-          }
-          ,
+          onTap: () {
+            controller.showPusher.value = false;
+            Get.toNamed(
+              '/mobile', // المسار مع المعلمة الديناميكية
+              // إرسال الكائن كامل
+            );
+          },
           child: Container(
             padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
@@ -135,31 +132,36 @@ class ChosePusher extends StatelessWidget {
                   .withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child:Image.asset( Get.find<ChangeLanguageController>().currentLocale.value.languageCode=="ar"?          ImagesPath.back:
-          ImagesPath.arrowLeft,
+            child: Image.asset(
+                Get.find<ChangeLanguageController>()
+                            .currentLocale
+                            .value
+                            .languageCode ==
+                        "ar"
+                    ? ImagesPath.back
+                    : ImagesPath.arrowLeft,
                 width: 24.w,
                 height: 24.h,
                 color: AppColors.textColor(themeController.isDarkMode.value)),
           ),
-        ), SizedBox(
-              width: 15.w,
-            ),
-
-         SizedBox(
-          width: 
-          250.w,
-          child:  Text(
+        ),
+        SizedBox(
+          width: 15.w,
+        ),
+        SizedBox(
+          width: 250.w,
+          child: Text(
             "بطاقة الناشر الاحترافية".tr,
             style: TextStyle(
               fontFamily: AppTextStyles.DinarOne,
               fontSize: 22.sp,
               color: AppColors.textColor(themeController.isDarkMode.value),
               fontWeight: FontWeight.bold,
-            ),  overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ),
-       
       ],
     );
   }
@@ -258,15 +260,22 @@ class ChosePusher extends StatelessWidget {
           width: 220.w,
           padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 25.w),
           decoration: BoxDecoration(
-            gradient:  LinearGradient(
-              colors: [AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value), AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value)],
+            gradient: LinearGradient(
+              colors: [
+                AppColors.backgroundColorIconBack(
+                    Get.find<ThemeController>().isDarkMode.value),
+                AppColors.backgroundColorIconBack(
+                    Get.find<ThemeController>().isDarkMode.value)
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               BoxShadow(
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value).withOpacity(0.3),
+                color: AppColors.backgroundColorIconBack(
+                        Get.find<ThemeController>().isDarkMode.value)
+                    .withOpacity(0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -338,7 +347,8 @@ class ChosePusher extends StatelessWidget {
             style: TextStyle(
               fontFamily: AppTextStyles.DinarOne,
               fontSize: 14.sp,
-              color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+              color: AppColors.backgroundColorIconBack(
+                  Get.find<ThemeController>().isDarkMode.value),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -350,7 +360,7 @@ class ChosePusher extends StatelessWidget {
       );
     } else {
       controller.showinfoPusherData.value = true;
-      Get.to(()=>CreateInfoData()); 
+      Get.to(() => CreateInfoData());
     }
   }
 }

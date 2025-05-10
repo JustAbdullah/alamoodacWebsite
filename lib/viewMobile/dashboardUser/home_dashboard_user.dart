@@ -272,7 +272,7 @@ class HomeDashboardUser extends StatelessWidget {
           onTap: () async {
             controller.showDashBoardUser.value = false;
             homeController.isChosedHome();
-            Get.offNamed(
+            Get.toNamed(
               '/mobile',
             );
           },

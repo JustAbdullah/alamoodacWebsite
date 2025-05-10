@@ -1480,7 +1480,7 @@ void _showFullScreenGallery(List<String> images, int initialIndex) {
         backgroundColor: Colors.black,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white, size: 28.sp),
-          onPressed: () => Get.offNamed('/mobile'),
+          onPressed: () => Get.toNamed('/mobile'),
         ),
       ),
       backgroundColor: Colors.black,

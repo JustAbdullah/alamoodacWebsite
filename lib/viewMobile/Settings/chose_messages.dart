@@ -54,7 +54,7 @@ class ChoseMessages extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Get.offNamed(
+                  Get.toNamed(
                     '/settings-mobile/', // المسار مع المعلمة الديناميكية
                     // إرسال الكائن كامل
                   );

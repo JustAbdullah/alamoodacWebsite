@@ -119,11 +119,16 @@ class _AddAuctionState extends State<AddAuction> {
       ThemeController themeController, Addpostcontrollerauction add) {
     return AppBar(
       leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value)),
+          icon: Icon(Icons.arrow_back,
+              color: AppColors.backgroundColorIconBack(
+                  Get.find<ThemeController>().isDarkMode.value)),
           onPressed: () {
             add.hideAll();
-            add.resetAll();            Get.back();
-
+            add.resetAll();
+            Get.toNamed(
+              '/add-post-mobile', // المسار مع المعلمة الديناميكية
+              // إرسال الكائن كامل
+            );
           }),
       title: Column(
         children: [
@@ -131,13 +136,15 @@ class _AddAuctionState extends State<AddAuction> {
               style: TextStyle(
                   fontFamily: AppTextStyles.DinarOne,
                   fontSize: 20.sp,
-                  color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value))),
+                  color: AppColors.backgroundColorIconBack(
+                      Get.find<ThemeController>().isDarkMode.value))),
           Text(add.nameOfCatee.value,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontFamily: AppTextStyles.DinarOne,
                   fontSize: 18.sp,
-                  color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value))),
+                  color: AppColors.backgroundColorIconBack(
+                      Get.find<ThemeController>().isDarkMode.value))),
         ],
       ),
       centerTitle: true,
@@ -145,7 +152,9 @@ class _AddAuctionState extends State<AddAuction> {
           ? AppColors.balckColorTypeFour
           : AppColors.whiteColor,
       elevation: 0,
-      iconTheme: IconThemeData(color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value)),
+      iconTheme: IconThemeData(
+          color: AppColors.backgroundColorIconBack(
+              Get.find<ThemeController>().isDarkMode.value)),
     );
   }
 
@@ -172,7 +181,10 @@ class _AddAuctionState extends State<AddAuction> {
                     width: 30.w,
                     height: 30.h,
                     decoration: BoxDecoration(
-                      color: isActive ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey[300],
+                      color: isActive
+                          ? AppColors.backgroundColorIconBack(
+                              Get.find<ThemeController>().isDarkMode.value)
+                          : Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
                     child: Center(
@@ -190,7 +202,10 @@ class _AddAuctionState extends State<AddAuction> {
                     _getStepLabel(index),
                     style: TextStyle(
                       fontSize: 12.sp,
-                      color: isActive ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey,
+                      color: isActive
+                          ? AppColors.backgroundColorIconBack(
+                              Get.find<ThemeController>().isDarkMode.value)
+                          : Colors.grey,
                       fontFamily: AppTextStyles.DinarOne,
                     ),
                   ),
@@ -633,8 +648,8 @@ class _AddAuctionState extends State<AddAuction> {
                 onDateTimePicked: (dateTime) {
                   setState(() {
                     startDateTime = dateTime;
-                    controller.startDateTime=dateTime;
-                     print("UTC Start: ${dateTime.toUtc()}");
+                    controller.startDateTime = dateTime;
+                    print("UTC Start: ${dateTime.toUtc()}");
                   });
                 },
               );
@@ -660,9 +675,9 @@ class _AddAuctionState extends State<AddAuction> {
                 onDateTimePicked: (dateTime) {
                   setState(() {
                     endDateTime = dateTime;
-                                        print("Date Of End ${endDateTime}");  
-                                         print("UTC Start: ${dateTime.toUtc()}"); controller.endDateTime=dateTime;
-
+                    print("Date Of End ${endDateTime}");
+                    print("UTC Start: ${dateTime.toUtc()}");
+                    controller.endDateTime = dateTime;
                   });
                 },
               );
@@ -681,7 +696,10 @@ class _AddAuctionState extends State<AddAuction> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey[300],
+        backgroundColor: isSelected
+            ? AppColors.backgroundColorIconBack(
+                Get.find<ThemeController>().isDarkMode.value)
+            : Colors.grey[300],
         padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -713,7 +731,8 @@ class _AddAuctionState extends State<AddAuction> {
             child: Container(
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+                color: AppColors.backgroundColorIconBack(
+                    Get.find<ThemeController>().isDarkMode.value),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -764,7 +783,7 @@ class _AddAuctionState extends State<AddAuction> {
   Widget _buildImageItem(Addpostcontrollerauction controller, int index) {
     return Stack(
       children: [
-       Image.memory(
+        Image.memory(
           controller.images[index],
           fit: BoxFit.cover,
           width: double.infinity,
@@ -825,7 +844,8 @@ class _AddAuctionState extends State<AddAuction> {
             style: TextStyle(
               fontFamily: AppTextStyles.DinarOne,
               fontSize: 16.sp,
-              color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+              color: AppColors.backgroundColorIconBack(
+                  Get.find<ThemeController>().isDarkMode.value),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -893,11 +913,17 @@ class _AddAuctionState extends State<AddAuction> {
               fontSize: 14.sp,
               color: Colors.white)),
       style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey[600],
+        backgroundColor: isPrimary
+            ? AppColors.backgroundColorIconBack(
+                Get.find<ThemeController>().isDarkMode.value)
+            : Colors.grey[600],
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value), width: 1),
+          side: BorderSide(
+              color: AppColors.backgroundColorIconBack(
+                  Get.find<ThemeController>().isDarkMode.value),
+              width: 1),
         ),
       ),
       onPressed: onPressed,
@@ -925,7 +951,8 @@ class _AddAuctionState extends State<AddAuction> {
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+        backgroundColor: AppColors.backgroundColorIconBack(
+            Get.find<ThemeController>().isDarkMode.value),
         padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 14.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -959,20 +986,24 @@ class _AddAuctionState extends State<AddAuction> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.check_circle_outline,
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value), size: 60.w),
+                color: AppColors.backgroundColorIconBack(
+                    Get.find<ThemeController>().isDarkMode.value),
+                size: 60.w),
             SizedBox(height: 20.h),
             Text(
               "تم التقديم بنجاح!".tr,
               style: TextStyle(
                 fontSize: 22.sp,
                 fontWeight: FontWeight.bold,
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+                color: AppColors.backgroundColorIconBack(
+                    Get.find<ThemeController>().isDarkMode.value),
                 fontFamily: AppTextStyles.DinarOne,
               ),
             ),
             SizedBox(height: 15.h),
             Text(
-              "تم رفع بيانات المنشور بنجاح. يخضع المنشور الآن لمراجعة فريقنا للتأكد من توافقه مع الشروط والأحكام. ستتم إشعارك فور الانتهاء من المراجعة.".tr,
+              "تم رفع بيانات المنشور بنجاح. يخضع المنشور الآن لمراجعة فريقنا للتأكد من توافقه مع الشروط والأحكام. ستتم إشعارك فور الانتهاء من المراجعة."
+                  .tr,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16.sp,
@@ -991,7 +1022,8 @@ class _AddAuctionState extends State<AddAuction> {
                     .resetAll(); // تم التعديل هنا
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+                backgroundColor: AppColors.backgroundColorIconBack(
+                    Get.find<ThemeController>().isDarkMode.value),
                 padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.r),
@@ -1030,7 +1062,8 @@ class _AddAuctionState extends State<AddAuction> {
         style: TextStyle(
           fontSize: 18.sp,
           fontFamily: AppTextStyles.DinarOne,
-          color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+          color: AppColors.backgroundColorIconBack(
+              Get.find<ThemeController>().isDarkMode.value),
           fontWeight: FontWeight.bold,
         ),
       ),

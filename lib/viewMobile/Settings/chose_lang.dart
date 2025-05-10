@@ -112,7 +112,7 @@ class ChoseLang extends StatelessWidget {
     return InkWell(
       onTap: () {
         controller.showChoseLang.value = false;
-        Get.offNamed(
+        Get.toNamed(
           '/settings-mobile/', // المسار مع المعلمة الديناميكية
           // إرسال الكائن كامل
         );
@@ -260,7 +260,7 @@ class ChoseLang extends StatelessWidget {
       ]);
 
       Get.find<Settingscontroller>().showChoseLang.value = false;
-      Get.offNamed(
+      Get.toNamed(
         '/mobile', // المسار مع المعلمة الديناميكية
         // إرسال الكائن كامل
       );

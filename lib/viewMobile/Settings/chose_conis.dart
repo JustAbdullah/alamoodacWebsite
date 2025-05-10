@@ -111,7 +111,7 @@ class ChoseConis extends StatelessWidget {
         InkWell(
           onTap: () {
             controller.showCoins.value = false;
-            Get.offNamed(
+            Get.toNamed(
               '/settings-mobile/', // المسار مع المعلمة الديناميكية
               // إرسال الكائن كامل
             );

@@ -45,7 +45,7 @@ class _ChoseModeState extends State<ChoseMode> {
                             InkWell(
                               onTap: () {
                                 controller.showMode.value = false;
-                                Get.offNamed(
+                                Get.toNamed(
                                   '/settings-mobile/', // المسار مع المعلمة الديناميكية
                                   // إرسال الكائن كامل
                                 );

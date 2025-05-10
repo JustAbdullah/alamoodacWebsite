@@ -93,7 +93,7 @@ class ShowAskDeleteAccount extends StatelessWidget {
     return InkWell(
       onTap: () {
         controller.showAskToDeleteAccount.value = false;
-        Get.offNamed(
+        Get.toNamed(
           '/settings-mobile/', // المسار مع المعلمة الديناميكية
           // إرسال الكائن كامل
         );

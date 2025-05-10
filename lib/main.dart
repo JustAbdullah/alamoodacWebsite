@@ -31,47 +31,91 @@ import 'viewsDeskTop/homeDeskTop/home_screen_desktop.dart';
 import 'viewsDeskTop/searchDeskTop/DetailsStoresDesktop/details_stroes_desktop.dart';
 import 'viewsDeskTop/searchDeskTop/search_screen_desktop.dart';
 
+class CustomNavigatorObserver extends NavigatorObserver {
+  @override
+  void didPush(Route route, Route? previousRoute) {
+    _updateHistory(route);
+  }
+
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    _updateHistory(previousRoute);
+  }
+
+  void _updateHistory(Route? route) {
+    if (route is PageRoute && route.settings.name != null) {
+      html.window.history.replaceState(
+        {'route': route.settings.name},
+        '',
+        route.settings.name,
+      );
+    }
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // تهيئة الخدمات والكونترولرات
   final appServices = await AppServices.init();
   Get.put(appServices);
   Get.put(ChangeLanguageController());
 
-  // استخدام الاستراتيجية الافتراضية لبناء سجل التنقل
   setUrlStrategy(PathUrlStrategy());
+  html.window.history.replaceState({'route': '/'}, '', '/');
 
-  // التعامل مع زر "رجوع" في المتصفح
   html.window.onPopState.listen((event) {
+    final currentRoute = Get.currentRoute;
+
     if (Get.isSnackbarOpen) {
-      Get.back(); // إغلاق Snackbar
+      Get.back();
       return;
     }
 
-    if (Get.key.currentState?.canPop() == true) {
-      Get.back();
+    if (currentRoute == '/Decider') {
+      _showExitConfirmation();
     } else {
-      // عرض رسالة بدلًا من الرجوع إلى /Decider مباشرة
-      Get.snackbar(
-        'تنبيه',
-        'لا يوجد صفحات أخرى للرجوع إليها',
-        backgroundColor: Colors.orange.shade200,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-      );
-      // إبقاء العنوان على /Decider فقط للترتيب
-      html.window.history.replaceState({}, '', '/Decider');
+      _forceRedirectToDecider();
     }
   });
 
-  // قفل التدوير على الوضع العمودي فقط
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
   runApp(const MyApp());
+}
+
+void _forceRedirectToDecider() {
+  Get.offAllNamed('/Decider');
+  html.window.history.replaceState({'route': '/Decider'}, '', '/Decider');
+}
+
+void _showExitConfirmation() {
+  Get.dialog(
+    AlertDialog(
+      title: const Text('تأكيد الخروج'),
+      content: const Text('هل تريد حقًا الخروج من التطبيق؟'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Get.back();
+            html.window.history.pushState(
+              {'route': '/Decider'},
+              '',
+              '/Decider',
+            );
+          },
+          child: const Text('إلغاء'),
+        ),
+        TextButton(
+          onPressed: () => html.window.close(),
+          child: const Text('خروج'),
+        ),
+      ],
+    ),
+    barrierDismissible: false,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -89,7 +133,10 @@ class MyApp extends StatelessWidget {
     return Obx(() => GetMaterialApp(
           navigatorKey: Get.key,
           debugShowCheckedModeBanner: false,
-          navigatorObservers: [GetObserver()],
+          navigatorObservers: [
+            CustomNavigatorObserver(),
+            GetObserver(),
+          ],
           title: 'على مودك',
           translations: AppTranslation(),
           locale: langCtrl.currentLocale.value,
@@ -129,11 +176,6 @@ class MyApp extends StatelessWidget {
               data: mq.copyWith(textScaleFactor: 0.9),
               child: child!,
             );
-          },
-          routingCallback: (routing) {
-            if (routing != null && !routing.isBack!) {
-              html.window.history.replaceState({}, '', Get.currentRoute);
-            }
           },
         ));
   }

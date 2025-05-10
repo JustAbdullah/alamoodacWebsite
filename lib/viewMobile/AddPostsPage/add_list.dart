@@ -416,7 +416,7 @@ class AddList extends StatelessWidget {
                                                 Get.find<Settingscontroller>()
                                                     .showPack
                                                     .value = true;
-                                                Get.to(() => ShowAskAddCode());
+                                                Get.to(() => ShowPackages());
                                               },
                                               child: Text('اشتري باقة'.tr,
                                                   style: TextStyle(
@@ -462,7 +462,7 @@ class AddList extends StatelessWidget {
                                                 Get.find<Settingscontroller>()
                                                     .showPack
                                                     .value = true;
-                                                Get.to(() => ShowAskAddCode());
+                                                Get.to(() => ShowPackages());
                                               },
                                               child: Text('تجديد الباقة'.tr,
                                                   style: TextStyle(
@@ -508,7 +508,7 @@ class AddList extends StatelessWidget {
                                                 Get.find<Settingscontroller>()
                                                     .showPack
                                                     .value = true;
-                                                Get.to(() => ShowAskAddCode());
+                                                Get.to(() => ShowPackages());
                                               },
                                               child: Text('الباقات'.tr,
                                                   style: TextStyle(

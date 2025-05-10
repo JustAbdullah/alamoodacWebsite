@@ -68,7 +68,7 @@ class _AboutTermsPrivacyPageState extends State<AboutTermsPrivacyPage>
       leading: IconButton(
           icon: Icon(Icons.arrow_back,
               color: AppColors.textColor(_themeController.isDarkMode.value)),
-          onPressed: () => Get.offNamed(
+          onPressed: () => Get.toNamed(
                 '/settings-mobile/', // المسار مع المعلمة الديناميكية
                 // إرسال الكائن كامل
               )),

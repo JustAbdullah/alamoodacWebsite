@@ -50,7 +50,7 @@ class Menu extends StatelessWidget {
                               child: InkWell(
                                 onTap: () {
                                   controller.isChosedHome();
-                                  Get.offNamed(
+                                  Get.toNamed(
                                     '/mobile', // المسار مع المعلمة الديناميكية
                                     // إرسال الكائن كامل
                                   );
@@ -216,7 +216,7 @@ class Menu extends StatelessWidget {
                           InkWell(
                             onTap: () {
                               controller.isChosedSearch();
-                              Get.offNamed(
+                              Get.toNamed(
                                 '/search-mobile', // المسار مع المعلمة الديناميكية
                                 // إرسال الكائن كامل
                               );
@@ -273,7 +273,7 @@ class Menu extends StatelessWidget {
                           InkWell(
                             onTap: () {
                               controller.isChosedMenu();
-                              Get.offNamed(
+                              Get.toNamed(
                                 '/settings-mobile', // المسار مع المعلمة الديناميكية
                                 // إرسال الكائن كامل
                               );
@@ -403,7 +403,7 @@ class Menu extends StatelessWidget {
                                   .value
                                   .languageCode);
                           controller.isChosedAddPost();
-                          Get.offNamed(
+                          Get.toNamed(
                             '/add-post-mobile', // المسار مع المعلمة الديناميكية
                             // إرسال الكائن كامل
                           );

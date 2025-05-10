@@ -296,7 +296,7 @@ class QuesSaveAccount extends StatelessWidget {
                           securityAnswer2:
                               controller.AnsTwoText.text.toString(),
                           context: context);
-                      await Get.offNamed(
+                      await Get.toNamed(
                         '/mobile', // المسار مع المعلمة الديناميكية
                         // إرسال الكائن كامل
                       );

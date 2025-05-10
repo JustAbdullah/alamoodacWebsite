@@ -35,7 +35,7 @@ class ChoseDeleteAccount extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             controller.deleteAccount.value = false;
-                            Get.offNamed(
+                            Get.toNamed(
                               '/settings-mobile/', // المسار مع المعلمة الديناميكية
                               // إرسال الكائن كامل
                             );

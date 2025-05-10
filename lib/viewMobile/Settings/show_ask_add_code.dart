@@ -65,7 +65,7 @@ class ShowAskAddCode extends StatelessWidget {
         InkWell(
           onTap: () {
             controller.isShowAddCode.value = false;
-            Get.offNamed(
+            Get.toNamed(
               '/settings-mobile/', // المسار مع المعلمة الديناميكية
               // إرسال الكائن كامل
             );

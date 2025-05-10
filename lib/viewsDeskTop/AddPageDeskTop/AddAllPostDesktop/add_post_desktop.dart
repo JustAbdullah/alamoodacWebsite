@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-
 import '../../../controllers/ThemeController.dart';
 import '../../../controllers/addPostControllerAll.dart';
 import '../../../controllers/areaController.dart';
@@ -23,7 +22,7 @@ class AddPostAllDeskTop extends StatefulWidget {
 }
 
 class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
-   final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   final PageController _pageController = PageController();
 
@@ -84,6 +83,9 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
           onPressed: () {
             add.hideAll();
             add.resetAll();
+            Get.toNamed(
+              '/add-post',
+            );
           }),
       title: Column(
         children: [
@@ -212,13 +214,14 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
               children: [
                 _buildSectionTitle('المعلومات الأساسية'.tr),
                 SizedBox(
-                  width: 600.w,
-                  child: _buildPublisherDropdown(controller, userData)),
+                    width: 600.w,
+                    child: _buildPublisherDropdown(controller, userData)),
                 SizedBox(height: 20.h),
                 SizedBox(
                   width: 600.w,
-                  child:   _buildCategoryDropdowns(controller),
-              )  ],
+                  child: _buildCategoryDropdowns(controller),
+                )
+              ],
             ),
           ),
         ));
@@ -404,10 +407,9 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
               builder: (FormFieldState<String> state) {
                 return Column(
                   children: [
-                     SizedBox(
-                  width: 600.w,
-                  child:
-                    DropdownFieldApi(
+                    SizedBox(
+                      width: 600.w,
+                      child: DropdownFieldApi(
                         label: "اختر المدينة".tr,
                         items: [
                           "غير مدخل".tr,
@@ -428,7 +430,8 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                               (city) =>
                                   city.translations.any((t) => t.name == value),
                             );
-                            homeController.chosedIdCity.value = selectedCity?.id;
+                            homeController.chosedIdCity.value =
+                                selectedCity?.id;
                             homeController.selectedCityName.value = value!;
                           }
                         },
@@ -480,23 +483,23 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                 builder: (FormFieldState<String> state) {
                   return Column(
                     children: [
-                     SizedBox(
-                  width: 600.w,
-                  child:    DropdownFieldApi(
-                        label: "اختر المنطقة".tr,
-                        items: areas.isNotEmpty
-                            ? areas.map((area) => area.name).toList()
-                            : ["غير مدخل".tr],
-                        onChanged: (value) {
-                          state.didChange(value);
-                          if (value != "غير مدخل".tr) {
-                            final selectedArea =
-                                areas.firstWhere((area) => area.name == value);
-                            areaController.idOfArea.value = selectedArea.id;
-                            areaController.selectedAreaName.value = value!;
-                          }
-                        },
-                     )),
+                      SizedBox(
+                          width: 600.w,
+                          child: DropdownFieldApi(
+                            label: "اختر المنطقة".tr,
+                            items: areas.isNotEmpty
+                                ? areas.map((area) => area.name).toList()
+                                : ["غير مدخل".tr],
+                            onChanged: (value) {
+                              state.didChange(value);
+                              if (value != "غير مدخل".tr) {
+                                final selectedArea = areas
+                                    .firstWhere((area) => area.name == value);
+                                areaController.idOfArea.value = selectedArea.id;
+                                areaController.selectedAreaName.value = value!;
+                              }
+                            },
+                          )),
                       if (state.hasError)
                         Padding(
                           padding: EdgeInsets.only(top: 8.h),
@@ -550,8 +553,7 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 
-                    600.w,
+                    width: 600.w,
                     child: PostDetailsField(
                       maxLines: 2,
                       label: "العنوان".tr,
@@ -605,8 +607,7 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
           Obx(
             () => controller.isAddPrice.value
                 ? SizedBox(
-                    width: 
-                    600.w,
+                    width: 600.w,
                     child: FormField<String>(
                       validator: (value) =>
                           value!.isEmpty ? 'يرجى إدخال السعر' : null,
@@ -618,8 +619,8 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                               maxLines: 2,
                               label: "السعر".tr,
                               hint: "السعر".tr,
-                              controller:
-                                  controller.detailControllersWithPrice["السعر"],
+                              controller: controller
+                                  .detailControllersWithPrice["السعر"],
                               keyboardType: TextInputType.number,
                             ),
                             if (state.hasError)
@@ -638,14 +639,13 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                         );
                       },
                     ),
-                )
+                  )
                 : SizedBox(),
           ),
           SizedBox(height: 20.h),
-         SizedBox(
-                    width: 
-                    600.w,
-                    child: PostDetailsField(
+          SizedBox(
+            width: 600.w,
+            child: PostDetailsField(
               maxLines: 8,
               label: "التفاصيل الإضافية".tr,
               hint: "ادخل التفاصيل الإضافية".tr,
@@ -701,9 +701,8 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
         children: [
           _buildSectionTitle('الصور المرفقة'.tr),
           SizedBox(
-                    width: 
-                    600.w,
-                    child: InkWell(
+            width: 600.w,
+            child: InkWell(
               onTap: () => controller.pickImages(),
               child: Container(
                 padding: EdgeInsets.all(16.w),
@@ -743,9 +742,8 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                   ),
                 )
               : SizedBox(
-                    width: 
-                    600.w,
-                    child:GridView.builder(
+                  width: 600.w,
+                  child: GridView.builder(
                     shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -756,7 +754,7 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
                     itemBuilder: (context, index) =>
                         _buildImageItem(controller, index),
                   ),
-              )),
+                )),
         ],
       ),
     );
@@ -765,7 +763,7 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
   Widget _buildImageItem(Addpostcontrollerall controller, int index) {
     return Stack(
       children: [
-       Image.memory(
+        Image.memory(
           controller.images[index],
           fit: BoxFit.cover,
           width: double.infinity,
@@ -1007,10 +1005,10 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
             SizedBox(height: 25.h),
             ElevatedButton(
               onPressed: () {
-                  Get.offNamed(
-    '/add-post', // المسار مع المعلمة الديناميكية
-  // إرسال الكائن كامل
-  );
+                Get.toNamed(
+                  '/add-post', // المسار مع المعلمة الديناميكية
+                  // إرسال الكائن كامل
+                );
                 Get.find<Addpostcontrollerall>().hideAll();
                 Get.find<Addpostcontrollerall>().resetAll(); // تم التعديل هنا
               },

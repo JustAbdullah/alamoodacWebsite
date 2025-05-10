@@ -83,7 +83,10 @@ class _AddPostAllState extends State<AddPostAll> {
           onPressed: () {
             add.hideAll();
             add.resetAll();
-            Get.back();
+            Get.toNamed(
+              '/add-post-mobile', // المسار مع المعلمة الديناميكية
+              // إرسال الكائن كامل
+            );
           }),
       title: Column(
         children: [
@@ -734,7 +737,7 @@ class _AddPostAllState extends State<AddPostAll> {
   Widget _buildImageItem(Addpostcontrollerall controller, int index) {
     return Stack(
       children: [
-       Image.memory(
+        Image.memory(
           controller.images[index],
           fit: BoxFit.cover,
           width: double.infinity,
