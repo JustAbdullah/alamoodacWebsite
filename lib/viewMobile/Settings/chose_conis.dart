@@ -13,6 +13,7 @@ import '../../core/localization/changelanguage.dart';
 class ChoseConis extends StatelessWidget {
   ChoseConis({super.key});
 
+  HomeController homeController = Get.find<HomeController>();
   final List<Map<String, dynamic>> currencies = [
     {
       'code': 'IQD',
@@ -111,6 +112,7 @@ class ChoseConis extends StatelessWidget {
         InkWell(
           onTap: () {
             controller.showCoins.value = false;
+            homeController.isChosedMenu();
             Get.toNamed(
               '/settings-mobile/', // المسار مع المعلمة الديناميكية
               // إرسال الكائن كامل
