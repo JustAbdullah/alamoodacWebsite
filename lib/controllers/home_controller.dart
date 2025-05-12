@@ -2549,7 +2549,7 @@ class HomeController extends GetxController
   ////////////......زر المشاركة............////////////////
   void sharePost(var postId) {
     // إنشاء الرابط باستخدام معرف المنشور
-    final String deepLink = 'https://alamoodac.com/post/share/$postId';
+    final String deepLink = 'https://alamoodac.com/post/$postId';
     print(deepLink);
     // مشاركة الرابط باستخدام share_plus
     Share.share('شاهد هذا المنشور: $deepLink');
