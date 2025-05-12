@@ -966,10 +966,13 @@ class AddSalons extends StatelessWidget {
             SizedBox(height: 25.h),
             ElevatedButton(
               onPressed: () {
-                Get.back();
                 Get.find<Addpostsalonscontroller>().hideAll();
                 Get.find<Addpostsalonscontroller>()
                     .resetAll(); // تم التعديل هنا
+                Get.toNamed(
+                  '/add-post-mobile', // المسار مع المعلمة الديناميكية
+                  // إرسال الكائن كامل
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundColorIconBack(

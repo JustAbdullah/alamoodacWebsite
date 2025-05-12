@@ -9,6 +9,7 @@ import '../../../../core/data/model/Stores.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../controllers/userDahsboardController.dart';
+import '../../core/localization/changelanguage.dart';
 
 class InfoPushInUserDashBoard extends StatelessWidget {
   @override
@@ -42,12 +43,15 @@ class _LoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value)),
+          CircularProgressIndicator(
+              color: AppColors.backgroundColorIconBack(
+                  Get.find<ThemeController>().isDarkMode.value)),
           SizedBox(height: 16.h),
           Text('جاري تحميل البيانات...',
               style: TextStyle(
                   fontSize: 16.sp,
-                  color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+                  color: AppColors.backgroundColorIconBack(
+                      Get.find<ThemeController>().isDarkMode.value),
                   fontWeight: FontWeight.w500)),
         ],
       ),
@@ -94,18 +98,22 @@ class _PublishersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async => controller.fetchStroePuscher('ar'),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+      onRefresh: () async => controller.fetchStroePuscher(
+          Get.find<ChangeLanguageController>()
+              .currentLocale
+              .value
+              .languageCode),
+      child: GridView.builder(
+        padding: EdgeInsets.all(12.w),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3, // عدد الأعمدة حسب التصميم
+          crossAxisSpacing: 12.w,
+          mainAxisSpacing: 12.h,
+          childAspectRatio: 0.8, // تعديل النسبة حسب الحاجة
+        ),
         itemCount: controller.StorePuscherList.length,
         itemBuilder: (context, index) {
-          return Container(
-            width: MediaQuery.of(context).size.width * 0.8,
-            margin: EdgeInsets.only(right: 12.w),
-            child:
-                _PublisherCard(publisher: controller.StorePuscherList[index]),
-          );
+          return _PublisherCard(publisher: controller.StorePuscherList[index]);
         },
       ),
     );
@@ -123,7 +131,8 @@ class _PublisherCard extends StatelessWidget {
     final textColor = AppColors.textColor(isDark);
 
     return Card(
-      color: AppColors.backgroundColor(Get.find<ThemeController>().isDarkMode.value),
+      color: AppColors.backgroundColor(
+          Get.find<ThemeController>().isDarkMode.value),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
@@ -188,7 +197,10 @@ class _AccountTypeChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color: type == 'commercial' ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey[600],
+        color: type == 'commercial'
+            ? AppColors.backgroundColorIconBack(
+                Get.find<ThemeController>().isDarkMode.value)
+            : Colors.grey[600],
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(

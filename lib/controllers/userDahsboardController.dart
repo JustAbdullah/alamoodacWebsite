@@ -18,7 +18,7 @@ import 'LoadingController.dart';
 import 'subscriptionController.dart';
 
 class Userdahsboardcontroller extends GetxController {
-      final subController = Get.put(SubscriptionController());
+  final subController = Get.put(SubscriptionController());
 
   RxBool showDashBoardUser = false.obs;
   RxInt countOfNumberPostUser = 0.obs;
@@ -37,7 +37,8 @@ class Userdahsboardcontroller extends GetxController {
     if (!isGetDataFirstTime.value) {
       final languageCode =
           Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
-subController.fetchUserSubscriptions(   Get.find<LoadingController>().currentUser?.id ?? 0, languageCode);  
+      subController.fetchUserSubscriptions(
+          Get.find<LoadingController>().currentUser?.id ?? 0, languageCode);
       fetchPosts(languageCode);
       fetchStroePuscher(languageCode);
       fetchStores(
@@ -218,7 +219,6 @@ subController.fetchUserSubscriptions(   Get.find<LoadingController>().currentUse
           duration: Duration(seconds: 2),
         );
       } else {
-
         // عرض سناكبر عند الفشل
         Get.snackbar(
           'فشل',
@@ -230,7 +230,6 @@ subController.fetchUserSubscriptions(   Get.find<LoadingController>().currentUse
         );
       }
     } catch (e) {
-
       // عرض سناكبر عند حدوث خطأ
       Get.snackbar(
         'خطأ',
@@ -695,28 +694,27 @@ subController.fetchUserSubscriptions(   Get.find<LoadingController>().currentUse
   var longitudeEnter;
 /////////////////............../
 
-Future<void> softDeleteUser(int id) async {
-  // قم بتعديل الرابط ليتناسب مع مسار API الخاص بك
-  final String url = 'https://alamoodac.com/modac/public/users/$id/soft-delete';
-  
-  try {
-    // إرسال طلب حذف للمستخدم
-    final response = await http.delete(Uri.parse(url));
-    
-    // التحقق من نجاح العملية
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      print("نجاح: ${data['success']}");
-      // يمكنك هنا تحديث الحالة في الواجهة أو القيام بأي عملية أخرى
-    } else {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      print("خطأ: ${data['error']}");
+  Future<void> softDeleteUser(int id) async {
+    // قم بتعديل الرابط ليتناسب مع مسار API الخاص بك
+    final String url =
+        'https://alamoodac.com/modac/public/users/$id/soft-delete';
+
+    try {
+      // إرسال طلب حذف للمستخدم
+      final response = await http.delete(Uri.parse(url));
+
+      // التحقق من نجاح العملية
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print("نجاح: ${data['success']}");
+        // يمكنك هنا تحديث الحالة في الواجهة أو القيام بأي عملية أخرى
+      } else {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print("خطأ: ${data['error']}");
+      }
+    } catch (e) {
+      // طبع الخطأ في حال حدوث استثناء (مثلاً فشل الاتصال)
+      print("حدث خطأ أثناء عملية الحذف: $e");
     }
-  } catch (e) {
-    // طبع الخطأ في حال حدوث استثناء (مثلاً فشل الاتصال)
-    print("حدث خطأ أثناء عملية الحذف: $e");
   }
-}
-
-
 }

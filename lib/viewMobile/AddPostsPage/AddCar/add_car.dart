@@ -1194,9 +1194,12 @@ class AddCar extends StatelessWidget {
             SizedBox(height: 25.h),
             ElevatedButton(
               onPressed: () {
-                Get.back();
                 Get.find<AddpostCarController>().hideAll();
                 Get.find<AddpostCarController>().resetAll(); // تم التعديل هنا
+                Get.toNamed(
+                  '/add-post-mobile', // المسار مع المعلمة الديناميكية
+                  // إرسال الكائن كامل
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundColorIconBack(

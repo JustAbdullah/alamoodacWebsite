@@ -15,11 +15,6 @@ import '../core/data/model/subcategory_level_one.dart';
 import 'settingsController.dart';
 import 'userDahsboardController.dart';
 
-
-
-
-
-
 class AddStorePushController extends GetxController {
   Userdahsboardcontroller userdahsboardcontroller =
       Get.put(Userdahsboardcontroller());
@@ -34,48 +29,47 @@ class AddStorePushController extends GetxController {
   // اختيار الصور من الجهاز
   final String uploadApiUrl =
       "https://alamoodac.com/modac/public/upload"; // رابط رفع الصور
-final images = <Uint8List>[].obs;
+  final images = <Uint8List>[].obs;
   // تعديل دالة اختيار الصور
-Future<void> pickImages() async {
-  final picker = ImagePicker();
-  final pickedFiles = await picker.pickMultiImage();
-  if (pickedFiles != null) {
-    for (var file in pickedFiles) {
-      final bytes = await file.readAsBytes();
-      images.add(bytes);
+  Future<void> pickImages() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles != null) {
+      for (var file in pickedFiles) {
+        final bytes = await file.readAsBytes();
+        images.add(bytes);
+      }
     }
   }
-}
-
 
 // تعديل دالة إزالة الصور
-void removeImage(int index) {
-  images.removeAt(index);
-}
+  void removeImage(int index) {
+    images.removeAt(index);
+  }
 
 // تعديل دالة تحديث الصورة
-Future<void> updateImage(int index) async {
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    final bytes = await pickedFile.readAsBytes();
-    images[index] = bytes;
+  Future<void> updateImage(int index) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      images[index] = bytes;
+    }
   }
-}
 
   // رفع الصور إلى السيرفر
- Future uploadImagesToServer() async {
-  try {
-    List<String> uploadedUrls = [];
-    var request = http.MultipartRequest('POST', Uri.parse(uploadApiUrl));
-    
-    for (var imageBytes in images) {
-      request.files.add(http.MultipartFile.fromBytes(
-        'images[]',
-        imageBytes,
-        filename: 'image_${DateTime.now().millisecondsSinceEpoch}.jpg',
-      ));
-    }
+  Future uploadImagesToServer() async {
+    try {
+      List<String> uploadedUrls = [];
+      var request = http.MultipartRequest('POST', Uri.parse(uploadApiUrl));
+
+      for (var imageBytes in images) {
+        request.files.add(http.MultipartFile.fromBytes(
+          'images[]',
+          imageBytes,
+          filename: 'image_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        ));
+      }
 
       var response = await request.send();
       if (response.statusCode == 201) {
@@ -100,61 +94,62 @@ Future<void> updateImage(int index) async {
 /////////..............صور تخص النشاط التجاري.....................///
 
 //////////////////صورة لوجو او شعار الناشر....................../////
- final imagesBuss = <Uint8List>[].obs; // قائمة الصور المختارة
-var uploadedImageUrlsBuss = "";
+  final imagesBuss = <Uint8List>[].obs; // قائمة الصور المختارة
+  var uploadedImageUrlsBuss = "";
 
 // 2. تعديل دالة اختيار الصور
-Future<void> pickImagesBuss() async {
-  final picker = ImagePicker();
-  final pickedFiles = await picker.pickMultiImage();
-  if (pickedFiles != null) {
-    for (var file in pickedFiles) {
-      final bytes = await file.readAsBytes(); // قراءة البيانات كـ bytes
-      imagesBuss.add(bytes); // إضافة البيانات الخام
+  Future<void> pickImagesBuss() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles != null) {
+      for (var file in pickedFiles) {
+        final bytes = await file.readAsBytes(); // قراءة البيانات كـ bytes
+        imagesBuss.add(bytes); // إضافة البيانات الخام
+      }
     }
   }
-}
 
 // 3. تعديل دالة تحديث الصورة
-Future<void> updateImageBuss(int index) async {
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    final bytes = await pickedFile.readAsBytes();
-    imagesBuss[index] = bytes;
+  Future<void> updateImageBuss(int index) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      imagesBuss[index] = bytes;
+    }
   }
-}
 
 // 4. تعديل دالة رفع الصور
-Future uploadImagesToServerBuss() async {
-  try {
-    List<String> uploadedUrls = [];
-    var request = http.MultipartRequest('POST', Uri.parse(uploadApiUrl));
-    
-    for (var imageBytes in imagesBuss) {
-      request.files.add(http.MultipartFile.fromBytes(
-        'images[]',
-        imageBytes,
-        filename: 'buss_image_${DateTime.now().millisecondsSinceEpoch}.jpg',
-      ));
-    }
+  Future uploadImagesToServerBuss() async {
+    try {
+      List<String> uploadedUrls = [];
+      var request = http.MultipartRequest('POST', Uri.parse(uploadApiUrl));
 
-    var response = await request.send();
-    if (response.statusCode == 201) {
-      var responseData = await response.stream.bytesToString();
-      var jsonData = json.decode(responseData);
-      uploadedUrls = List<String>.from(jsonData['image_urls']);
-      uploadedImageUrlsBuss = uploadedUrls.join(',');
-      print("Buss images uploaded: $uploadedImageUrlsBuss");
-    } else {
+      for (var imageBytes in imagesBuss) {
+        request.files.add(http.MultipartFile.fromBytes(
+          'images[]',
+          imageBytes,
+          filename: 'buss_image_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        ));
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 201) {
+        var responseData = await response.stream.bytesToString();
+        var jsonData = json.decode(responseData);
+        uploadedUrls = List<String>.from(jsonData['image_urls']);
+        uploadedImageUrlsBuss = uploadedUrls.join(',');
+        print("Buss images uploaded: $uploadedImageUrlsBuss");
+      } else {
+        Get.snackbar("Error", "Failed to upload business images");
+      }
+    } catch (e) {
+      print("Buss images upload error: $e");
       Get.snackbar("Error", "Failed to upload business images");
     }
-  } catch (e) {
-    print("Buss images upload error: $e");
-    Get.snackbar("Error", "Failed to upload business images");
   }
-}
-void removeImageBuss(int index) {
+
+  void removeImageBuss(int index) {
     imagesBuss.removeAt(index);
   }
 
@@ -374,6 +369,11 @@ void removeImageBuss(int index) {
                 .languageCode);
 
         restValues();
+
+        Get.toNamed(
+          '/settings-mobile/', // المسار مع المعلمة الديناميكية
+          // إرسال الكائن كامل
+        );
       } else {
         Get.snackbar('خطأ', 'حدث خطأ: ${response.body}');
         print(response.body);
@@ -658,7 +658,8 @@ void removeImageBuss(int index) {
     companySpecializationController.clear();
     workingHoursController.clear();
     images.clear();
-    imagesBuss.clear(); Get.back();
+    imagesBuss.clear();
+    Get.back();
   }
 
   //////////////////تعديل................///////////////

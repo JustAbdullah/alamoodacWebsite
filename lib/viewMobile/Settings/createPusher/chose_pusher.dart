@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 import '../../../controllers/LoadingController.dart';
 import '../../../controllers/ThemeController.dart';
-import '../../../controllers/home_controller.dart';
-import '../../../controllers/searchController.dart';
 import '../../../controllers/settingsController.dart';
 import '../../../core/constant/app_text_styles.dart';
 import '../../../core/constant/appcolors.dart';

@@ -1,4 +1,5 @@
 import 'package:alamoadac_website/viewMobile/AddPostsPage/AddAllPost/add_post.dart';
+import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddAllPostDesktop/add_post_desktop.dart';
 import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddAuctionsPageDesktop/add_auctions_desktop.dart';
 import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddEducationalDesktop/add_educational_desktop.dart';
 import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddProfessionsDesktop/add_professions_desktop.dart';
@@ -38,6 +39,7 @@ import '../SettingsDeskTop/show_packages_desktop.dart';
 import '../SidePopup.dart';
 import '../homeDeskTop/top_section_desktop.dart';
 import 'AddCarDesktop/add_car_desktop.dart';
+import 'AddDailyWorkerDesktop/add_daily_worker_desktop.dart';
 import 'AddUsedFurnitureDesktop/add_used_desktop.dart';
 
 class AddListDeskTop extends StatelessWidget {
@@ -220,6 +222,7 @@ class AddListDeskTop extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAddAllPost.value = true;
+          Get.to(() => AddPostAllDeskTop());
       }
     }
 
@@ -371,6 +374,7 @@ class AddListDeskTop extends StatelessWidget {
                           addpostdailyworkercontroller
                               .fetchSubcategories(category.id);
                           addpostdailyworkercontroller.showAdd.value = true;
+                          Get.to(() => AddDailyWorkerDesktop());
                           return;
                         }
 

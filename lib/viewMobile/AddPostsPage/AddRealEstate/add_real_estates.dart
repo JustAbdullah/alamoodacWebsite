@@ -1076,6 +1076,10 @@ class AddRealEstates extends StatelessWidget {
                 Get.find<Addpostcontrollerrealestate>().hideAll();
                 Get.find<Addpostcontrollerrealestate>()
                     .resetAll(); // تم التعديل هنا
+                Get.toNamed(
+                  '/add-post-mobile', // المسار مع المعلمة الديناميكية
+                  // إرسال الكائن كامل
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundColorIconBack(

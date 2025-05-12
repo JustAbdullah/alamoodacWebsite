@@ -1,5 +1,4 @@
 import 'package:alamoadac_website/controllers/home_controller.dart';
-import 'package:alamoadac_website/viewMobile/OnAppPages/on_app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

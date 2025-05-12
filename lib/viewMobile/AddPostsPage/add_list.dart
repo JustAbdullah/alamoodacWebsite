@@ -35,6 +35,7 @@ import 'AddAllPost/add_post.dart';
 import 'AddAuctionsPage/add_auctions.dart';
 import 'AddCar/add_car.dart';
 import 'AddCompany/add_company.dart';
+import 'AddDailyWorker/add_daily_worker.dart';
 import 'AddEducational/add_educational.dart';
 import 'AddProfessions/add_professions.dart';
 import 'AddRealEstate/add_real_estates.dart';
@@ -214,7 +215,7 @@ class AddList extends StatelessWidget {
             ..nameOfCatee.value = name
             ..fetchSubcategories(category.id)
             ..showAddAllPost.value = true;
-          ;
+          Get.to(() => AddPostAll());
       }
     }
 
@@ -380,6 +381,7 @@ class AddList extends StatelessWidget {
                                               .fetchSubcategories(category.id);
                                           addpostdailyworkercontroller
                                               .showAdd.value = true;
+                                          Get.to(() => AddDailyWorker());
                                           return;
                                         }
 

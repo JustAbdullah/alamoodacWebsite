@@ -1019,10 +1019,13 @@ class AddEducational extends StatelessWidget {
             SizedBox(height: 25.h),
             ElevatedButton(
               onPressed: () {
-                Get.back();
                 Get.find<Addpostcontrollereducational>().hideAll();
                 Get.find<Addpostcontrollereducational>()
                     .resetAll(); // تم التعديل هنا
+                Get.toNamed(
+                  '/add-post-mobile', // المسار مع المعلمة الديناميكية
+                  // إرسال الكائن كامل
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundColorIconBack(

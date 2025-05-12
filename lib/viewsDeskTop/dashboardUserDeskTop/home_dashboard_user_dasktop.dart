@@ -768,7 +768,7 @@ class HomeDashboardUserDeskTop extends StatelessWidget {
         SizedBox(height: 15.h),
         Obx(() {
           return SizedBox(
-              width: 500.w,
+              width: 900.w,
               height: controller.StorePuscherList.isEmpty ? 250.h : 400.h,
               child: InfoPushInUserDashBoardDeskTop());
         })

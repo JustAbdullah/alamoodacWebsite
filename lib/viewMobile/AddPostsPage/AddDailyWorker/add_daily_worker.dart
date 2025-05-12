@@ -947,10 +947,13 @@ class AddDailyWorker extends StatelessWidget {
             SizedBox(height: 25.h),
             ElevatedButton(
               onPressed: () {
-                Get.back();
                 Get.find<Addpostdailyworkercontroller>().hideAll();
                 Get.find<Addpostdailyworkercontroller>()
                     .resetAll(); // تم التعديل هنا
+                Get.toNamed(
+                  '/add-post-mobile', // المسار مع المعلمة الديناميكية
+                  // إرسال الكائن كامل
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundColorIconBack(
