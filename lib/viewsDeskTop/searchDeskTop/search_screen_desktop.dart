@@ -25,38 +25,46 @@ class SearchScreenDesktop extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor(themeCtrl.isDarkMode.value),
-      body: SafeArea(child: GetBuilder<Searchcontroller>(builder: (searchCtrl) {
-        return CustomScrollView(
-          slivers: [
-            const SliverToBoxAdapter(child: TopSectionDeskTop()),
+      body: SafeArea(
+        child: GetBuilder<Searchcontroller>(
+          builder: (searchCtrl) {
+            return CustomScrollView(
+              slivers: [
+                const SliverToBoxAdapter(child: TopSectionDeskTop()),
+                
+                // Header Section
+                SliverToBoxAdapter(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: searchCtrl.showPublishers.value
+                        ? _PublishersSearchHeader(searchCtrl: searchCtrl)
+                        : _PostsSearchHeader(searchCtrl: searchCtrl),
+                  ),
+                ),
 
-            // شريط البحث الرئيسي
-            SliverToBoxAdapter(
-                child: searchCtrl.showPublishers.value
-                    ? _PublishersSearchHeader(searchCtrl: searchCtrl)
-                    : _PostsSearchHeader(searchCtrl: searchCtrl)),
+                // Toggle Buttons
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h,horizontal: 40.w),
+                  sliver: SliverToBoxAdapter(
+                    child: _SearchToggleButtons(searchCtrl: searchCtrl),
+                  ),
+                ),
 
-            // مفاتيح التبديل بين المنشورات والناشرين
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              sliver: SliverToBoxAdapter(
-                child: _SearchToggleButtons(searchCtrl: searchCtrl),
-              ),
-            ),
+                // Main Content
+                searchCtrl.showPublishers.value
+                    ? _PublishersContent()
+                    : _PostsContent(),
 
-            // المحتوى الرئيسي
-            searchCtrl.showPublishers.value
-                ? _PublishersContent()
-                : _PostsContent(),
-
-            // الفوتر
-            const SliverToBoxAdapter(child: FooterDesktop()),
-          ],
-        );
-      })),
+                const SliverToBoxAdapter(child: FooterDesktop()),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
+
 
 // جزء رأس البحث عن المنشورات
 class _PostsSearchHeader extends StatelessWidget {
@@ -113,47 +121,128 @@ class _PublishersSearchHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeCtrl = Get.find<ThemeController>();
 
-    return Column(
-      children: [
-        SizedBox(height: 20.h),
-        Text(
-          "البحث عن ناشرين".tr,
-          style: TextStyle(
-            fontFamily: AppTextStyles.DinarOne,
-            color: AppColors.textColor(themeCtrl.isDarkMode.value),
-            fontSize: 20.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 16.h),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: TextField(
-            controller: searchCtrl.publisherNameController,
-            decoration: InputDecoration(
-              hintText: "أدخل اسم الناشر".tr,
-              prefixIcon:
-                  Icon(Icons.person_search, color: AppColors.primaryColor),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),
-              filled: true,
-              fillColor: AppColors.backgroundColor(themeCtrl.isDarkMode.value),
-            ),
-            onSubmitted: (value) => searchCtrl.fetchStoresList(
-              language: Get.find<ChangeLanguageController>()
-                  .currentLocale
-                  .value
-                  .languageCode,
-              searchName: value.trim(),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.backgroundColor(themeCtrl.isDarkMode.value),
+      ),
+      child: Column(
+        children: [
+          SizedBox(height: 48.h),
+          Text(
+            "البحث عن ناشرين".tr,
+            style: TextStyle(
+              fontFamily: AppTextStyles.DinarOne,
+              color: AppColors.textColor(themeCtrl.isDarkMode.value),
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
             ),
           ),
-        ),
-        SizedBox(height: 16.h),
-      ],
+          SizedBox(height: 32.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 600.w),
+              child: TextField(
+                controller: searchCtrl.publisherNameController,
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: "أدخل اسم الناشر".tr,
+                  hintStyle: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.grey.shade500,
+                  ),
+                  filled: true,
+                  fillColor: themeCtrl.isDarkMode.value
+                      ? Colors.grey.shade800
+                      : Colors.grey.shade50,
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.only(left: 20.w, right: 12.w),
+                    child: Icon(
+                      Icons.search_rounded,
+                      size: 24.w,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  suffixIcon: _buildSearchIndicator(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 20.h,
+                    horizontal: 24.w,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide(
+                      color: AppColors.primaryColor.withOpacity(0.8),
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade300,
+                      width: 1.0,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: Colors.red),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                    borderSide: const BorderSide(color: Colors.red),
+                  ),
+                ),
+                onSubmitted: (value) => _performSearch(value.trim()),
+              ),
+            ),
+          ),
+          SizedBox(height: 48.h),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchIndicator() {
+    return GetBuilder<Searchcontroller>(
+      builder: (controller) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: controller.isSearchingPublishers.value
+              ? Padding(
+                  padding: EdgeInsets.only(right: 16.w),
+                  child: SizedBox(
+                    width: 24.w,
+                    height: 24.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        );
+      },
+    );
+  }
+
+  void _performSearch(String value) {
+    if (value.isEmpty) return;
+    
+    searchCtrl.isSearchingPublishers.value = true;
+    searchCtrl.fetchStoresList(
+      language: Get.find<ChangeLanguageController>()
+          .currentLocale
+          .value
+          .languageCode,
+      searchName: value,
     );
   }
 }
-
+  
 // أزرار التبديل بين البحثين
 class _SearchToggleButtons extends StatelessWidget {
   final Searchcontroller searchCtrl;
@@ -162,42 +251,43 @@ class _SearchToggleButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _ToggleButton(
-              label: 'المنشورات',
-              icon: Icons.article,
-              isActive: !searchCtrl.showPublishers.value,
-              onTap: () {
-                searchCtrl.showPublishers.value = false;
-                searchCtrl.update();
-              }),
-        ),
-        SizedBox(width: 12.w),
-        Expanded(
-          child: _ToggleButton(
-              label: 'الناشرين',
-              icon: Icons.people,
-              isActive: searchCtrl.showPublishers.value,
-              onTap: () {
-                searchCtrl.showPublishers.value = true;
-                searchCtrl.update();
-              }),
-        ),
-      ],
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 16.h),
+      child: Row(
+        
+        children: [
+          _AnimatedToggleButton(
+            index: 0,
+            label: 'المنشورات',
+            icon: Icons.article_rounded,
+            isActive: !searchCtrl.showPublishers.value,
+            onTap: () { searchCtrl.showPublishers.value = false;
+                searchCtrl.update();} ,
+          ),
+          SizedBox(width: 14.w),
+          _AnimatedToggleButton(
+            index: 1,
+            label: 'الناشرين',
+            icon: Icons.storefront_rounded,
+            isActive: searchCtrl.showPublishers.value,
+            onTap: (){searchCtrl.showPublishers.value = true;
+                searchCtrl.update();},
+          ),
+        ],
+      ),
     );
   }
 }
 
-// زر تبديل مخصص
-class _ToggleButton extends StatelessWidget {
+class _AnimatedToggleButton extends StatelessWidget {
+  final int index;
   final String label;
   final IconData icon;
   final bool isActive;
   final VoidCallback onTap;
 
-  const _ToggleButton({
+  const _AnimatedToggleButton({
+    required this.index,
     required this.label,
     required this.icon,
     required this.isActive,
@@ -206,32 +296,50 @@ class _ToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeCtrl = Get.find<ThemeController>();
-
-    return Material(
-      borderRadius: BorderRadius.circular(8.r),
-      color: isActive
-          ? AppColors.primaryColor
-          : AppColors.backgroundColor(themeCtrl.isDarkMode.value),
-      child: InkWell(
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8.r),
-        child: Padding(
-          padding: EdgeInsets.all(12.w),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: EdgeInsets.symmetric(
+            horizontal: 62.w,
+            vertical: 16.h,
+          ),
+          decoration: BoxDecoration(
+            color: isActive 
+                ? AppColors.TheMain 
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10.r),
+            border: Border.all(
+              color: isActive 
+                  ? Colors.transparent 
+                  : AppColors.TheMain,
+              width: 2,
+            ),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColors.TheMain.withOpacity(0.2),
+                      blurRadius: 12,
+                      spreadRadius: 2,
+                    )
+                  ]
+                : [],
+          ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon,
-                  color: isActive ? Colors.white : AppColors.primaryColor),
-              SizedBox(width: 8.w),
+              Icon(
+                icon, 
+                size: 24.w,
+                color: isActive ? Colors.white : AppColors.TheMain),
+              SizedBox(width: 12.w),
               Text(
                 label.tr,
                 style: TextStyle(
-                  color: isActive
-                      ? Colors.white
-                      : AppColors.textColor(themeCtrl.isDarkMode.value),
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
+                  color: isActive ? Colors.white : AppColors.TheMain,
                 ),
               ),
             ],
@@ -241,7 +349,6 @@ class _ToggleButton extends StatelessWidget {
     );
   }
 }
-
 // شريط التحكم في البحث
 class _SearchControlBar extends StatelessWidget {
   @override
@@ -267,9 +374,9 @@ class _MapButton extends StatelessWidget {
       icon: Icon(Icons.map_outlined, size: 20.w),
       label: Text("عرض الخريطة".tr),
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.TheMain,
         foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 22.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.r),
         ),
@@ -340,7 +447,10 @@ class _PublishersContent extends StatelessWidget {
     return SliverPadding(
       padding: EdgeInsets.all(16.w),
       sliver: SliverToBoxAdapter(
-        child: ListStoresDesktop(),
+        child: Padding(
+          padding:  EdgeInsets.symmetric(horizontal: 100.w),
+          child: ListStoresDesktop(),
+        ),
       ),
     );
   }
@@ -631,7 +741,7 @@ class ToggleIconButton extends StatelessWidget {
         splashColor: iconColor.withOpacity(0.2),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 26.w),
           decoration: BoxDecoration(
             gradient: active
                 ? LinearGradient(
@@ -662,13 +772,13 @@ class ToggleIconButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 20.w, color: iconColor),
+              Icon(icon, size: 25.w, color: iconColor),
               SizedBox(width: 8.w),
               Text(
                 label,
                 style: TextStyle(
                   fontFamily: AppTextStyles.DinarOne,
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                   color: textColor,
                 ),

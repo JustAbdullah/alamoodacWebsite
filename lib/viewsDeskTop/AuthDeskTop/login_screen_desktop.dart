@@ -201,6 +201,9 @@ class _LoginPopupState extends State<LoginPopup> {
                     // رابط إنشاء حساب جديد
                     TextButton(
                       onPressed: () {
+                       
+                        authController.textControllerName.clear();
+                        authController.textControllerPassword.clear();
                         Get.back(); // إغلاق نافذة تسجيل الدخول
                         Get.dialog(
                           SignupPopup(),

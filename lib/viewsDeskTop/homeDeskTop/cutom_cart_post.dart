@@ -16,12 +16,12 @@ class CustomCardPostDeskTop extends StatefulWidget {
   final String title; // عنوان القسم
   final RxBool isLoading; // حالة التحميل
   final RxList<Post> postsList; // قائمة المنشورات
-
-  const CustomCardPostDeskTop({
+ void Function()? onTap;
+   CustomCardPostDeskTop({
     Key? key,
     required this.title,
     required this.isLoading,
-    required this.postsList,
+    required this.postsList,  required this.onTap,
   }) : super(key: key);
 
   @override
@@ -53,26 +53,29 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
   }
 
   Widget _buildWebHeader() {
-    return Row(
-      children: [
-        Icon(
-                Icons.category  ,
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-                size: 28.sp,
+    return InkWell(
+        onTap:widget. onTap,
+        child: Row(
+        children: [
+          Icon(
+                  Icons.category  ,
+                  color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
+                  size: 28.sp,
+                ),
+            
+           
+            SizedBox(width: 8.w),
+            Text(
+            widget.title.tr,
+              style: TextStyle(
+                fontFamily: AppTextStyles.DinarOne,
+                color: AppColors.textColor(themeController.isDarkMode.value),
+              fontSize: 21.sp,
+                fontWeight: FontWeight.bold,
               ),
-          
-         
-          SizedBox(width: 8.w),
-          Text(
-          widget.title.tr,
-            style: TextStyle(
-              fontFamily: AppTextStyles.DinarOne,
-              color: AppColors.textColor(themeController.isDarkMode.value),
-            fontSize: 21.sp,
-              fontWeight: FontWeight.bold,
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

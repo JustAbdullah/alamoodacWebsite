@@ -90,6 +90,8 @@ class SignupPopup extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
+                                controller.textControllerName.clear();
+                        controller.textControllerPassword.clear();
                               Get.back(); // إغلاق نافذة التسجيل
                               Get.dialog(
                                 LoginPopup(), // فتح نافذة تسجيل الدخول
@@ -313,6 +315,7 @@ class _LoadingOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 400.h,
       color: Colors.black54,
       child: Center(
         child: Column(

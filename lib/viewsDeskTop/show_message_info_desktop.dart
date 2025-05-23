@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
-import '../controllers/settingsController.dart';
 import '../core/constant/app_text_styles.dart';
 import '../core/constant/appcolors.dart';
-import 'Settings/createPusher/chose_pusher.dart';
+import 'SettingsDeskTop/createPusher/chose_pusher_desktop.dart';
+import 'SidePopup.dart';
 
-class PublisherInfoDialog extends StatelessWidget {
-  const PublisherInfoDialog({super.key});
+class PublisherInfoDialogDeskTop extends StatelessWidget {
+  const PublisherInfoDialogDeskTop({super.key});
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.find();
-    Settingscontroller settingscontroller = Get.put(Settingscontroller());
-
+ 
     return GetX<HomeController>(
       builder: (controller) => Visibility(
         visible: controller.shouldShowDialog.value,
@@ -57,9 +55,13 @@ class PublisherInfoDialog extends StatelessWidget {
               text: 'الإكمال الان'.tr,
               isPrimary: true,
               onTap: () async {
-                controller.isChosedMenu();
-                settingscontroller.showPusher.value = true;
-                  Get.to(() => ChosePusher());
+               
+               showSidePopup(
+                      context: context,
+                      child: const ChosePusherDesktop(),
+                      widthPercent: 0.30,
+                      useSideAlignment: true,
+                    );
               },
             ),
           ],

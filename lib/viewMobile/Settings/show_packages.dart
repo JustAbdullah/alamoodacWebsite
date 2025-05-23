@@ -22,6 +22,7 @@ class ShowPackages extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeController themeController = Get.find();
 
+    final HomeController homeController = Get.find();
     return GetX<Settingscontroller>(
       builder: (controller) => AnimatedSwitcher(
         duration: const Duration(milliseconds: 500),
@@ -45,6 +46,7 @@ class ShowPackages extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             controller.showPack.value = false;
+                            homeController.isChosedMenu();
                             Get.toNamed(
                               '/settings-mobile/', // المسار مع المعلمة الديناميكية
                               // إرسال الكائن كامل

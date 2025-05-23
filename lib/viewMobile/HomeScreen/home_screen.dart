@@ -4,8 +4,11 @@ import 'package:get/get.dart';
 
 import '../../controllers/ThemeController.dart';
 import '../../controllers/home_controller.dart';
+import '../../controllers/searchController.dart';
 import '../../core/constant/appcolors.dart';
+import '../../core/data/model/category.dart';
 import '../../core/data/model/post.dart';
+import '../../core/localization/changelanguage.dart';
 import '../OnAppPages/menu.dart';
 import 'PromotedAdPage.dart';
 import 'ad_section.dart';
@@ -20,8 +23,9 @@ class SectionData<T> {
   final String title;
   final RxBool isLoading;
   final RxList<T> posts;
+  void Function()? onTap;
 
-  SectionData(this.title, this.isLoading, this.posts);
+  SectionData(this.title, this.isLoading, this.posts,this.onTap);
 }
 
 class HomeScreen extends StatefulWidget {
@@ -39,84 +43,165 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     super.build(context);
     final ThemeController themeController = Get.find();
-
+  final controller = Get.find<HomeController>();
+  final searchcontroller = Get.find<Searchcontroller>();
     return GetX<HomeController>(
       builder: (controller) {
+
+void _handleCategoryTap(TheCategory category) async {
+
+
+     controller.nameCategories.value =
+                                          category.translations.first.name;
+                                      controller.idCategories.value =
+                                          category.id.toString();
+                                      controller.fetchSubcategories(
+                                        category.id,
+                                        Get.find<ChangeLanguageController>()
+                                            .currentLocale
+                                            .value
+                                            .languageCode,
+                                      );
+                                      controller.fetchPostsAll(
+                                        category.id,
+                                        Get.find<ChangeLanguageController>()
+                                            .currentLocale
+                                            .value
+                                            .languageCode,
+                                        null,
+                                        null,
+                                      );
+
+                                      searchcontroller.subCategories.clear();
+                                      searchcontroller
+                                          .isChosedAndShowTheSub.value = false;
+                                      searchcontroller
+                                          .fetchSubcategories(
+                                        int.parse(
+                                            controller.idCategories.value),
+                                        Get.find<ChangeLanguageController>()
+                                            .currentLocale
+                                            .value
+                                            .languageCode,
+                                      )
+                                          .then((_) {
+                                        searchcontroller
+                                            .isChosedAndShowTheSub.value = true;
+                                      });
+                                      searchcontroller.idOfCateSearchBox.value =
+                                          category.id;
+                                      print(
+                                          "/......................................");
+                                      print(searchcontroller
+                                          .idOfCateSearchBox.value);
+                                      print(
+                                          "/......................................");
+                                      searchcontroller
+                                          .detailCarControllers["القسم الرئيسي"]
+                                          ?.text = controller.idCategories.value;
+
+                                      searchcontroller
+                                              .detailRealestateControllers[
+                                                  "القسم الرئيسي"]
+                                              ?.text =
+                                          controller.idCategories.value;
+
+                                      searchcontroller.isOpenINSubPost.value =
+                                          true;
+                                      searchcontroller.selectedMainCategory =
+                                          category.id;
+
+                                      controller.showTheSubCategories.value =
+                                          true;
+    Get.toNamed('/category-mobile');
+  }
+void _handleSectionTap(RxList<Post> postsList) {
+  if (postsList.isNotEmpty && postsList.first.category != null) {
+    final category = postsList.first.category!;
+    _handleCategoryTap(category);
+  } else {
+    Get.snackbar("خطأ", "لا يوجد بيانات لهذا القسم");
+  }
+}
+
+
+
         // قائمة الأقسام
         final List<SectionData<Post>> sections = [
           SectionData<Post>("المول الإلكتروني".tr,
-              controller.LoadingPostsCateOne, controller.postsListCateOne),
+              controller.LoadingPostsCateOne, controller.postsListCateOne,() => _handleSectionTap(controller.postsListCateOne)), 
           SectionData<Post>("سوق المستعمل".tr, controller.LoadingPostsCateTwo,
-              controller.postsListCateTwo),
+              controller.postsListCateTwo,() => _handleSectionTap(controller.postsListCateTwo)),
           SectionData<Post>("مركبات للبيع والايجار".tr,
-              controller.LoadingPostsCateThree, controller.postsListCateThree),
+              controller.LoadingPostsCateThree, controller.postsListCateThree,() => _handleSectionTap(controller.postsListCateThree)), 
           SectionData<Post>("المهن والحرف".tr, controller.LoadingPostsCateFour,
-              controller.postsListCateFour),
+              controller.postsListCateFour,() => _handleSectionTap(controller.postsListCateFour)), 
           SectionData<Post>("منتجات من البيت".tr,
-              controller.LoadingPostsCateFive, controller.postsListCateFive),
+              controller.LoadingPostsCateFive, controller.postsListCateFive,() => _handleSectionTap(controller.postsListCateFive)), 
           SectionData<Post>("عقارات للبيع والإيجار".tr,
-              controller.LoadingPostsCateSix, controller.postsListCateSix),
+              controller.LoadingPostsCateSix, controller.postsListCateSix,() => _handleSectionTap(controller.postsListCateSix)), 
           SectionData<Post>("عروض وصفقات".tr, controller.LoadingPostsCateSeven,
-              controller.postsListCateSeven),
+              controller.postsListCateSeven,() => _handleSectionTap(controller.postsListCateSeven)), 
           SectionData("المزاد الإلكتروني".tr, controller.LoadingPostsCateEight,
-              controller.postsListCateEight),
+              controller.postsListCateEight,() => _handleSectionTap(controller.postsListCateEight)), 
           SectionData<Post>("متجر المنتجات العالمية".tr,
-              controller.LoadingPostsCateNine, controller.postsListCateNine),
+              controller.LoadingPostsCateNine, controller.postsListCateNine,() => _handleSectionTap(controller.postsListCateNine)), 
           SectionData<Post>("الإعلانات الرسمية".tr,
-              controller.LoadingPostsCateTen, controller.postsListCateTen),
+              controller.LoadingPostsCateTen, controller.postsListCateTen,() => _handleSectionTap(controller.postsListCateTen)), 
           SectionData<Post>(
               "سوق الجملة والتوكيلات".tr,
               controller.LoadingPostsCateEleven,
-              controller.postsListCateEleven),
+              controller.postsListCateEleven,() => _handleSectionTap(controller.postsListCateEleven)), 
           SectionData<Post>("فرص عمل".tr, controller.LoadingPostsCateTwelve,
-              controller.postsListCateTwelve),
+              controller.postsListCateTwelve,() => _handleSectionTap(controller.postsListCateTwelve)), 
           SectionData<Post>(
               "أفكار ومشاريع للتمويل".tr,
               controller.LoadingPostsCateThrteen,
-              controller.postsListCateThrteen),
+              controller.postsListCateThrteen,() => _handleSectionTap(controller.postsListCateThrteen)), 
           SectionData<Post>("المطاعم".tr, controller.LoadingPostsCateFourTeen,
-              controller.postsListCateFourTeen),
+              controller.postsListCateFourTeen,() => _handleSectionTap(controller.postsListCateFourTeen)), 
           SectionData<Post>(
               "دليل الشركات".tr,
               controller.LoadingPostsCateFifteen,
-              controller.postsListCateFifteen),
+              controller.postsListCateFifteen,() => _handleSectionTap(controller.postsListCateFifteen)), 
           SectionData<Post>(
               "منتجات من المرزعة".tr,
               controller.LoadingPostsCateSixteen,
-              controller.postsListCateSixteen),
+              controller.postsListCateSixteen,() => _handleSectionTap(controller.postsListCateSixteen)), 
           SectionData<Post>(
               "الخدمات التعليمية".tr,
               controller.LoadingPostsCateSeventeen,
-              controller.postsListCateSeventeen),
+              controller.postsListCateSeventeen,() => _handleSectionTap(controller.postsListCateSeventeen)), 
           SectionData<Post>(
               "عمال يوميين".tr,
               controller.LoadingPostsCateEighteen,
-              controller.postsListCateEighteen),
+              controller.postsListCateEighteen,() => _handleSectionTap(controller.postsListCateEighteen)), 
           SectionData<Post>(
               "خدمات الذكاء الاصطناعي".tr,
               controller.LoadingPostsCateNineteen,
-              controller.postsListCateNineteen),
+              controller.postsListCateNineteen,() => _handleSectionTap(controller.postsListCateNineteen)), 
           SectionData<Post>(
               "الانشاءات مواد البناء".tr,
               controller.LoadingPostsCateTwenty,
-              controller.postsListCateTwenty),
+              controller.postsListCateTwenty,() => _handleSectionTap(controller.postsListCateTwenty)), 
           SectionData<Post>(
               "الالات والمعدات".tr,
               controller.LoadingPostsCateTwentyOne,
-              controller.postsListCateTwentyOne),
+              controller.postsListCateTwentyOne,() => _handleSectionTap(controller.postsListCateTwentyOne)), 
           SectionData<Post>(
               "الزراعة والحيوان".tr,
               controller.LoadingPostsCateTwentyTwo,
-              controller.postsListCateTwentyTwo),
+              controller.postsListCateTwentyTwo,() => _handleSectionTap(controller.postsListCateTwentyTwo)), 
           SectionData<Post>(
               "الصالونات الصحية والرياضية".tr,
               controller.LoadingPostsCateTwentyThree,
-              controller.postsListCateTwentyThree),
+              controller.postsListCateTwentyThree,() => _handleSectionTap(controller.postsListCateTwentyThree)), 
           SectionData<Post>(
               "الحيوانات الأليفة".tr,
               controller.LoadingPostsCateTwentyFour,
-              controller.postsListCateTwentyFour),
+              controller.postsListCateTwentyFour,() => _handleSectionTap(controller.postsListCateTwentyFour)), 
         ];
+        
 
         return Scaffold(
           body: Stack(
@@ -156,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen>
                               title: section.title,
                               isLoading: section.isLoading,
                               postsList: section.posts,
+      onTap: section.onTap, // أضف هذا
                             );
                           },
                         ),

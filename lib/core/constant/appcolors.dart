@@ -67,7 +67,8 @@ class AppColors {
   static Color primaryDark = Color(0xFF2A2D3E);
   static Color primaryLight = Color(0xFF3C4156);
   static Color accentColor = Color(0xFFF5A623);
-  static Color cardBackground = Color(0xFFFFFFFF);
+static Color cardBackground(bool isDark) => 
+      isDark ? Colors.grey[850]! : Colors.white;
   static Color primaryText = Color(0xFF2A2D3E);
   static Color secondaryText = Color(0xFF6B7280);
   static Color errorColor = Color(0xFFE53935);
@@ -105,4 +106,31 @@ class AppColors {
   static const Color facebook = Color(0xFF1877F2);
   static const Color youtube = Color(0xFFFF0000);
   static const Color linkedin = Color(0xFF0A66C2);
+
+  static Gradient get personalGradient => LinearGradient(
+    colors: [Color(0xFF6B46C1), Color(0xFF553C9A)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static Gradient get commercialGradient => LinearGradient(
+    colors: [Color(0xFF4299E1), Color(0xFF3182CE)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+ 
+  static Color titleColor(bool isDark) => 
+      isDark ? Colors.white : Colors.grey[800]!;
+
+  static Color subtitleColor(bool isDark) => 
+      isDark ? Colors.grey[400]! : Colors.grey[600]!;
+
+  static Color chipBackground(bool isDark) => 
+      isDark ? Colors.grey[800]! : Colors.grey[100]!;
+
+  static Color chipTextColor(bool isDark) => 
+      isDark ? Colors.grey[300]! : Colors.grey[700]!;
+
+  
 }

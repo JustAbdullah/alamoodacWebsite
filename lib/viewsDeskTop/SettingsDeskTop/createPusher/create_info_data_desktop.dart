@@ -251,184 +251,222 @@ class CreateInfoDataDeskTop extends StatelessWidget {
   }
 
   // ------------------ Step 1: Account Type ------------------
-  Widget _buildStep1(AddStorePushController controller,
-      ThemeController themeController, BuildContext context) {
-    return SingleChildScrollView(
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-
-      // أضف هذا
-      padding: EdgeInsets.all(16.w).copyWith(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 150.h,
-      ), //
-      child: Column(    mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-            child: Text("اختر نوع الحساب المناسب".tr,
-                style: TextStyle(
-                    fontSize: 22.sp,
-                    color:
-                        AppColors.textColor(themeController.isDarkMode.value),
-                    fontWeight: FontWeight.bold,
-                    fontFamily: AppTextStyles.DinarOne)),
+Widget _buildStep1(
+  AddStorePushController controller,
+  ThemeController themeController,
+  BuildContext context,
+) {
+  return SingleChildScrollView(
+    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+    padding: EdgeInsets.all(16.w).copyWith(
+      bottom: MediaQuery.of(context).viewInsets.bottom + 150.h,
+    ),
+    child: Column(
+      children: [
+        Text(
+          "اختر نوع الحساب المناسب".tr,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24.sp,
+            color: AppColors.textColor(themeController.isDarkMode.value),
+            fontWeight: FontWeight.bold,
+            fontFamily: AppTextStyles.DinarOne,
           ),
-          SizedBox(height: 20.h),
-          SizedBox(
-            width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: _buildAccountTypeCard(
-                      type: 'personal',
-                      icon: Icons.person,
-                      title: "حساب شخصي".tr,
-                      isSelected: controller.accountType.value == 'personal',
-                      context: context),
-                ),
-                SizedBox(width: 15.w), Align(
-                  alignment: Alignment.center,
-                  child:
-                _buildAccountTypeCard(
-                    type: 'commercial',
-                    icon: Icons.business,
-                    title: "حساب تجاري".tr,
-                    isSelected: controller.accountType.value == 'commercial',
-                    context: context)),
+        ),
+        SizedBox(height: 25.h),
+        Column(
+          children: [
+            _buildAccountCard(
+              context: context,
+              type: 'personal',
+              icon: Icons.account_circle_rounded,
+              title: "ناشر شخصي".tr,
+              subtitle: "مناسب أكثر للاقسام الاقتصادية التى لاتتطلب معلومات كثيرة مثال على ذلك".tr,
+              categories:  [
+                'سوق المستعمل'.tr,
+                'منتجات منزلية'.tr,
+                'الحرف والمهن'.tr,
+                'البحث عن عمل'.tr ,
+                'وغيرها'.tr,
               ],
+              gradient: AppColors.personalGradient,
+              isSelected: controller.accountType.value == 'personal',
             ),
+            SizedBox(height: 20.h),
+            _buildAccountCard(
+              context: context,
+              type: 'commercial',
+              icon: Icons.business_rounded,
+              title: "ناشر تجاري".tr,
+              subtitle: "مناسب أكثر للاقسام التجارية التى تتطلب معلومات احترافية أكثر مثال على ذلك".tr,
+              categories:  [
+                'العقارات'.tr,
+                'المركبات'.tr,
+                'الخدمات التعليمية'.tr,
+                'الصالونات'.tr,
+                'وغيرها'.tr,
+              ],
+              gradient: AppColors.commercialGradient,
+              isSelected: controller.accountType.value == 'commercial',
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildAccountCard({
+  required BuildContext context,
+  required String type,
+  required IconData icon,
+  required String title,
+  required String subtitle,
+  required List<String> categories,
+  required Gradient gradient,
+  required bool isSelected,
+}) {
+  final themeController = Get.find<ThemeController>();
+  final isDark = themeController.isDarkMode.value;
+
+  return InkWell(
+    borderRadius: BorderRadius.circular(20.r),
+    onTap: () => Get.find<AddStorePushController>().setAccountType(type),
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      decoration: BoxDecoration(
+        gradient: isSelected ? gradient : null,
+        color: isSelected ? null : AppColors.cardBackground(isDark),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: isSelected 
+              ? AppColors.primaryColor 
+              : Colors.grey.withOpacity(isDark ? 0.2 : 0.3),
+          width: isSelected ? 2.2 : 1.2,
+        ),
+        boxShadow: [
+          if(isSelected)
+          BoxShadow(
+            color: AppColors.primaryColor.withOpacity(0.15),
+            blurRadius: 20,
+            spreadRadius: 3,
+            offset: Offset(0, 5),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAccountTypeCard(
-      {required String type,
-      required IconData icon,
-      required String title,
-      required bool isSelected,
-      required BuildContext context}) {
-    final Map<String, List<Map<String, dynamic>>> accountFeatures = {
-      'personal': [
-        {'icon': Icons.person_pin, 'text': 'حساب شخصي خاص بك'.tr},
-        {'icon': Icons.share, 'text': 'مشاركة الإعلانات بسهولة'.tr},
-        {'icon': Icons.content_copy, 'text': 'إضافة معلومات التواصل'.tr},
-        {
-          'icon': Icons.social_distance,
-          'text': 'روابط لمواقع التواصل الإجتماعي'.tr
-        },
-      ],
-      'commercial': [
-        {'icon': Icons.info, 'text': 'معلومات أشمل حول النشاط التجاري'.tr},
-        {'icon': Icons.timelapse, 'text': 'أوقات العمل والخدمات المميزة'.tr},
-        {'icon': Icons.photo, 'text': 'صور أكثر للخدمات والمنشاة'.tr},
-        {'icon': Icons.share, 'text': 'مشاركة الإعلانات بسهولة'.tr},
-        {'icon': Icons.content_copy, 'text': 'إضافة معلومات التواصل'.tr},
-        {
-          'icon': Icons.social_distance,
-          'text': 'روابط لمواقع التواصل الإجتماعي'.tr
-        },
-      ],
-    };
-
-    return Align(
-      alignment: Alignment.center,
-      child: InkWell(
-        onTap: () => Get.find<AddStorePushController>().setAccountType(type),
-        child: Container(
-          alignment: Alignment.center,
-            width: 500.w,
-        
-          margin: EdgeInsets.symmetric(vertical: 10.h),
-          decoration: BoxDecoration(
-            gradient: isSelected
-                ? LinearGradient(colors: [
-                    AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value).withOpacity(0.1),
-                    Colors.white
-                  ], begin: Alignment.topCenter, end: Alignment.bottomCenter)
-                : null,
-            color: !isSelected ? Colors.white : null,
-            borderRadius: BorderRadius.circular(25.r),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 15,
-                  offset: Offset(0, 5)),
-            ],
-            border: Border.all(
-              color: isSelected ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey[200]!,
-              width: 2,
-            ),
-          ),
-          child: Padding(
+      child: Stack(
+        children: [
+          Padding(
             padding: EdgeInsets.all(20.w),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Icon Container
                 Container(
-                  width: 70.w,
-                  height: 70.h,
+                  padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey[200],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon,
-                      size: 35.w,
-                      color: isSelected ? Colors.white : Colors.grey[600]),
-                ),
-                SizedBox(height: 10.h),
-                Text(title,
-                    style: TextStyle(
-                        fontSize: 20.sp,
-                        color: isSelected
-                            ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value)
-                            : Colors.grey[800],
-                        fontWeight: FontWeight.bold,
-                        fontFamily: AppTextStyles.DinarOne)),
-                SizedBox(height: 15.h),
-                ...accountFeatures[type]!.map((feature) => ListTile(
-                      leading: Icon(feature['icon'],
-                          size: 22.w,
-                          color:
-                              isSelected ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey),
-                      title: Text(feature['text'],
-                          style: TextStyle(
-                              fontSize: 14.sp,
-                              fontFamily: AppTextStyles.DinarOne,
-                              color: Colors.grey[700])),
-                      contentPadding: EdgeInsets.zero,
-                      minLeadingWidth: 10.w,
-                    )),
-                SizedBox(height: 5.h),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
-                  decoration: BoxDecoration(
-                    color:
-                        isSelected ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.transparent,
+                    color: isSelected 
+                        ? Colors.white.withOpacity(0.2)
+                        : Colors.grey.withOpacity(isDark ? 0.1 : 0.05),
                     borderRadius: BorderRadius.circular(15.r),
-                    border: Border.all(
-                        color: isSelected ? AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value) : Colors.grey),
                   ),
-                  child: Text(
-                    'اختر هذا النوع'.tr,
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.grey,
-                      fontSize: 14.sp,
-                      fontFamily: AppTextStyles.DinarOne,
+                  child: Icon(
+                    icon,
+                    size: 34.w,
+                    color: isSelected 
+                        ? Colors.white 
+                        : AppColors.iconColor(isDark),
+                  ),
+                ),
+                
+                SizedBox(height: 20.h),
+                
+                // Title & Subtitle
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 22.sp,
+                    color: isSelected ? Colors.white : AppColors.titleColor(isDark),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: AppTextStyles.DinarOne,
+                  ),
+                ),
+                
+                SizedBox(height: 8.h),
+                
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14.5.sp,
+                    color: isSelected ? Colors.white70 : AppColors.subtitleColor(isDark),
+                    height: 1.3,
+                  ),
+                ),
+                
+                SizedBox(height: 20.h),
+                
+                // Category Chips
+                Wrap(
+                  spacing: 10.w,
+                  runSpacing: 10.h,
+                  children: categories.map((category) => Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 14.w,
+                      vertical: 8.h,
                     ),
-                  ),
+                    decoration: BoxDecoration(
+                      color: isSelected 
+                          ? Colors.white.withOpacity(0.15)
+                          : AppColors.chipBackground(isDark),
+                      borderRadius: BorderRadius.circular(10.r),
+                      border: isSelected ? Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 0.8,
+                      ) : null,
+                    ),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        fontSize: 12.5.sp,
+                        color: isSelected ? Colors.white : AppColors.chipTextColor(isDark),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  )).toList(),
                 ),
               ],
             ),
           ),
-        ),
+          
+          // Selection Badge
+          if(isSelected)
+          Positioned(
+            top: 12.w,
+            left: 12.w,
+            child: Container(
+              padding: EdgeInsets.all(6.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 6,
+                    offset: Offset(0, 2)),
+                ],
+              ),
+              child: Icon(
+                Icons.check_rounded,
+                size: 18.w,
+                color: AppColors.primaryColor,
+              ),
+            ),
+          )
+        ],
       ),
-    );
-  }
-
+    ),
+  );
+}
   // ------------------ Step 2: Basic Info ------------------
   Widget _buildStep2(BuildContext context, AddStorePushController controller,
       ThemeController themeController) {

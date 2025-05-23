@@ -29,8 +29,8 @@ import '../../customWidgets/custom_logo.dart';
 import '../../controllers/settingsController.dart';
 import '../Auth/login_screen.dart';
 import '../OnAppPages/menu.dart';
-import '../Settings/show_ask_add_code.dart';
 import '../Settings/show_packages.dart';
+import '../show_message_info.dart';
 import 'AddAllPost/add_post.dart';
 import 'AddAuctionsPage/add_auctions.dart';
 import 'AddCar/add_car.dart';
@@ -312,6 +312,7 @@ class AddList extends StatelessWidget {
                                         final loadingCtrl =
                                             Get.find<LoadingController>();
                                         final user = loadingCtrl.currentUser;
+                                       print("One In InkWell");
 
                                         // 1️⃣ التأكد من تسجيل الدخول
                                         if (user == null) {
@@ -355,8 +356,8 @@ class AddList extends StatelessWidget {
                                                     vertical: 8),
                                               ),
                                               onPressed: () =>
-                                                  Get.to(LoginScreen()),
-                                              child: Text('تسجيل دخول'.tr,
+                                                  Get.to(() => LoginScreen()),
+                                              child: Text('تسجيل الدخول'.tr,
                                                   style: TextStyle(
                                                       fontSize: 14.sp,
                                                       fontWeight:
@@ -367,10 +368,12 @@ class AddList extends StatelessWidget {
                                           );
                                           return;
                                         }
-
+print("Two In InkWell");
                                         // 2️⃣ حالة daily worker (category 18)
                                         if (controller.showMessage.value)
                                           return;
+                                       
+                                       print("Three In InkWell");
                                         if (category.id == 18) {
                                           addpostdailyworkercontroller.idCate =
                                               category.id;
@@ -390,7 +393,6 @@ class AddList extends StatelessWidget {
                                           _openCategory(category);
                                           return;
                                         }
-
                                         // 4️⃣ لمستخدم عادي: جلب الاشتراكات وتصفية النشطة
                                         final subs =
                                             scriptionController.subscriptions;
@@ -772,6 +774,7 @@ class AddList extends StatelessWidget {
                       ),
                     ],
                   ),
+                  PublisherInfoDialog(),
                   _BottomNavigationSection(),
                 ]),
               ),

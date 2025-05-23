@@ -273,35 +273,7 @@ class CategoriesPage extends StatelessWidget {
   }
 
   void _handleCategoryTap(Category category) async {
-   /* controller.nameCategories.value = category.translations.first.name;
-    controller.idCategories.value = category.id.toString();
 
-    final langCode = langController.currentLocale.value.languageCode;
-
-    await controller.fetchSubcategories(category.id, langCode);
-    await controller.fetchPostsAll(category.id, langCode, null, null);
-
-    searchcontroller.subCategories.clear();
-    searchcontroller.isChosedAndShowTheSub.value = false;
-
-    await searchcontroller.fetchSubcategories(
-      int.parse(controller.idCategories.value),
-      langCode,
-    );
-
-    searchcontroller.isChosedAndShowTheSub.value = true;
-    searchcontroller.idOfCateSearchBox.value = category.id;
-
-    searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-        controller.idCategories.value;
-
-    searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-        controller.idCategories.value;
-
-    searchcontroller.isOpenINSubPost.value = true;
-    searchcontroller.selectedMainCategory = category.id;
-
-    controller.showTheSubCategories.value = true;*/
 
      controller.nameCategories.value =
                                           category.translations.first.name;

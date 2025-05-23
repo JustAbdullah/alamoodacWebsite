@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/ThemeController.dart';
+import '../../../controllers/home_controller.dart';
 import '../../../controllers/settingsController.dart';
 import '../../../core/constant/app_text_styles.dart';
 import '../../../core/constant/appcolors.dart';
@@ -16,7 +17,7 @@ class SaveAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
-    final controller = Get.find<Settingscontroller>();
+    final homeController = Get.find<HomeController>();
 
     return GetX<Settingscontroller>(
       builder: (controller) => Visibility(
@@ -47,6 +48,7 @@ class SaveAccount extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             controller.saveAccount.value = false;
+                            homeController.isMenu.value = true;
                             Get.toNamed(
                               '/settings-mobile/', // المسار مع المعلمة الديناميكية
                               // إرسال الكائن كامل

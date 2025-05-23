@@ -471,7 +471,6 @@ const Map<String, String> trTR = {
   'الأقل تقييماً': 'En Düşük Puan',
   ////////////
   "المول الإلكتروني": "Elektronik Alışveriş Merkezi",
-  "سوق المستعمل": "İkinci El Pazarı",
   "مركبات للبيع والايجار": "Satılık ve Kiralık Araçlar",
   "المهن والحرف": "Meslekler ve Zanaatlar",
   "منتجات من البيت": "Ev Yapımı Ürünler",
@@ -486,7 +485,6 @@ const Map<String, String> trTR = {
   "المطاعم": "Restoranlar",
   "دليل الشركات": "Şirket Rehberi",
   "منتجات من المرزعة": "Çiftlik Ürünleri",
-  "الخدمات التعليمية": "Eğitim Hizmetleri",
   "عمال يوميين": "Günlük İşçiler",
   "خدمات الذكاء الاصطناعي": "Yapay Zeka Hizmetleri",
   "الانشاءات مواد البناء": "İnşaat ve Yapı Malzemeleri",
@@ -971,4 +969,21 @@ const Map<String, String> trTR = {
   "الرسائل والتنبيهات": "Mesajlar ve bildirimler",
 
   "تــفاصيل النــاشر": "Yayıncı ayrıntıları", "معرض الصور": "Fotoğraf galerisi",
+/////////
+"ناشر شخصي": "Kişisel Yayıncı",  
+"مناسب أكثر للاقسام الاقتصادية التى لاتتطلب معلومات كثيرة مثال على ذلك": "Daha çok fazla bilgi gerektirmeyen ekonomik bölümler için daha uygun, örneğin",  
+"سوق المستعمل": "İkinci El Pazarı",  
+"منتجات منزلية": "Ev Ürünleri",  
+"الحرف والمهن": "El Sanatları ve Meslekler",  
+"البحث عن عمل": "İş Arama",  
+"وغيرها": "Ve diğerleri",  
+"ناشر تجاري": "Ticari Yayıncı",  
+"مناسب أكثر للاقسام التجارية التى تتطلب معلومات احترافية أكثر مثال على ذلك": "Daha profesyonel bilgi gerektiren ticari bölümler için daha uygun, örneğin",  
+"العقارات": "Emlak",  
+"المركبات": "Araçlar",  
+"الخدمات التعليمية": "Eğitim Hizmetleri",  
+"الصالونات": "Kuaförler",  
+"جاري تسجيل الدخول...": "Giriş yapılıyor...",  
+"جاري إنشاء حسابك...": "Hesabınız oluşturuluyor...",  
+"املأ جميع الحقول بشكل صحيح": "Tüm alanları doğru şekilde doldurun",  
 };

@@ -8,7 +8,6 @@ import '../../core/constant/app_text_styles.dart';
 import '../../core/constant/appcolors.dart';
 import '../../core/constant/images_path.dart';
 import '../../customWidgets/custome_textfiled.dart';
-import '../OnAppPages/on_app_pages.dart';
 import '../Settings/chose_terms.dart';
 import 'login_screen.dart';
 
@@ -304,7 +303,6 @@ class _SignupForm extends StatelessWidget {
   }
 }
 
-// باقي الودجات تبقى كما هي (_GuestButton, _LoadingOverlay) مع إزالة الودجات الغير مستخدمة
 
 class _GuestButton extends StatelessWidget {
   const _GuestButton({required this.controller});

@@ -1,11 +1,10 @@
 import 'dart:html' as html;
-
-import 'package:alamoadac_website/Load_new_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get/get.dart';
 
+import 'package:alamoadac_website/Load_new_app.dart';
 import 'HomeDeciderView.dart';
 import 'controllers/ThemeController.dart';
 import 'controllers/home_controller.dart';
@@ -19,7 +18,6 @@ import 'viewMobile/AddPostsPage/add_list.dart';
 import 'viewMobile/HomeScreen/DetailsPost/details_post.dart';
 import 'viewMobile/HomeScreen/SubCategories/sub_categories.dart';
 import 'viewMobile/HomeScreen/home_screen.dart';
-import 'viewMobile/OnAppPages/on_app_pages.dart';
 import 'viewMobile/SearchScreen/DetailsStores/details_stroes.dart';
 import 'viewMobile/SearchScreen/search_screen.dart';
 import 'viewMobile/Settings/settings.dart';
@@ -44,17 +42,51 @@ class CustomNavigatorObserver extends NavigatorObserver {
 
   void _updateHistory(Route? route) {
     if (route is PageRoute && route.settings.name != null) {
-      html.window.history.replaceState(
-        {'route': route.settings.name},
-        '',
-        route.settings.name,
-      );
+      Future.microtask(() {
+        html.window.history.replaceState(
+          {'route': route.settings.name},
+          '',
+          route.settings.name,
+        );
+      });
     }
   }
 }
 
+void _forceFullScreen() {
+  html.document.documentElement!.style
+    ..height = '100%'
+    ..width = '100%'
+    ..minWidth = '100%'
+    ..minHeight = '100%'
+    ..margin = '0'
+    ..padding = '0'
+    ..overflow = 'hidden'
+    ..setProperty('-webkit-overflow-scrolling', 'touch'); // إصلاح التمرير في iOS
+
+  html.document.body!.style
+    ..height = '100%'
+    ..width = '100%'
+    ..minWidth = '100%'
+    ..minHeight = '100%'
+    ..margin = '0'
+    ..padding = '0'
+    ..overflow = 'hidden';
+}
+
 Future<void> main() async {
+  debugDisableShadows = true;
+  
   WidgetsFlutterBinding.ensureInitialized();
+  _forceFullScreen();
+
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ),
+  );
 
   final appServices = await AppServices.init();
   Get.put(appServices);
@@ -71,11 +103,9 @@ Future<void> main() async {
       return;
     }
 
-    if (currentRoute == '/Decider') {
-      _showExitConfirmation();
-    } else {
-      _forceRedirectToDecider();
-    }
+    currentRoute == '/Decider' 
+      ? _showExitConfirmation()
+      : _forceRedirectToDecider();
   });
 
   SystemChrome.setPreferredOrientations([
@@ -117,18 +147,12 @@ void _showExitConfirmation() {
     barrierDismissible: false,
   );
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final langCtrl = Get.find<ChangeLanguageController>();
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: ModeColor.mode),
-    );
 
     return Obx(() => GetMaterialApp(
           navigatorKey: Get.key,
@@ -169,12 +193,30 @@ class MyApp extends StatelessWidget {
             GetPage(
                 name: '/dashboard-mobile/', page: () => HomeDashboardUser()),
           ],
-          theme: ThemeData(primarySwatch: ModeColor.mode),
+      
           builder: (context, child) {
-            final mq = MediaQuery.of(context);
-            return MediaQuery(
-              data: mq.copyWith(textScaleFactor: 0.9),
-              child: child!,
+            return Scaffold(
+              body: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaleFactor: 0.9,
+                  // إصلاح حواف iOS
+                  padding: EdgeInsets.zero,
+                  viewPadding: EdgeInsets.zero,
+                  viewInsets: EdgeInsets.zero,
+                ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width,
+                    maxWidth: MediaQuery.of(context).size.width,
+                    minHeight: MediaQuery.of(context).size.height,
+                    maxHeight: MediaQuery.of(context).size.height,
+                  ),
+                  child: Container(
+              
+                    child: child,
+                  ),
+                ),
+              ),
             );
           },
         ));

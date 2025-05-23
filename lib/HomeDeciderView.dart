@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 import '../controllers/LoadingController.dart';
-import '../viewMobile/OnAppPages/on_app_pages.dart';
 import '../viewsDeskTop/homeDeskTop/home_screen_desktop.dart';
 
 class HomeDeciderView extends StatelessWidget {

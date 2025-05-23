@@ -499,7 +499,6 @@ const Map<String, String> enUS = {
   'الأقل تقييماً': 'Lowest Rated',
   ///////////////////////////////
   "المول الإلكتروني": "Online Mall",
-  "سوق المستعمل": "Used Market",
   "مركبات للبيع والايجار": "Vehicles for Sale and Rent",
   "المهن والحرف": "Professions and Crafts",
   "منتجات من البيت": "Homemade Products",
@@ -514,7 +513,6 @@ const Map<String, String> enUS = {
   "المطاعم": "Restaurants",
   "دليل الشركات": "Companies Directory",
   "منتجات من المرزعة": "Farm Products",
-  "الخدمات التعليمية": "Educational Services",
   "عمال يوميين": "Day Laborers",
   "خدمات الذكاء الاصطناعي": "Artificial Intelligence Services",
   "الانشاءات مواد البناء": "Construction and Building Materials",
@@ -970,7 +968,6 @@ const Map<String, String> enUS = {
       "Password must contain at least 4 characters",
   "العودة لتعديل الاسم": "Go back to edit name",
   "استكشف التطبيق كزائر": "Explore the app as a visitor",
-  "جاري إنشاء حسابك...": "Creating your account...",
 
   // Posts & Services
   "المنشور المطلوب": "Required Post",
@@ -1148,5 +1145,23 @@ const Map<String, String> enUS = {
   "سياسة الخصوصية": "Privacy Policy",
 
   ///////////
+  
+
+  "ناشر شخصي": "Personal Publisher",  
+"مناسب أكثر للاقسام الاقتصادية التى لاتتطلب معلومات كثيرة مثال على ذلك": "More suitable for economic sections that don't require much information, for example",  
+"سوق المستعمل": "Used Market",  
+"منتجات منزلية": "Home Products",  
+"الحرف والمهن": "Crafts and Professions",  
+"البحث عن عمل": "Job Search",  
+"وغيرها": "And others",  
+"ناشر تجاري": "Commercial Publisher",  
+"مناسب أكثر للاقسام التجارية التى تتطلب معلومات احترافية أكثر مثال على ذلك": "More suitable for commercial sections that require more professional information, for example",  
+"العقارات": "Real Estate",  
+"المركبات": "Vehicles",  
+"الخدمات التعليمية": "Educational Services",  
+"الصالونات": "Salons",  
+"جاري تسجيل الدخول...": "Logging in...",  
+"جاري إنشاء حسابك...": "Creating your account...",  
+"املأ جميع الحقول بشكل صحيح": "Fill all fields correctly",  
   ////////////////////////
 };

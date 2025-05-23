@@ -17,6 +17,7 @@ import '../../core/data/model/Subscription.dart';
 import '../../core/data/model/SubscriptionCode.dart';
 import '../../core/localization/changelanguage.dart';
 import '../Settings/saveAccount/save_account.dart';
+import '../Settings/show_packages.dart';
 import 'details_post_edit.dart';
 import 'info_push_user_dashboard.dart';
 import 'users_posts.dart';
@@ -583,6 +584,7 @@ class HomeDashboardUser extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Get.find<Settingscontroller>().showPack.value = true;
+                Get.to(() => ShowPackages());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.backgroundColorIconBack(
