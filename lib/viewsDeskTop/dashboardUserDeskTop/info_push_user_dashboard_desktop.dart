@@ -76,14 +76,6 @@ class _EmptyState extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: AppColors.textColor(isDark))),
           SizedBox(height: 8.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.w),
-            child: Text('اضغط على زر (+) لإضافة حساب جديد',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.textColor(isDark).withOpacity(0.6))),
-          ),
         ],
       ),
     );

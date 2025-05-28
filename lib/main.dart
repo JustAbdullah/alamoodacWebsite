@@ -4,13 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get/get.dart';
 
-import 'package:alamoadac_website/Load_new_app.dart';
 import 'HomeDeciderView.dart';
 import 'controllers/ThemeController.dart';
 import 'controllers/home_controller.dart';
 import 'controllers/LoadingController.dart';
 import 'controllers/searchController.dart';
-import 'core/constant/color_primary.dart';
 import 'core/localization/AppTranslation.dart';
 import 'core/localization/changelanguage.dart';
 import 'core/services/appservices.dart';
@@ -24,32 +22,98 @@ import 'viewMobile/Settings/settings.dart';
 import 'viewMobile/dashboardUser/home_dashboard_user.dart';
 import 'viewsDeskTop/AddPageDeskTop/add_list_desktop.dart';
 import 'viewsDeskTop/SubCategoriesDeskTop/sub_categories_desktop.dart';
+import 'viewsDeskTop/homeDeskTop/DetailsPostDeskTop/details_load_link.dart';
 import 'viewsDeskTop/homeDeskTop/DetailsPostDeskTop/details_post_desktop.dart';
 import 'viewsDeskTop/homeDeskTop/home_screen_desktop.dart';
 import 'viewsDeskTop/searchDeskTop/DetailsStoresDesktop/details_stroes_desktop.dart';
 import 'viewsDeskTop/searchDeskTop/search_screen_desktop.dart';
 
-class CustomNavigatorObserver extends NavigatorObserver {
+class EnhancedNavigatorObserver extends NavigatorObserver {
+  static final List<String> _navigationStack = [];
+  static String? _initialPath;
+
   @override
   void didPush(Route route, Route? previousRoute) {
-    _updateHistory(route);
+    _handleRouteChange(route, isPush: true);
   }
 
   @override
   void didPop(Route route, Route? previousRoute) {
-    _updateHistory(previousRoute);
+    _handleRouteChange(previousRoute, isPop: true);
   }
 
-  void _updateHistory(Route? route) {
+  void _handleRouteChange(Route? route,
+      {bool isPush = false, bool isPop = false}) {
     if (route is PageRoute && route.settings.name != null) {
-      Future.microtask(() {
-        html.window.history.replaceState(
-          {'route': route.settings.name},
-          '',
-          route.settings.name,
-        );
-      });
+      final routeName = _normalizeRoute(route.settings.name!);
+
+      if (isPop && _navigationStack.isNotEmpty) {
+        _navigationStack.removeLast();
+      } else if (isPush) {
+        if (_navigationStack.isEmpty) _navigationStack.add(_initialPath ?? '/');
+        if (_navigationStack.last != routeName) _navigationStack.add(routeName);
+      }
+
+      _updateBrowserHistory(routeName, isPush: isPush);
     }
+  }
+
+  String _normalizeRoute(String path) {
+    return path;
+  }
+
+  void _updateBrowserHistory(String route, {bool isPush = false}) {
+    // معالجة المسار بشكل آمن
+    final currentPath = html.window.location.pathname;
+    final pathSegments = currentPath?.split('/') ?? [];
+    final dynamicId = pathSegments.isNotEmpty ? pathSegments.last : '';
+
+    // استبدال المعلمة الديناميكية
+    final browserPath = route.replaceFirst(':id', dynamicId);
+
+    // استخدام التوابع المباشرة بدلاً من المُعامل []
+    if (isPush) {
+      html.window.history.pushState(
+        {
+          'type': 'flutter_route',
+          'path': route,
+          'stack': List<String>.from(_navigationStack)
+        },
+        '',
+        browserPath,
+      );
+    } else {
+      html.window.history.replaceState(
+        {
+          'type': 'flutter_route',
+          'path': route,
+          'stack': List<String>.from(_navigationStack)
+        },
+        '',
+        browserPath,
+      );
+    }
+  }
+
+  static void handleBrowserBack(dynamic state) {
+    if (state != null && state['type'] == 'flutter_route') {
+      final stack = List<String>.from(state['stack'] ?? []);
+      if (stack.isNotEmpty) {
+        _navigationStack
+          ..clear()
+          ..addAll(stack);
+
+        final targetRoute = stack.isNotEmpty ? stack.last : _initialPath;
+        if (targetRoute != null && Get.currentRoute != targetRoute) {
+          Get.offNamedUntil(targetRoute, (route) => false);
+        }
+      }
+    }
+  }
+
+  static void initialize(String initialPath) {
+    _initialPath = initialPath;
+    _navigationStack.add(initialPath);
   }
 }
 
@@ -61,8 +125,7 @@ void _forceFullScreen() {
     ..minHeight = '100%'
     ..margin = '0'
     ..padding = '0'
-    ..overflow = 'hidden'
-    ..setProperty('-webkit-overflow-scrolling', 'touch'); // إصلاح التمرير في iOS
+    ..overflow = 'hidden';
 
   html.document.body!.style
     ..height = '100%'
@@ -76,7 +139,6 @@ void _forceFullScreen() {
 
 Future<void> main() async {
   debugDisableShadows = true;
-  
   WidgetsFlutterBinding.ensureInitialized();
   _forceFullScreen();
 
@@ -93,19 +155,19 @@ Future<void> main() async {
   Get.put(ChangeLanguageController());
 
   setUrlStrategy(PathUrlStrategy());
-  html.window.history.replaceState({'route': '/'}, '', '/');
+
+  final initialUri = Uri.parse(html.window.location.href);
+  final initialPath = initialUri.path.isEmpty ? '/' : initialUri.path;
+
+  EnhancedNavigatorObserver.initialize(initialPath);
+  html.window.history.replaceState({
+    'type': 'flutter_route',
+    'path': initialPath,
+    'stack': [initialPath]
+  }, '', initialPath);
 
   html.window.onPopState.listen((event) {
-    final currentRoute = Get.currentRoute;
-
-    if (Get.isSnackbarOpen) {
-      Get.back();
-      return;
-    }
-
-    currentRoute == '/Decider' 
-      ? _showExitConfirmation()
-      : _forceRedirectToDecider();
+    EnhancedNavigatorObserver.handleBrowserBack(event.state);
   });
 
   SystemChrome.setPreferredOrientations([
@@ -113,54 +175,32 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const MyApp());
+  runApp(MyApp(initialUri: initialUri));
 }
 
-void _forceRedirectToDecider() {
-  Get.offAllNamed('/Decider');
-  html.window.history.replaceState({'route': '/Decider'}, '', '/Decider');
-}
-
-void _showExitConfirmation() {
-  Get.dialog(
-    AlertDialog(
-      title: const Text('تأكيد الخروج'),
-      content: const Text('هل تريد حقًا الخروج من التطبيق؟'),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Get.back();
-            html.window.history.pushState(
-              {'route': '/Decider'},
-              '',
-              '/Decider',
-            );
-          },
-          child: const Text('إلغاء'),
-        ),
-        TextButton(
-          onPressed: () => html.window.close(),
-          child: const Text('خروج'),
-        ),
-      ],
-    ),
-    barrierDismissible: false,
-  );
-}
+// هنا نقوم بتعديل الروتين الخاص بالروابط العميقة بحيث إذا كان الرابط يبدأ بـ “/post/…” نوجه المستخدم إلى واجهة DetailsLoadLink
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final Uri initialUri;
+
+  const MyApp({Key? key, required this.initialUri}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final langCtrl = Get.find<ChangeLanguageController>();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // إذا كان المسار يحتوي على "post" فهذا يعني أننا دخلنا عبر رابط تفاصيل المنشور
+      if (initialUri.pathSegments.length >= 2 &&
+          initialUri.pathSegments[0] == 'post') {
+        // التوجيه إلى واجهة DetailsLoadLink مع تمرير معرف المنشور كمعامل (arguments)
+        Get.offAllNamed('/link', arguments: {'id': initialUri.pathSegments[1]});
+      }
+    });
+
     return Obx(() => GetMaterialApp(
           navigatorKey: Get.key,
           debugShowCheckedModeBanner: false,
-          navigatorObservers: [
-            CustomNavigatorObserver(),
-            GetObserver(),
-          ],
+          navigatorObservers: [EnhancedNavigatorObserver()],
           title: 'على مودك',
           translations: AppTranslation(),
           locale: langCtrl.currentLocale.value,
@@ -171,12 +211,26 @@ class MyApp extends StatelessWidget {
             Get.put(ThemeController(), permanent: true);
             Get.put(LoadingController(), permanent: true);
           }),
-          initialRoute: '/',
+          // يمكن ترك initialRoute كما هو أو تغييره حسب منطق التطبيق
+          initialRoute: '/Decider',
           getPages: [
-            GetPage(name: '/', page: () => const LoadTheWeb()),
+            GetPage(
+              name: '/Decider',
+              page: () => const HomeDeciderView(),
+              preventDuplicates: false,
+            ),
+            GetPage(
+              name: '/post/:id',
+              page: () => PostDetailsDeskTop(),
+            ),
+            GetPage(
+              name: '/link',
+              page: () => DetailsLoadLink(),
+              transition: Transition.fadeIn,
+            ),
+
             GetPage(name: '/Decider', page: () => const HomeDeciderView()),
             GetPage(name: '/desktop', page: () => const HomeScreenDesktop()),
-            GetPage(name: '/post/:id', page: () => PostDetailsDeskTop()),
             GetPage(name: '/store/:id', page: () => StoreDetailsDeskTop()),
             GetPage(name: '/Category', page: () => SubCategoriesPageDeskTop()),
             GetPage(name: '/add-post', page: () => AddListDeskTop()),
@@ -193,13 +247,20 @@ class MyApp extends StatelessWidget {
             GetPage(
                 name: '/dashboard-mobile/', page: () => HomeDashboardUser()),
           ],
-      
-          builder: (context, child) {
-            return Scaffold(
+          builder: (context, child) => WillPopScope(
+            onWillPop: () async {
+              if (EnhancedNavigatorObserver._navigationStack.length > 1) {
+                EnhancedNavigatorObserver._navigationStack.removeLast();
+                html.window.history.back();
+                return false;
+              }
+              _showExitConfirmation();
+              return false;
+            },
+            child: Scaffold(
               body: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
                   textScaleFactor: 0.9,
-                  // إصلاح حواف iOS
                   padding: EdgeInsets.zero,
                   viewPadding: EdgeInsets.zero,
                   viewInsets: EdgeInsets.zero,
@@ -211,14 +272,33 @@ class MyApp extends StatelessWidget {
                     minHeight: MediaQuery.of(context).size.height,
                     maxHeight: MediaQuery.of(context).size.height,
                   ),
-                  child: Container(
-              
-                    child: child,
-                  ),
+                  child: Container(child: child),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ));
+  }
+
+  void _showExitConfirmation() {
+    if (Get.isDialogOpen ?? false) return;
+
+    Get.dialog(
+      AlertDialog(
+        title: const Text('تأكيد الخروج'),
+        content: const Text('هل تريد حقًا الخروج من التطبيق؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => html.window.close(),
+            child: const Text('خروج'),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
   }
 }

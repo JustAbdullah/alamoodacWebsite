@@ -1,3 +1,4 @@
+import 'package:alamoadac_website/viewMobile/OnAppPages/on_app_pages%20-%20Copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -987,6 +988,10 @@ class ShowPackages extends StatelessWidget {
                 Get.back();
                 Navigator.of(context, rootNavigator: true).pop();
                 Get.find<Settingscontroller>().showPack.value = false;
+                homeController.isChosedMenu();
+                Get.toNamed(
+                  '/settings-mobile',
+                );
               },
               child: Text(
                 "حسناً".tr,

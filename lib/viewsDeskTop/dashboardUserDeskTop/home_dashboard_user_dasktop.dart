@@ -438,22 +438,33 @@ class HomeDashboardUserDeskTop extends StatelessWidget {
             SizedBox(height: 10.h),
             SizedBox(height: 15.h),
             if (daysRemaining > 0 && daysRemaining <= 30)
-              ElevatedButton(
-                onPressed: () {/* تجديد الاشتراك */},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.backgroundColorIconBack(
-                      Get.find<ThemeController>().isDarkMode.value),
-                  minimumSize: Size(500.w, 45.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              SizedBox(
+                width: 250.w,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.find<Settingscontroller>().showPack.value = true;
+                    showSidePopup(
+                      context: context,
+                      child: const ShowPackagesDeskTopPage(),
+                      widthPercent: 0.75,
+                      useSideAlignment: false,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.backgroundColorIconBack(
+                        Get.find<ThemeController>().isDarkMode.value),
+                    minimumSize: Size(500.w, 45.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                ),
-                child: Text(
-                  "تجديد الاشتراك".tr,
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.DinarOne,
-                    color: Colors.white,
-                    fontSize: 14.sp,
+                  child: Text(
+                    "تجديد الاشتراك".tr,
+                    style: TextStyle(
+                      fontFamily: AppTextStyles.DinarOne,
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                    ),
                   ),
                 ),
               ),
@@ -585,30 +596,33 @@ class HomeDashboardUserDeskTop extends StatelessWidget {
               ),
             ),
             SizedBox(height: 15.h),
-            ElevatedButton(
-              onPressed: () {
-                Get.find<Settingscontroller>().showPack.value = true;
-                showSidePopup(
-                  context: context,
-                  child: ShowPackagesDeskTopPage(),
-                  widthPercent: 0.30,
-                  useSideAlignment: true,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.backgroundColorIconBack(
-                    Get.find<ThemeController>().isDarkMode.value),
-                minimumSize: Size(500.w, 45.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            SizedBox(
+              width: 250.w,
+              child: ElevatedButton(
+                onPressed: () {
+                  Get.find<Settingscontroller>().showPack.value = true;
+                  showSidePopup(
+                    context: context,
+                    child: const ShowPackagesDeskTopPage(),
+                    widthPercent: 0.75,
+                    useSideAlignment: false,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.backgroundColorIconBack(
+                      Get.find<ThemeController>().isDarkMode.value),
+                  minimumSize: Size(500.w, 45.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-              child: Text(
-                "الاشتراك الآن".tr,
-                style: TextStyle(
-                  fontFamily: AppTextStyles.DinarOne,
-                  color: Colors.white,
-                  fontSize: 14.sp,
+                child: Text(
+                  "الاشتراك الآن".tr,
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.DinarOne,
+                    color: Colors.white,
+                    fontSize: 14.sp,
+                  ),
                 ),
               ),
             ),

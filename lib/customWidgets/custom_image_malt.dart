@@ -37,12 +37,17 @@ class _ImagesViewerState extends State<ImagesViewer> {
   late final PhotoViewController _photoController;
   late final PhotoViewScaleStateController _scaleController;
 
+  // هذا مثال لتعريف متغير _data وتخزين قائمة الصور فيه
+  late final List<String> _data;
+
   static const double _zoomStep = 1.2;
   int _currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    // تهيئة _data باستخدام البيانات المُمرّرة من الـ widget
+    _data = widget.images;
     _pageController = PageController(viewportFraction: 0.9999)
       ..addListener(_updateCurrentPage);
     _photoController = PhotoViewController();
@@ -82,7 +87,7 @@ class _ImagesViewerState extends State<ImagesViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.images.isEmpty) {
+    if (_data.isEmpty) {
       return SizedBox(
         height: 200.h,
         child: Center(
@@ -99,15 +104,14 @@ class _ImagesViewerState extends State<ImagesViewer> {
     }
 
     return Semantics(
-      label: 'عارض الصور، ${widget.images.length} صور',
+      label: 'عارض الصور، ${_data.length} صور',
       child: SizedBox(
         height: widget.maxHeight.h,
         child: Stack(
           children: [
-            // عرض الصور مع السحب والتكبير
             PhotoViewGallery.builder(
               pageController: _pageController,
-              itemCount: widget.images.length,
+              itemCount: _data.length,
               scrollPhysics: const ClampingScrollPhysics(),
               allowImplicitScrolling: true,
               gaplessPlayback: true,
@@ -120,13 +124,12 @@ class _ImagesViewerState extends State<ImagesViewer> {
                 final initialScale = widget.fullWidth
                     ? PhotoViewComputedScale.covered
                     : PhotoViewComputedScale.contained;
-
                 return PhotoViewGalleryPageOptions.customChild(
                   controller: widget.enableZoom ? _photoController : null,
                   scaleStateController:
                       widget.enableZoom ? _scaleController : null,
                   child: CachedNetworkImage(
-                    imageUrl: widget.images[index],
+                    imageUrl: _data[index],
                     imageBuilder: (ctx, img) => Image(
                       image: img,
                       fit: widget.fullWidth ? BoxFit.cover : BoxFit.contain,
@@ -160,8 +163,6 @@ class _ImagesViewerState extends State<ImagesViewer> {
                 );
               },
             ),
-
-            // مؤشر الصفحات
             Positioned(
               bottom: 12.h,
               left: 0,
@@ -169,7 +170,7 @@ class _ImagesViewerState extends State<ImagesViewer> {
               child: Center(
                 child: SmoothPageIndicator(
                   controller: _pageController,
-                  count: widget.images.length,
+                  count: _data.length,
                   effect: ExpandingDotsEffect(
                     activeDotColor: AppColors.oragne,
                     dotColor: Colors.grey.shade400,
@@ -185,8 +186,6 @@ class _ImagesViewerState extends State<ImagesViewer> {
                 ),
               ),
             ),
-
-            // أزرار الزوم
             if (widget.enableZoom)
               Positioned(
                 bottom: 16.h,

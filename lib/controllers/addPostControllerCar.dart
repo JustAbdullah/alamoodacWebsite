@@ -34,70 +34,70 @@ class AddpostCarController extends GetxController {
   // اختيار الصور من الجهاز
   final String uploadApiUrl =
       "https://alamoodac.com/modac/public/upload"; // رابط رفع الصور
-   //////////Image Web.............
-final images = <Uint8List>[].obs; // تغيير File إلى Uint8List
+  //////////Image Web.............
+  final images = <Uint8List>[].obs; // تغيير File إلى Uint8List
 
 // 3. تعديل دوال إدارة الصور
-Future<void> pickImages() async {
-  final picker = ImagePicker();
-  final pickedFiles = await picker.pickMultiImage();
-  if (pickedFiles != null) {
-    for (var file in pickedFiles) {
-      final bytes = await file.readAsBytes(); // قراءة البيانات كـ bytes
-      images.add(bytes);
+  Future<void> pickImages() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+    if (pickedFiles != null) {
+      for (var file in pickedFiles) {
+        final bytes = await file.readAsBytes(); // قراءة البيانات كـ bytes
+        images.add(bytes);
+      }
     }
   }
-}
 
-void removeImage(int index) {
-  images.removeAt(index);
-}
-
-Future<void> updateImage(int index) async {
-  final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    final bytes = await pickedFile.readAsBytes();
-    images[index] = bytes;
+  void removeImage(int index) {
+    images.removeAt(index);
   }
-}
+
+  Future<void> updateImage(int index) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      images[index] = bytes;
+    }
+  }
 
 // 4. تعديل دالة رفع الصور
-Future<void> uploadImagesToServer() async {
-  try {
-    List<String> uploadedUrls = [];
+  Future<void> uploadImagesToServer() async {
+    try {
+      List<String> uploadedUrls = [];
 
-    if (images.isEmpty) {
+      if (images.isEmpty) {
+        loading.value = false;
+        Get.snackbar("Error", "No images selected.");
+        return;
+      }
+
+      var request = http.MultipartRequest('POST', Uri.parse(uploadApiUrl));
+
+      for (var imageBytes in images) {
+        request.files.add(http.MultipartFile.fromBytes(
+          'images[]',
+          imageBytes,
+          filename: 'post_image_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        ));
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 201) {
+        var responseData = await response.stream.bytesToString();
+        var jsonData = json.decode(responseData);
+        uploadedUrls = List<String>.from(jsonData['image_urls']);
+        uploadedImageUrls = uploadedUrls.join(',');
+      } else {
+        Get.snackbar("Error", "Failed to upload images:");
+      }
+    } catch (e) {
+      print("Upload error: $e");
       loading.value = false;
-      Get.snackbar("Error", "No images selected.");
-      return;
+      Get.snackbar("Error", "Failed to upload images: ${e.toString()}");
     }
-
-    var request = http.MultipartRequest('POST', Uri.parse(uploadApiUrl));
-    
-    for (var imageBytes in images) {
-      request.files.add(http.MultipartFile.fromBytes(
-        'images[]',
-        imageBytes,
-        filename: 'post_image_${DateTime.now().millisecondsSinceEpoch}.jpg',
-      ));
-    }
-
-    var response = await request.send();
-    if (response.statusCode == 201) {
-      var responseData = await response.stream.bytesToString();
-      var jsonData = json.decode(responseData);
-      uploadedUrls = List<String>.from(jsonData['image_urls']);
-      uploadedImageUrls = uploadedUrls.join(',');
-    } else {
-      Get.snackbar("Error", "Failed to upload images:");
-    }
-  } catch (e) {
-    print("Upload error: $e");
-    loading.value = false;
-    Get.snackbar("Error", "Failed to upload images: ${e.toString()}");
   }
-}
 
   // ترجمة العنوان
   final TextEditingController titleController = TextEditingController();
@@ -138,34 +138,33 @@ Future<void> uploadImagesToServer() async {
   }
 
   /// ترجمة النصوص مع إعادة المحاولة عند الفشل
- 
-  Future<Map<String, String>> _translateTextWithRetries(String text) async {
-  final Map<String, String> translations = {};
-  await Future.wait(targetLanguages.map((originalLang) async {
-    String langToUse = originalLang;
-    // شرط التحويل إلى السورانية
-    if (originalLang == 'ku') {
-      langToUse = 'ckb'; // إجبار استخدام ckb للترجمة
-    }
 
-    int attempts = 0;
-    bool success = false;
-    while (attempts < 3 && !success) {
-      try {
-        final result = await translator.translate(text, to: langToUse);
-        translations[originalLang] = result.text; // الاحتفاظ بـ ku كمفتاح
-        success = true;
-      } catch (e) {
-        attempts++;
-        if (attempts == 3) {
-          translations[originalLang] = "Error: Unable to translate";
+  Future<Map<String, String>> _translateTextWithRetries(String text) async {
+    final Map<String, String> translations = {};
+    await Future.wait(targetLanguages.map((originalLang) async {
+      String langToUse = originalLang;
+      // شرط التحويل إلى السورانية
+      if (originalLang == 'ku') {
+        langToUse = 'ckb'; // إجبار استخدام ckb للترجمة
+      }
+
+      int attempts = 0;
+      bool success = false;
+      while (attempts < 3 && !success) {
+        try {
+          final result = await translator.translate(text, to: langToUse);
+          translations[originalLang] = result.text; // الاحتفاظ بـ ku كمفتاح
+          success = true;
+        } catch (e) {
+          attempts++;
+          if (attempts == 3) {
+            translations[originalLang] = "Error: Unable to translate";
+          }
         }
       }
-    }
-  }));
-  return translations;
-}
-
+    }));
+    return translations;
+  }
 
   /// ترجمة التفاصيل
   final Map<String, TextEditingController> detailControllers = {
@@ -211,50 +210,53 @@ Future<void> uploadImagesToServer() async {
       Get.snackbar("Error", "Failed to process details: $e");
     }
   }
-Future<void> _translateDetailWithRetries(
-    String detailName, String detailValue) async {
-  try {
-    Map<String, dynamic> detailTranslation = {
-      'detail_name': detailName,
-      'detail_value': detailValue,
-      'translations': []
-    };
-    for (String originalLang in targetLanguages) {
-      String langToUse = originalLang;
-      // شرط التحويل إلى السورانية
-      if (originalLang == 'ku') {
-        langToUse = 'ckb'; // إجبار استخدام ckb للترجمة
-      }
 
-      int attempts = 0;
-      bool success = false;
-      while (attempts < 3 && !success) {
-        try {
-          final translatedName = await translator.translate(detailName, to: langToUse);
-          final translatedValue = await translator.translate(detailValue, to: langToUse);
-          detailTranslation['translations'].add({
-            'language': originalLang, // الاحتفاظ بـ ku كمفتاح
-            'translated_detail_name': translatedName.text,
-            'translated_detail_value': translatedValue.text,
-          });
-          success = true;
-        } catch (e) {
-          attempts++;
-          if (attempts == 3) {
+  Future<void> _translateDetailWithRetries(
+      String detailName, String detailValue) async {
+    try {
+      Map<String, dynamic> detailTranslation = {
+        'detail_name': detailName,
+        'detail_value': detailValue,
+        'translations': []
+      };
+      for (String originalLang in targetLanguages) {
+        String langToUse = originalLang;
+        // شرط التحويل إلى السورانية
+        if (originalLang == 'ku') {
+          langToUse = 'ckb'; // إجبار استخدام ckb للترجمة
+        }
+
+        int attempts = 0;
+        bool success = false;
+        while (attempts < 3 && !success) {
+          try {
+            final translatedName =
+                await translator.translate(detailName, to: langToUse);
+            final translatedValue =
+                await translator.translate(detailValue, to: langToUse);
             detailTranslation['translations'].add({
-              'language': originalLang,
-              'translated_detail_name': "Error",
-              'translated_detail_value': "Error",
+              'language': originalLang, // الاحتفاظ بـ ku كمفتاح
+              'translated_detail_name': translatedName.text,
+              'translated_detail_value': translatedValue.text,
             });
+            success = true;
+          } catch (e) {
+            attempts++;
+            if (attempts == 3) {
+              detailTranslation['translations'].add({
+                'language': originalLang,
+                'translated_detail_name': "Error",
+                'translated_detail_value': "Error",
+              });
+            }
           }
         }
       }
+      translatedDetails.add(detailTranslation);
+    } catch (e) {
+      print("Error translating detail $detailName: $e");
     }
-    translatedDetails.add(detailTranslation);
-  } catch (e) {
-    print("Error translating detail $detailName: $e");
   }
-}
 
   // إنشاء المنشور
   Future<void> createPost(Map<String, dynamic> postData) async {
@@ -481,24 +483,24 @@ Future<void> _translateDetailWithRetries(
       'longitude': long,
       'translations': translatedTitles,
       'details': translatedDetails.map((detail) {
-    // التحويل لحقل السعر فقط
-    if (detail['detail_name'] == 'السعر') {
-      return {
-        ...detail,
-        'detail_value': convertArabicToEnglishNumbers(detail['detail_value']),
-        'translations': detail['translations'].map((translation) {
+        // التحويل لحقل السعر فقط
+        if (detail['detail_name'] == 'السعر') {
           return {
-            ...translation,
-            'translated_detail_value': convertArabicToEnglishNumbers(
-              translation['translated_detail_value']
-            ),
+            ...detail,
+            'detail_value':
+                convertArabicToEnglishNumbers(detail['detail_value']),
+            'translations': detail['translations'].map((translation) {
+              return {
+                ...translation,
+                'translated_detail_value': convertArabicToEnglishNumbers(
+                    translation['translated_detail_value']),
+              };
+            }).toList(),
           };
-        }).toList(),
-      };
-    }
-    return detail; // إرجاع البيانات الأخرى بدون تعديل
-  }).toList(),
-};
+        }
+        return detail; // إرجاع البيانات الأخرى بدون تعديل
+      }).toList(),
+    };
 
     print('Post Data: $postData');
 
@@ -506,6 +508,8 @@ Future<void> _translateDetailWithRetries(
     await createPost(postData);
     isAddPost.value = true;
     Navigator.of(context, rootNavigator: true).pop();
+    homeController.sendMessage(
+        userId: Get.find<LoadingController>().currentUser?.id, whatType: 4);
   }
 
   // وظيفة لإعادة تعيين القيم
@@ -606,13 +610,14 @@ Future<void> _translateDetailWithRetries(
     resetFields(); // إعادة تعيين الحقول
   }
 
-  RxString nameOfCatee = "".obs;  
+  RxString nameOfCatee = "".obs;
   String convertArabicToEnglishNumbers(String input) {
-  const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  const englishNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  
-  for (int i = 0; i < arabicNumbers.length; i++) {
-    input = input.replaceAll(arabicNumbers[i], englishNumbers[i]);
+    const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    const englishNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+    for (int i = 0; i < arabicNumbers.length; i++) {
+      input = input.replaceAll(arabicNumbers[i], englishNumbers[i]);
+    }
+    return input;
   }
-  return input;
-}}
+}

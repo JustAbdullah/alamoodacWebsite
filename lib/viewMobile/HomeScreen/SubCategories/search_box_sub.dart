@@ -9,7 +9,6 @@ import '../../../core/constant/app_text_styles.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../core/localization/changelanguage.dart';
 import '../../../customWidgets/DropdwondFieldApi.dart';
-import '../../OnAppPages/on_app_pages.dart';
 import 'searchingType/all_type_prices_sub.dart';
 import 'searchingType/cars_type_sub.dart';
 import 'searchingType/realestate_sub.dart';

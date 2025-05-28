@@ -16,20 +16,23 @@ class ChoseMessages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find();
-    final Settingscontroller settingsController = Get.find();
+    // استخراج متغيرات رئيسية مرة واحدة
+    final ThemeController themeController = Get.find<ThemeController>();
+    final Settingscontroller settingsController =
+        Get.find<Settingscontroller>();
+
+    // استخراج حجم الشاشة مرة واحدة.
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.92,
+        width: screenWidth,
+        height: screenHeight * 0.92,
         color: AppColors.backgroundColor(themeController.isDarkMode.value),
         child: Column(
           children: [
-            // Header Section
             _buildHeader(themeController),
-
-            // Content Section
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => settingsController.fetchMessages(
@@ -45,6 +48,8 @@ class ChoseMessages extends StatelessWidget {
   }
 
   Widget _buildHeader(ThemeController themeController) {
+    // استخراج حالة الوضع الداكن هنا
+    final bool isDark = themeController.isDarkMode.value;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 25.h),
       child: Column(
@@ -54,43 +59,40 @@ class ChoseMessages extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Get.toNamed(
-                    '/settings-mobile/', // المسار مع المعلمة الديناميكية
-                    // إرسال الكائن كامل
-                  );
+                  // الانتقال إلى صفحة الإعدادات
+                  Get.toNamed('/settings-mobile/');
                 },
                 child: Container(
                   padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
-                    color: AppColors.backgroundColorIconBack(
-                            themeController.isDarkMode.value)
+                    color: AppColors.backgroundColorIconBack(isDark)
                         .withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Image.asset(
-                      Get.find<ChangeLanguageController>()
-                                  .currentLocale
-                                  .value
-                                  .languageCode ==
-                              "ar"
-                          ? ImagesPath.back
-                          : ImagesPath.arrowLeft,
-                      width: 24.w,
-                      height: 24.h,
-                      color: AppColors.textColor(
-                          themeController.isDarkMode.value)),
+                    Get.find<ChangeLanguageController>()
+                                .currentLocale
+                                .value
+                                .languageCode ==
+                            "ar"
+                        ? ImagesPath.back
+                        : ImagesPath.arrowLeft,
+                    width: 24.w,
+                    height: 24.h,
+                    color: AppColors.textColor(isDark),
+                  ),
                 ),
               ),
               Text(
                 "الرسائل والتنبيهات".tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.DinarOne,
-                  color: AppColors.textColor(themeController.isDarkMode.value),
+                  color: AppColors.textColor(isDark),
                   fontSize: 19.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 40), // للحفاظ على التوازن في التصميم
+              const SizedBox(width: 40), // عنصر فارغ للحفاظ على توازن التصميم
             ],
           ),
           SizedBox(height: 20.h),
@@ -102,7 +104,7 @@ class ChoseMessages extends StatelessWidget {
   Widget _buildMessageList(
       ThemeController themeController, Settingscontroller controller) {
     if (controller.isLoadingMessages.value) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (controller.messages.isEmpty) {
@@ -121,16 +123,22 @@ class ChoseMessages extends StatelessWidget {
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
       itemCount: controller.messages.length,
-      separatorBuilder: (context, index) =>
-          Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+      separatorBuilder: (context, index) => Divider(
+        height: 1,
+        color: Colors.grey.withOpacity(0.2),
+      ),
       itemBuilder: (context, index) => _buildMessageItem(
-          themeController, controller.messages[index], context),
+        themeController,
+        controller.messages[index],
+        context,
+      ),
     );
   }
 
   Widget _buildMessageItem(ThemeController themeController,
       MessageModel message, BuildContext context) {
-    final isArabic =
+    // استخراج اللغة مرة واحدة
+    final bool isArabic =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
             "ar";
 
@@ -143,7 +151,7 @@ class ChoseMessages extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 8,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -206,8 +214,11 @@ class ChoseMessages extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: Icon(Icons.delete_outline,
-                    color: Colors.redAccent, size: 24.w),
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: Colors.redAccent,
+                  size: 24.w,
+                ),
                 onPressed: () => _confirmDelete(context, message.id),
               ),
             ],

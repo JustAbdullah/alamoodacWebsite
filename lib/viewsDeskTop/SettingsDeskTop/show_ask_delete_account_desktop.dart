@@ -215,6 +215,6 @@ class ShowAskDeleteAccountDeskTopPage extends StatelessWidget {
   }
 
   void _performAccountDeletion(Settingscontroller controller) {
-    controller.softDeleteUser();
+    controller.softDeleteUserDeskTop();
   }
 }

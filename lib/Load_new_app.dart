@@ -34,40 +34,40 @@ class _LoadTheWebState extends State<LoadTheWeb> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-    builder: (context, constraints) {
+    return LayoutBuilder(builder: (context, constraints) {
       return Container(
         width: constraints.maxWidth,
         height: constraints.maxHeight,
         child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: Image.asset(ImagesPath.logo),
-              ),
-              const SizedBox(height: 20),
-              const CircularProgressIndicator(
-                backgroundColor: AppColors.oragne,
-                color: AppColors.balckColorTypeFour,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'جاري التحميل، يرجى الانتظار...',
-                style: TextStyle(
-                  color: AppColors.blackColorTypeTeo,
-                  fontSize: 15,
-                  fontFamily: AppTextStyles.DinarOne,
+          backgroundColor: Colors.white,
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Image.asset(ImagesPath.logo),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                const CircularProgressIndicator(
+                  backgroundColor: AppColors.oragne,
+                  color: AppColors.balckColorTypeFour,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'جاري التحميل، يرجى الانتظار...',
+                  style: TextStyle(
+                    color: AppColors.blackColorTypeTeo,
+                    fontSize: 15,
+                    fontFamily: AppTextStyles.DinarOne,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );});
+      );
+    });
   }
 }

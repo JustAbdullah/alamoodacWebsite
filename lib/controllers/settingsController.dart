@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:async';
+import 'package:alamoadac_website/viewMobile/OnAppPages/on_app_pages%20-%20Copy.dart';
 
 import '../core/data/model/MessageModel.dart';
 import 'LoadingController.dart';
@@ -112,7 +114,7 @@ class Settingscontroller extends GetxController {
     }
   }
 
-  Future<void> SignOut() async {
+  Future<void> SignOutMobile() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.clear();
@@ -126,6 +128,34 @@ class Settingscontroller extends GetxController {
       //////////////////////////////////////////////////////...... await Get.offAll(() => LoadingApp());
       Get.reload<AuthController>(force: true);
       Get.reload<LoadingController>(force: true);
+      homeController.isChosedHome();
+      Get.toNamed(
+        '/mobile', // المسار مع المعلمة الديناميكية
+        // إرسال الكائن كامل
+      );
+    } catch (e) {
+      print('SignOut Error: $e');
+    }
+  }
+
+  Future<void> SignOutDeskTop() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      await prefs.reload();
+      final authController = Get.find<AuthController>();
+      final loadingController = Get.find<LoadingController>();
+      authController.currentUser = null;
+      loadingController.currentUser = null;
+      // هذه السطور السحرية تحل المشكلة
+      Get.forceAppUpdate();
+      //////////////////////////////////////////////////////...... await Get.offAll(() => LoadingApp());
+      Get.reload<AuthController>(force: true);
+      Get.reload<LoadingController>(force: true);
+      Get.toNamed(
+        '/desktop', // المسار مع المعلمة الديناميكية
+        // إرسال الكائن كامل
+      );
     } catch (e) {
       print('SignOut Error: $e');
     }
@@ -274,7 +304,7 @@ class Settingscontroller extends GetxController {
   RxBool showAskToDeleteAccount = false.obs;
 
 ////////
-  Future<void> softDeleteUser() async {
+  Future<void> softDeleteUserMobile() async {
     // قم بتعديل الرابط ليتناسب مع مسار API الخاص بك
     final String url =
         'https://alamoodac.com/modac/public/delete-user/${loadingController.currentUser?.id ?? 0}';
@@ -293,7 +323,39 @@ class Settingscontroller extends GetxController {
           backgroundColor: AppColors.errorColor,
           colorText: Colors.white,
         );
-        SignOut();
+        SignOutMobile();
+
+        // يمكنك هنا تحديث الحالة في الواجهة أو القيام بأي عملية أخرى
+      } else {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print("خطأ: ${data['error']}");
+      }
+    } catch (e) {
+      // طبع الخطأ في حال حدوث استثناء (مثلاً فشل الاتصال)
+      print("حدث خطأ أثناء عملية الحذف: $e");
+    }
+  }
+
+  Future<void> softDeleteUserDeskTop() async {
+    // قم بتعديل الرابط ليتناسب مع مسار API الخاص بك
+    final String url =
+        'https://alamoodac.com/modac/public/delete-user/${loadingController.currentUser?.id ?? 0}';
+
+    try {
+      // إرسال طلب حذف للمستخدم
+      final response = await http.put(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        print("نجاح: ${data['success']}");
+        Get.snackbar(
+          "تم الحذف".tr,
+          "تم حذف الحساب بشكل نهائي".tr,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.errorColor,
+          colorText: Colors.white,
+        );
+        SignOutDeskTop();
 
         // يمكنك هنا تحديث الحالة في الواجهة أو القيام بأي عملية أخرى
       } else {
@@ -315,25 +377,43 @@ class Settingscontroller extends GetxController {
   Future<void> fetchMessages(int userId) async {
     isLoadingMessages.value = true;
     try {
-      final url =
+      final Uri url =
           Uri.parse('https://alamoodac.com/modac/public/messages/user/$userId');
-      final response = await http.get(url);
+      // إضافة timeout لتفادي الانتظار الطويل
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final body = json.decode(response.body);
-        final data = body['data'];
-        if (data is List) {
-          messages.value = data
-              .map(
-                  (item) => MessageModel.fromJson(item as Map<String, dynamic>))
-              .toList();
+        final Map<String, dynamic> body = json.decode(response.body);
+        // التأكد من نجاح العملية
+        if (body['success'] == true) {
+          final data = body['data'];
+          if (data is List) {
+            messages.value = data
+                .map((item) =>
+                    MessageModel.fromJson(item as Map<String, dynamic>))
+                .toList();
+            // يمكنك تحديث متغير showMessages بحسب وجود بيانات
+            showMessages.value = messages.isNotEmpty;
+          } else {
+            print('❌ البيانات ليست من النوع List');
+            messages.value = [];
+            showMessages.value = false;
+          }
+        } else {
+          print('❌ فشل الاستجابة من الخادم: ${body['error']}');
+          messages.value = [];
+          showMessages.value = false;
         }
       } else {
-        print('❌ خطأ في جلب الرسائل: ${response.statusCode}');
+        print('❌ خطأ في الاستجابة: ${response.statusCode}');
+        messages.value = [];
+        showMessages.value = false;
       }
+    } on TimeoutException catch (e) {
+      print('❌ انتهاء مهلة الاتصال: $e');
     } catch (e) {
       print('❌ حدث خطأ أثناء جلب الرسائل: $e');
     } finally {

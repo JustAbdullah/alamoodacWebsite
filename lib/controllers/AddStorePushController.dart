@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:alamoadac_website/viewMobile/OnAppPages/on_app_pages%20-%20Copy.dart';
+
 import '../core/localization/changelanguage.dart';
 import 'LoadingController.dart';
 import 'package:flutter/material.dart';
@@ -368,12 +370,15 @@ class AddStorePushController extends GetxController {
                 .value
                 .languageCode);
 
-        restValues();
-
         Get.toNamed(
           '/settings-mobile/', // المسار مع المعلمة الديناميكية
           // إرسال الكائن كامل
         );
+        homeController.sendMessage(
+            userId: loadingController.currentUser?.id, whatType: 4);
+        homeController.isMenu();
+
+        restValues();
       } else {
         Get.snackbar('خطأ', 'حدث خطأ: ${response.body}');
         print(response.body);
@@ -451,7 +456,7 @@ class AddStorePushController extends GetxController {
       Get.snackbar("خطأ".tr, "حدث خطأ غير متوقع.".tr);
     } finally {
       // إخفاء مؤشر التحميل
-      Navigator.of(context, rootNavigator: true).pop();
+      // Navigator.of(context, rootNavigator: true).pop();
       print("تم إخفاء مؤشر التحميل");
     }
   }
@@ -659,7 +664,7 @@ class AddStorePushController extends GetxController {
     workingHoursController.clear();
     images.clear();
     imagesBuss.clear();
-    Get.back();
+    // Get.back();
   }
 
   //////////////////تعديل................///////////////

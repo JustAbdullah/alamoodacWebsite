@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
 import '../../controllers/PromotedAdController.dart';
 import '../../controllers/ThemeController.dart';
 import '../../controllers/home_controller.dart';
@@ -21,7 +22,8 @@ class PromotedAdPage extends StatefulWidget {
 
 class _PromotedAdPageState extends State<PromotedAdPage>
     with AutomaticKeepAliveClientMixin {
-  final PromotedadController controller = Get.find();
+  // استرداد الـ Controllers مرة واحدة لتفادي الاستدعاءات المتكررة
+  final PromotedadController promotedController = Get.find();
   final HomeController homeController = Get.find();
   final ThemeController themeController = Get.find();
 
@@ -36,32 +38,43 @@ class _PromotedAdPageState extends State<PromotedAdPage>
   void initState() {
     super.initState();
     _initComponents();
-    _loadDataIfNeeded();
+    _loadDataIfNeeded(); // حالياً لا يحتوي على منطق؛ يمكن تطويره لاحقاً إذا لزم الأمر
   }
 
   void _initComponents() {
+    // viewportFraction أقل من الواحد لإظهار جزء من البطاقة المجاورة، مما يعطي تأثير رائع
     _pageController = PageController(viewportFraction: 0.8);
-    if (controller.adsList.isNotEmpty) {
+    if (promotedController.adsList.isNotEmpty) {
       _startAutoScroll();
     }
   }
 
   void _loadDataIfNeeded() {
-    if (controller.adsList.isEmpty && !controller.loadingAds.value) {}
+    // في حال كان الإعلان فارغ وغير قيد التحميل، يمكن تنفيذ منطق لتحميل البيانات هنا.
+    if (promotedController.adsList.isEmpty &&
+        !promotedController.loadingAds.value) {
+      // منطق تحميل البيانات هنا إذا لزم
+    }
   }
 
   void _startAutoScroll() {
     _autoScrollTimer?.cancel();
-    _autoScrollTimer = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) => _animateToNextPage(),
-    );
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final int count = promotedController.adsList.length;
+      if (count == 0) return;
+      final int newPage = (_currentPage + 1) % count;
+      _pageController.animateToPage(
+        newPage,
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _animateToNextPage() {
-    final count = controller.adsList.length;
+    final int count = promotedController.adsList.length;
     if (count == 0) return;
-    final newPage = (_currentPage + 1) % count;
+    final int newPage = (_currentPage + 1) % count;
     _pageController.animateToPage(
       newPage,
       duration: const Duration(milliseconds: 800),
@@ -72,7 +85,8 @@ class _PromotedAdPageState extends State<PromotedAdPage>
   @override
   void didUpdateWidget(covariant PromotedAdPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (controller.adsList.isNotEmpty && !_autoScrollTimer!.isActive) {
+    if (promotedController.adsList.isNotEmpty &&
+        !(_autoScrollTimer?.isActive ?? false)) {
       _startAutoScroll();
     }
   }
@@ -86,12 +100,12 @@ class _PromotedAdPageState extends State<PromotedAdPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    super.build(context); // مهم لعمل AutomaticKeepAliveClientMixin
     return _buildMainContainer();
   }
 
   Widget _buildMainContainer() {
-    final isDark = themeController.isDarkMode.value;
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       width: double.infinity,
       height: 340.h,
@@ -101,7 +115,7 @@ class _PromotedAdPageState extends State<PromotedAdPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const _Header(),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           Expanded(child: _buildContentSection()),
         ],
       ),
@@ -110,28 +124,30 @@ class _PromotedAdPageState extends State<PromotedAdPage>
 
   Widget _buildContentSection() {
     return Obx(() {
-      if (controller.loadingAds.value) {
+      if (promotedController.loadingAds.value) {
         return const _ShimmerLoader();
       }
-      if (controller.adsList.isEmpty) {
+      if (promotedController.adsList.isEmpty) {
         return const _EmptyState();
       }
       return _PromotedCarousel(
         pageController: _pageController,
         currentPage: _currentPage,
-        ads: controller.adsList,
-        onPageChanged: (i) => setState(() => _currentPage = i),
+        ads: promotedController.adsList,
+        onPageChanged: (int i) => setState(() => _currentPage = i),
       );
     });
   }
 }
 
+// قسم رأس الصفحة مع أيقونة دوارة وعنوان ثابت
 class _Header extends StatelessWidget {
   const _Header();
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Get.find<ThemeController>().isDarkMode.value;
+    // تخزين قيمة الوضع الداكن محلياً لتقليل استدعاءات Get.find
+    final bool isDark = Get.find<ThemeController>().isDarkMode.value;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
@@ -181,6 +197,7 @@ class _SpinningIconState extends State<_SpinningIcon>
 
   @override
   Widget build(BuildContext context) {
+    // استخدام AnimatedBuilder لتجنب إعادة بناء الأيقونة بالكامل عند تغير القيمة
     return AnimatedBuilder(
       animation: _anim,
       builder: (ctx, child) => Transform.rotate(
@@ -191,7 +208,8 @@ class _SpinningIconState extends State<_SpinningIcon>
         Icons.rocket_launch_rounded,
         size: 28.sp,
         color: AppColors.backgroundColorIconBack(
-            Get.find<ThemeController>().isDarkMode.value),
+          Get.find<ThemeController>().isDarkMode.value,
+        ),
       ),
     );
   }
@@ -225,15 +243,16 @@ class _PromotedCarousel extends StatelessWidget {
 
 class _PromotedAdCard extends StatelessWidget {
   final PromotedAd ad;
+  final HomeController homeController = Get.find();
+  final ThemeController themeController = Get.find();
 
-  const _PromotedAdCard({required this.ad});
+  _PromotedAdCard({Key? key, required this.ad}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Get.find<ThemeController>().isDarkMode.value;
-    final homeController = Get.find<HomeController>();
-    final post = ad.post;
-    final price = post.details
+    final bool isDark = themeController.isDarkMode.value;
+    final Post post = ad.post;
+    final String? price = post.details
         .firstWhereOrNull(
             (d) => d.detailName == "السعر" && d.detailValue != '0')
         ?.detailValue;
@@ -254,7 +273,7 @@ class _PromotedAdCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildImageSection(post),
-                  _buildPostInfo(post, price, homeController, isDark),
+                  _buildPostInfo(post, price, isDark),
                 ],
               ),
             ),
@@ -277,9 +296,9 @@ class _PromotedAdCard extends StatelessWidget {
   }
 
   void _handlePostTap(Post post) {
-    final home = Get.find<HomeController>();
-    home.setSelectedPost(post);
-    home.showDetailsPost.value = true;
+    // استخدام الـ homeController المخزّن مسبقاً لتجنب استدعاء Get.find مجددًا
+    homeController.setSelectedPost(post);
+    homeController.showDetailsPost.value = true;
     Get.toNamed('/post-mobile/${post.id}', arguments: post);
   }
 }
@@ -309,22 +328,21 @@ Widget _buildImageSection(Post post) {
   );
 }
 
-Widget _buildPostInfo(
-    Post post, String? price, HomeController controller, bool isDark) {
+Widget _buildPostInfo(Post post, String? price, bool isDark) {
   return Padding(
     padding: EdgeInsets.all(12.w),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildPostTitle(post),
+        _buildPostTitle(post, isDark),
         const SizedBox(height: 8),
-        _buildPriceInfo(price, controller, isDark),
+        _buildPriceInfo(price, isDark),
       ],
     ),
   );
 }
 
-Widget _buildPostTitle(Post post) {
+Widget _buildPostTitle(Post post, bool isDark) {
   return Text(
     post.translations.first.title!,
     maxLines: 1,
@@ -333,33 +351,37 @@ Widget _buildPostTitle(Post post) {
       fontFamily: AppTextStyles.DinarOne,
       fontSize: 16.sp,
       fontWeight: FontWeight.bold,
-      color: AppColors.textColor(Get.find<ThemeController>().isDarkMode.value),
+      color: AppColors.textColor(isDark),
     ),
   );
 }
 
-Widget _buildPriceInfo(String? price, HomeController controller, bool isDark) {
+Widget _buildPriceInfo(String? price, bool isDark) {
   return AnimatedSwitcher(
     duration: const Duration(milliseconds: 300),
     child: price != null
-        ? _PriceTag(price: price, controller: controller, isDark: isDark)
+        ? _PriceTag(price: price, isDark: isDark)
         : const _NoPriceTag(),
   );
 }
 
 class _PriceTag extends StatelessWidget {
   final String price;
-  final HomeController controller;
   final bool isDark;
 
   const _PriceTag({
+    Key? key,
     required this.price,
-    required this.controller,
     required this.isDark,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // يُفترض أن المعالجة في الدالة getConvertedPrice تُجرى عبر الـ HomeController،
+    // ويمكن دمجها هنا إذا كان ذلك مناسبًا، أو تمرير السعر المحوّل مُسبقًا.
+    final String convertedPrice =
+        Get.find<HomeController>().getConvertedPrice(price);
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 7.h),
       decoration: BoxDecoration(
@@ -380,7 +402,7 @@ class _PriceTag extends StatelessWidget {
           ),
           SizedBox(width: 4.w),
           Text(
-            controller.getConvertedPrice(price),
+            convertedPrice,
             style: TextStyle(
               fontSize: 15.sp,
               color: isDark
@@ -396,7 +418,7 @@ class _PriceTag extends StatelessWidget {
 }
 
 class _NoPriceTag extends StatelessWidget {
-  const _NoPriceTag();
+  const _NoPriceTag({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -409,7 +431,11 @@ class _NoPriceTag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.info_outline_rounded, size: 14.sp, color: Colors.grey),
+          Icon(
+            Icons.info_outline_rounded,
+            size: 14.sp,
+            color: Colors.grey,
+          ),
           SizedBox(width: 4.w),
           Text(
             'بدون سعر'.tr,
@@ -433,11 +459,12 @@ class _Badge extends StatelessWidget {
   final Color? color;
 
   const _Badge({
+    Key? key,
     required this.icon,
     required this.text,
     required this.alignLeft,
     this.color,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -455,7 +482,10 @@ class _Badge extends StatelessWidget {
           children: [
             Icon(icon, size: 14.sp, color: color ?? Colors.white),
             SizedBox(width: 4.w),
-            Text(text, style: TextStyle(color: Colors.white, fontSize: 12.sp)),
+            Text(
+              text,
+              style: TextStyle(color: Colors.white, fontSize: 12.sp),
+            ),
           ],
         ),
       ),
@@ -464,11 +494,11 @@ class _Badge extends StatelessWidget {
 }
 
 class _ShimmerLoader extends StatelessWidget {
-  const _ShimmerLoader();
+  const _ShimmerLoader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Get.find<ThemeController>().isDarkMode.value;
+    final bool isDark = Get.find<ThemeController>().isDarkMode.value;
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: 3,
@@ -489,11 +519,11 @@ class _ShimmerLoader extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Get.find<ThemeController>().isDarkMode.value;
+    final bool isDark = Get.find<ThemeController>().isDarkMode.value;
     return Center(
       child: Text(
         'لا توجد إعلانات ممولة حالياً'.tr,

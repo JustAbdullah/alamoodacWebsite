@@ -15,15 +15,17 @@ import '../../core/localization/changelanguage.dart';
 class CategoriesPage extends StatelessWidget {
   CategoriesPage({super.key});
 
-  final controller = Get.find<HomeController>();
-  final themeController = Get.find<ThemeController>();
-  final searchcontroller = Get.find<Searchcontroller>();
-  final langController = Get.find<ChangeLanguageController>();
+  final HomeController controller = Get.find<HomeController>();
+  final ThemeController themeController = Get.find<ThemeController>();
+  final Searchcontroller searchcontroller = Get.find<Searchcontroller>();
+  final ChangeLanguageController langController =
+      Get.find<ChangeLanguageController>();
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size; // تخزين أبعاد الشاشة محلياً
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: size.width,
       color: AppColors.backgroundColor(themeController.isDarkMode.value),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -59,7 +61,7 @@ class CategoriesPage extends StatelessWidget {
 
   Widget _buildToggleButton() {
     return Obx(() {
-      final isShow = controller.isShowTheCate.value;
+      final bool isShow = controller.isShowTheCate.value;
       return InkWell(
         onTap: () => controller.isShowTheCate.value = !isShow,
         child: Container(
@@ -103,21 +105,16 @@ class CategoriesPage extends StatelessWidget {
     });
   }
 
+  // دمج الـ Obx بحيث يكون داخل كتلة واحدة لتفادي التداخل الغير ضروري
   Widget _buildCategoriesListSection(BuildContext context) {
     return Obx(() {
       if (!controller.isShowTheCate.value) return const SizedBox.shrink();
 
-      return Obx(() {
-        if (controller.isLoadingCategories.value) {
-          return _buildSkeletonLoader();
-        }
+      if (controller.isLoadingCategories.value) return _buildSkeletonLoader();
 
-        if (controller.categoriesList.isEmpty) {
-          return _buildEmptyState();
-        }
+      if (controller.categoriesList.isEmpty) return _buildEmptyState();
 
-        return _buildCategoriesList(context);
-      });
+      return _buildCategoriesList(context);
     });
   }
 
@@ -148,15 +145,17 @@ class CategoriesPage extends StatelessWidget {
   }
 
   Widget _buildCategoriesList(BuildContext context) {
+    final Size size = MediaQuery.of(context)
+        .size; // استخدام الحجم المحلي إذا كانت الحاجة ملحة
     return Container(
       color: AppColors.backgroundColor(themeController.isDarkMode.value),
-      width: MediaQuery.of(context).size.width,
+      width: size.width,
       child: ListView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: controller.categoriesList.length,
         itemBuilder: (context, index) {
-          final category = controller.categoriesList[index];
+          final Category category = controller.categoriesList[index];
           return _buildCategoryItem(category);
         },
       ),
@@ -174,9 +173,10 @@ class CategoriesPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2)),
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
           child: Padding(
@@ -195,11 +195,16 @@ class CategoriesPage extends StatelessWidget {
     );
   }
 
+  // يمكن تحسين طريقة عرض صور الأقسام باستخدام CachedNetworkImage إن كانت الصور تأتي من السيرفر؛
   Widget _buildCategoryImage(Category category) {
+    final double imageWidth = 50.w;
+    final double imageHeight = 50.h;
+    final bool isDark = themeController.isDarkMode.value;
+
     return CachedNetworkImage(
       imageUrl: category.image,
-      width: 50.w,
-      height: 50.h,
+      width: imageWidth,
+      height: imageHeight,
       fit: BoxFit.cover,
       imageBuilder: (context, imageProvider) => Container(
         decoration: BoxDecoration(
@@ -211,28 +216,26 @@ class CategoriesPage extends StatelessWidget {
         ),
       ),
       placeholder: (context, url) => Container(
-        width: 50.w,
-        height: 50.h,
-        color:
-            AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+        width: imageWidth,
+        height: imageHeight,
+        color: AppColors.backgroundColorIconBack(isDark),
         alignment: Alignment.center,
         child: Text(
           "على مودك".tr,
           style: TextStyle(
             fontSize: 15.sp,
             fontFamily: AppTextStyles.DinarOne,
-            color: AppColors.textColor(themeController.isDarkMode.value),
+            color: AppColors.textColor(isDark),
           ),
         ),
       ),
       errorWidget: (context, url, error) => Container(
-        width: 50.w,
-        height: 50.h,
-        color: AppColors.backgroundColor(themeController.isDarkMode.value),
+        width: imageWidth,
+        height: imageHeight,
+        color: AppColors.backgroundColor(isDark),
         child: Icon(
           Icons.broken_image,
-          color: AppColors.backgroundColorIconBack(
-              themeController.isDarkMode.value),
+          color: AppColors.backgroundColorIconBack(isDark),
           size: 30.sp,
         ),
       ),
@@ -240,6 +243,8 @@ class CategoriesPage extends StatelessWidget {
   }
 
   Widget _buildCategoryInfo(Category category) {
+    final bool isDark = themeController.isDarkMode.value;
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,7 +253,7 @@ class CategoriesPage extends StatelessWidget {
             category.translations.first.name,
             style: TextStyle(
               fontFamily: AppTextStyles.DinarOne,
-              color: AppColors.textColor(themeController.isDarkMode.value),
+              color: AppColors.textColor(isDark),
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -260,7 +265,7 @@ class CategoriesPage extends StatelessWidget {
             category.translations.first.description,
             style: TextStyle(
               fontFamily: AppTextStyles.DinarOne,
-              color: AppColors.textColorOne(themeController.isDarkMode.value),
+              color: AppColors.textColorOne(isDark),
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
@@ -273,70 +278,39 @@ class CategoriesPage extends StatelessWidget {
   }
 
   void _handleCategoryTap(Category category) async {
+    // تخزين اللغة المستخدمة لتقليل عمليات البحث المتكررة
+    final languageCode =
+        Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+    final String categoryName = category.translations.first.name;
+    final String categoryIdStr = category.id.toString();
 
+    controller.nameCategories.value = categoryName;
+    controller.idCategories.value = categoryIdStr;
 
-     controller.nameCategories.value =
-                                          category.translations.first.name;
-                                      controller.idCategories.value =
-                                          category.id.toString();
-                                      controller.fetchSubcategories(
-                                        category.id,
-                                        Get.find<ChangeLanguageController>()
-                                            .currentLocale
-                                            .value
-                                            .languageCode,
-                                      );
-                                      controller.fetchPostsAll(
-                                        category.id,
-                                        Get.find<ChangeLanguageController>()
-                                            .currentLocale
-                                            .value
-                                            .languageCode,
-                                        null,
-                                        null,
-                                      );
+    controller.fetchSubcategories(category.id, languageCode);
+    controller.fetchPostsAll(category.id, languageCode, null, null);
 
-                                      searchcontroller.subCategories.clear();
-                                      searchcontroller
-                                          .isChosedAndShowTheSub.value = false;
-                                      searchcontroller
-                                          .fetchSubcategories(
-                                        int.parse(
-                                            controller.idCategories.value),
-                                        Get.find<ChangeLanguageController>()
-                                            .currentLocale
-                                            .value
-                                            .languageCode,
-                                      )
-                                          .then((_) {
-                                        searchcontroller
-                                            .isChosedAndShowTheSub.value = true;
-                                      });
-                                      searchcontroller.idOfCateSearchBox.value =
-                                          category.id;
-                                      print(
-                                          "/......................................");
-                                      print(searchcontroller
-                                          .idOfCateSearchBox.value);
-                                      print(
-                                          "/......................................");
-                                      searchcontroller
-                                          .detailCarControllers["القسم الرئيسي"]
-                                          ?.text = controller.idCategories.value;
+    searchcontroller.subCategories.clear();
+    searchcontroller.isChosedAndShowTheSub.value = false;
+    searchcontroller
+        .fetchSubcategories(
+            int.parse(controller.idCategories.value), languageCode)
+        .then((_) => searchcontroller.isChosedAndShowTheSub.value = true);
 
-                                      searchcontroller
-                                              .detailRealestateControllers[
-                                                  "القسم الرئيسي"]
-                                              ?.text =
-                                          controller.idCategories.value;
+    searchcontroller.idOfCateSearchBox.value = category.id;
+    print("/......................................");
+    print(searchcontroller.idOfCateSearchBox.value);
+    print("/......................................");
 
-                                      searchcontroller.isOpenINSubPost.value =
-                                          true;
-                                      searchcontroller.selectedMainCategory =
-                                          category.id;
+    searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
+        controller.idCategories.value;
+    searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
+        controller.idCategories.value;
 
-                                      controller.showTheSubCategories.value =
-                                          true;
+    searchcontroller.isOpenINSubPost.value = true;
+    searchcontroller.selectedMainCategory = category.id;
+
+    controller.showTheSubCategories.value = true;
     Get.toNamed('/category-mobile');
   }
 }

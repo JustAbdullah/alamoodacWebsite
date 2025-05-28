@@ -392,6 +392,7 @@ class _NewPostsDesktopState extends State<NewPostsDesktop> {
                                 ? AppColors.whiteColor
                                 : AppColors.backgroundColorIconBack(isDarkMode),
                             fontWeight: FontWeight.bold,
+                            fontFamily: AppTextStyles.Cairo,
                           ),
                         ),
                       ],
@@ -456,6 +457,7 @@ class _NewPostsDesktopState extends State<NewPostsDesktop> {
               fontSize: 14.sp, // تصغير حجم النص
               color: Colors.white,
               fontWeight: FontWeight.bold,
+              fontFamily: AppTextStyles.Cairo,
             ),
           ),
         ],

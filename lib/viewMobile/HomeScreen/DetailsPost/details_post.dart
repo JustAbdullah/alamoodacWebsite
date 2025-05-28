@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -39,6 +40,7 @@ class PostDetails extends StatelessWidget {
     final backgroundColor = AppColors.backgroundColor(isDark);
     final borderColor = AppColors.borderColor(isDark);
     HomeController controller = Get.find<HomeController>();
+
     return Scaffold(
       body: SafeArea(
         child: AnimatedSwitcher(
@@ -75,8 +77,8 @@ class PostDetails extends StatelessWidget {
                               children: [
                                 _buildTitleSection(controller, textColor),
                                 SizedBox(height: 12.h),
-                                _buildCategoryBreadcrumbs(
-                                    controller, textColor, cardColor),
+                                _buildCategoryBreadcrumbs(controller, textColor,
+                                    cardColor, themeController),
                                 _buildRatingSection(
                                     controller, textColor, context, isDark),
                                 SizedBox(height: 2.h),
@@ -148,6 +150,12 @@ class PostDetails extends StatelessWidget {
   }
 
   Widget _buildTitleSection(HomeController controller, Color textColor) {
+    // نتحقق من توافر بيانات التراجم بحيث لا يحدث Null Exception
+    final title = controller.selectedPost.value?.translations != null &&
+            controller.selectedPost.value!.translations.isNotEmpty
+        ? controller.selectedPost.value!.translations.first.title
+        : "عنوان المنشور غير متوفر";
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -155,43 +163,61 @@ class PostDetails extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Text(
-                controller.postTitle,
-                style: TextStyle(
-                  fontSize: 20.sp,
-                  fontFamily: AppTextStyles.DinarOne,
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
+              child: MouseRegion(
+                cursor: kIsWeb ? SystemMouseCursors.text : MouseCursor.defer,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: kIsWeb ? 24 : 20.sp,
+                    fontFamily: AppTextStyles.DinarOne,
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
             _buildViewCounter(controller, textColor),
           ],
         ),
-        Divider(color: textColor.withOpacity(0.2), height: 24.h),
-        ElevatedButton.icon(
+        Divider(
+          color: textColor.withOpacity(0.2),
+          height: kIsWeb ? 30 : 24.h,
+          thickness: kIsWeb ? 1.5 : 1,
+        ),
+        MouseRegion(
+          cursor: kIsWeb ? SystemMouseCursors.click : MouseCursor.defer,
+          child: ElevatedButton.icon(
             onPressed: () {
               controller.sharePost(controller.selectedPost.value?.id ?? 0);
             },
-            icon: const Icon(Icons.share, color: Colors.white),
+            icon: Icon(
+              Icons.share,
+              color: Colors.white,
+              size: kIsWeb ? 20 : 24,
+            ),
             label: Text(
               "مشاركة".tr,
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontSize: kIsWeb ? 18 : 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green, // اللون الأخضر الأساسي
-
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              backgroundColor: Colors.green,
+              padding: kIsWeb
+                  ? const EdgeInsets.symmetric(horizontal: 24, vertical: 16)
+                  : const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(kIsWeb ? 12 : 20),
               ),
-              elevation: 5,
-            )),
+              elevation: kIsWeb ? 2 : 5,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -395,31 +421,142 @@ class PostDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryBreadcrumbs(
-      HomeController controller, Color textColor, Color backGround) {
+  Widget _buildCategoryBreadcrumbs(HomeController controller, Color textColor,
+      Color backGround, ThemeController themeController) {
+    // دوال مساعدة لاستخراج الاسم من العلاقة باستخدام الوصول عبر الخاصية وليس المصفوفة
+    String extractCategoryName(dynamic category) {
+      if (category != null &&
+          category.translations != null &&
+          category.translations is List &&
+          category.translations.isNotEmpty) {
+        return category.translations.first.name ?? "";
+      }
+      return "";
+    }
+
+    String extractSubcategoryName(dynamic subcategory) {
+      if (subcategory != null &&
+          subcategory.translations != null &&
+          subcategory.translations is List &&
+          subcategory.translations.isNotEmpty) {
+        return subcategory.translations.first.name ?? "";
+      }
+      return "";
+    }
+
+    String extractSubcategoryLevelTwoName(dynamic subcategoryLevelTwo) {
+      if (subcategoryLevelTwo != null &&
+          subcategoryLevelTwo.translations != null &&
+          subcategoryLevelTwo.translations is List &&
+          subcategoryLevelTwo.translations.isNotEmpty) {
+        return subcategoryLevelTwo.translations.first.name ?? "";
+      }
+      return "";
+    }
+
+    // استخراج بيانات المنشور المختار في المتحكم
+    final selectedPost = controller.selectedPost.value;
+    final String categoryName = selectedPost != null
+        ? extractCategoryName(selectedPost.category)
+        : "غير متوفر";
+    final String subcategoryName = selectedPost != null
+        ? extractSubcategoryName(selectedPost.subcategory)
+        : "غير متوفر";
+    // تأكد من استخدام الخاصية التي تُرجع كائن (وليس رقم الـ ID)
+    final String subcategoryLevelTwoName = selectedPost != null
+        ? extractSubcategoryLevelTwoName(selectedPost.subcategoryLevelTwo)
+        : "غير متوفر";
+
     return Wrap(
-      spacing: 8.w,
-      runSpacing: 7.h,
+      spacing: kIsWeb ? 12 : 8.w,
+      runSpacing: kIsWeb ? 10 : 7.h,
       children: [
-        _buildBreadcrumbItem(controller.categoryName, textColor, backGround),
-        _buildBreadcrumbItem(controller.subcategoryName, textColor, backGround),
         _buildBreadcrumbItem(
-            controller.subcategoryLevelTwoName, textColor, backGround),
+            categoryName, textColor, backGround, controller, themeController),
+        _buildBreadcrumbItem(subcategoryName, textColor, backGround, controller,
+            themeController),
+        _buildBreadcrumbItem(subcategoryLevelTwoName, textColor, backGround,
+            controller, themeController),
       ],
     );
   }
 
-  Widget _buildBreadcrumbItem(String text, Color color, Color backGround) {
-    return Chip(
-      label: Text(text),
-      backgroundColor: backGround.withOpacity(0.1),
-      labelStyle: TextStyle(
-        fontSize: 16.sp,
-        color: AppColors.balckColorTypeFour,
-        fontFamily: AppTextStyles.DinarOne,
-      ),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
+  Widget _buildBreadcrumbItem(String text, Color color, Color backGround,
+      HomeController controller, ThemeController themeController) {
+    return kIsWeb
+        ? Obx(
+            () => AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              margin: EdgeInsets.only(right: 10.w),
+              decoration: BoxDecoration(
+                color: backGround.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: color.withOpacity(0.3),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  )
+                ],
+              ),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                onEnter: (_) => controller.setHoverState(true),
+                onExit: (_) => controller.setHoverState(false),
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 200),
+                  scale: controller.isHovered.value ? 1.05 : 1.0,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.category_rounded,
+                        size: 18.w,
+                        color: color.withOpacity(0.8),
+                      ),
+                      SizedBox(width: 8.w),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: 18.w,
+                          color: AppColors.textColor(
+                              themeController.isDarkMode.value),
+                          fontFamily: AppTextStyles.DinarOne,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      if (controller.isHovered.value) ...[
+                        SizedBox(width: 8.w),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 14.w,
+                          color: color.withOpacity(0.8),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          )
+        : Chip(
+            labelPadding: EdgeInsets.symmetric(horizontal: 8.w),
+            avatar: Icon(Icons.category_rounded, size: 18.w),
+            label: Text(text),
+            backgroundColor: backGround.withOpacity(0.1),
+            labelStyle: TextStyle(
+              fontSize: 16.sp,
+              color: AppColors.balckColorTypeFour,
+              fontFamily: AppTextStyles.DinarOne,
+            ),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          );
   }
 
   Widget _buildExpandableSections(

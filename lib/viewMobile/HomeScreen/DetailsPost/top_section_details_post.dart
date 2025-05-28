@@ -64,7 +64,12 @@ class TopSectionDetailsPost extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(15.r),
                   onTap: () {
-                    Get.back();
+                    if (homeController.isGoFromLink.value == 1) {
+                      homeController.isGoFromLink.value = 0;
+                      Get.toNamed('/Decider');
+                    } else {
+                      Get.back();
+                    }
                   },
                   splashColor: mainColor.withOpacity(0.1),
                   child: Container(

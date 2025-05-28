@@ -27,20 +27,23 @@ class _NewPostsState extends State<NewPosts>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _buildMainContainer();
+    // تخزين عرض الشاشة محلياً لتقليل الاستدعاءات المتكررة
+    final double screenWidth = MediaQuery.of(context).size.width;
+    return _buildMainContainer(screenWidth);
   }
 
-  Widget _buildMainContainer() {
+  Widget _buildMainContainer(double screenWidth) {
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: screenWidth,
       height: 300.h,
-      color: AppColors.backgroundColor(themeController.isDarkMode.value),
+      color: AppColors.backgroundColor(isDark),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            _buildHeader(isDark),
             _buildContentSection(),
           ],
         ),
@@ -48,15 +51,14 @@ class _NewPostsState extends State<NewPosts>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isDark) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         children: [
           Icon(
             Icons.new_releases_sharp,
-            color: AppColors.backgroundColorIconBack(
-                themeController.isDarkMode.value),
+            color: AppColors.backgroundColorIconBack(isDark),
             size: 28.sp,
           ),
           SizedBox(width: 8.w),
@@ -64,7 +66,7 @@ class _NewPostsState extends State<NewPosts>
             "أحدث المنشورات".tr,
             style: TextStyle(
               fontFamily: AppTextStyles.DinarOne,
-              color: AppColors.textColor(themeController.isDarkMode.value),
+              color: AppColors.textColor(isDark),
               fontSize: 21.sp,
               fontWeight: FontWeight.bold,
             ),
@@ -92,6 +94,8 @@ class _NewPostsState extends State<NewPosts>
   }
 
   Widget _buildShimmerLoader() {
+    // استرجاع حالة الوضع الداكن محلياً
+    final bool isDark = themeController.isDarkMode.value;
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: 5,
@@ -101,8 +105,7 @@ class _NewPostsState extends State<NewPosts>
       itemBuilder: (context, index) => Padding(
         padding: EdgeInsets.symmetric(horizontal: 2.w),
         child: Skeletonizer(
-          child:
-              _SkeletonPostItem(isDarkMode: themeController.isDarkMode.value),
+          child: _SkeletonPostItem(isDarkMode: isDark),
         ),
       ),
     );
@@ -114,9 +117,10 @@ class _PostsList extends StatelessWidget {
   final ThemeController themeController;
 
   const _PostsList({
+    Key? key,
     required this.posts,
     required this.themeController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -139,14 +143,16 @@ class _PostItem extends StatelessWidget {
   final ThemeController themeController;
 
   const _PostItem({
+    Key? key,
     required this.post,
     required this.themeController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final priceDetails = _getPriceDetails(post);
-
+    // حساب بيانات السعر مرة واحدة
+    final PriceDetails priceDetails = _getPriceDetails(post);
+    final bool isDark = themeController.isDarkMode.value;
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 2.w),
       child: InkWell(
@@ -154,10 +160,9 @@ class _PostItem extends StatelessWidget {
         onTap: () => _handlePostTap(post),
         child: Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          color: AppColors.cardColor(themeController.isDarkMode.value),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          color: AppColors.cardColor(isDark),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -185,7 +190,7 @@ class _PostItem extends StatelessWidget {
       final priceDetail = post.details.firstWhere(
         (detail) => detail.detailName == "السعر",
       );
-      final hasPrice =
+      final bool hasPrice =
           priceDetail.detailValue.isNotEmpty && priceDetail.detailValue != '0';
       return PriceDetails(
         priceValue: hasPrice ? priceDetail.detailValue : '',
@@ -197,13 +202,10 @@ class _PostItem extends StatelessWidget {
   }
 
   void _handlePostTap(Post post) {
-    final controller = Get.find<HomeController>();
+    final HomeController controller = Get.find<HomeController>();
     controller.setSelectedPost(post);
     controller.showDetailsPost.value = true;
-    Get.toNamed(
-      '/post-mobile/${post.id}',
-      arguments: post,
-    );
+    Get.toNamed('/post-mobile/${post.id}', arguments: post);
   }
 }
 
@@ -212,9 +214,10 @@ class _PostImageSection extends StatelessWidget {
   final ThemeController themeController;
 
   const _PostImageSection({
+    Key? key,
     required this.post,
     required this.themeController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -253,21 +256,31 @@ class _PostImageSection extends StatelessWidget {
   }
 }
 
+class PriceDetails {
+  final String priceValue;
+  final bool hasPrice;
+
+  PriceDetails({required this.priceValue, required this.hasPrice});
+}
+
+////
 class _PostInfoSection extends StatelessWidget {
   final Post post;
   final PriceDetails priceDetails;
   final ThemeController themeController;
 
   const _PostInfoSection({
+    Key? key,
     required this.post,
     required this.priceDetails,
     required this.themeController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = themeController.isDarkMode.value;
-    final hasValidPrice =
+    // تخزين حالة الوضع الداكن في متغير محلي لتقليل الاستدعاءات
+    final bool isDarkMode = themeController.isDarkMode.value;
+    final bool hasValidPrice =
         priceDetails.hasPrice && priceDetails.priceValue != '0';
 
     return Padding(
@@ -275,6 +288,7 @@ class _PostInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // استخدام ConstrainedBox لضمان عدم تجاوز عرض النص للقيمة المحددة
           ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 180.w),
             child: Text(
@@ -295,7 +309,7 @@ class _PostInfoSection extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             child: hasValidPrice
                 ? _PriceTag(priceDetails: priceDetails)
-                : _NoPriceTag(),
+                : const _NoPriceTag(),
           ),
         ],
       ),
@@ -303,15 +317,19 @@ class _PostInfoSection extends StatelessWidget {
   }
 }
 
+/// تظهر علامة السعر عند وجود بيانات السعر
 class _PriceTag extends StatelessWidget {
   final PriceDetails priceDetails;
 
-  const _PriceTag({required this.priceDetails});
+  const _PriceTag({Key? key, required this.priceDetails}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<HomeController>();
-    final isDarkMode = Get.find<ThemeController>().isDarkMode.value;
+    // استدعاء الـ HomeController وحالة الوضع الداكن مرة واحدة
+    final HomeController homeController = Get.find<HomeController>();
+    final bool isDarkMode = Get.find<ThemeController>().isDarkMode.value;
+    final String convertedPrice =
+        homeController.getConvertedPrice(priceDetails.priceValue);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
@@ -333,7 +351,7 @@ class _PriceTag extends StatelessWidget {
           ),
           SizedBox(width: 4.w),
           Text(
-            controller.getConvertedPrice(priceDetails.priceValue),
+            convertedPrice,
             style: TextStyle(
               fontSize: 15.sp,
               color: isDarkMode
@@ -348,7 +366,10 @@ class _PriceTag extends StatelessWidget {
   }
 }
 
+/// تُعرض في حال عدم وجود بيانات للسعر
 class _NoPriceTag extends StatelessWidget {
+  const _NoPriceTag({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -377,16 +398,18 @@ class _NoPriceTag extends StatelessWidget {
   }
 }
 
+/// تعرض البادج (علامة المعلومات) على صورة المنشور مثل عدد المشاهدات أو التقييم
 class _InfoBadge extends StatelessWidget {
   final IconData icon;
   final String value;
   final Color? color;
 
   const _InfoBadge({
+    Key? key,
     required this.icon,
     required this.value,
     this.color,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -415,20 +438,22 @@ class _InfoBadge extends StatelessWidget {
   }
 }
 
+/// تعرض في حال عدم وجود منشورات بهذا القسم
 class _EmptyState extends StatelessWidget {
   final HomeController controller;
 
-  const _EmptyState({required this.controller});
+  const _EmptyState({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-
+    final ThemeController themeController = Get.find<ThemeController>();
+    final bool isDark = themeController.isDarkMode.value;
+    final double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: screenWidth,
       padding: EdgeInsets.all(2.w),
       decoration: BoxDecoration(
-        color: AppColors.cardColor(themeController.isDarkMode.value),
+        color: AppColors.cardColor(isDark),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -444,8 +469,7 @@ class _EmptyState extends StatelessWidget {
           Icon(
             Icons.search_off_outlined,
             size: 50.sp,
-            color: AppColors.backgroundColorIconBack(
-                themeController.isDarkMode.value),
+            color: AppColors.backgroundColorIconBack(isDark),
           ),
           SizedBox(height: 4.h),
           Column(
@@ -455,7 +479,7 @@ class _EmptyState extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontFamily: AppTextStyles.DinarOne,
-                  color: AppColors.textColor(themeController.isDarkMode.value),
+                  color: AppColors.textColor(isDark),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -465,8 +489,7 @@ class _EmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15.sp,
-                  color: AppColors.textColor(themeController.isDarkMode.value)
-                      .withOpacity(0.8),
+                  color: AppColors.textColor(isDark).withOpacity(0.8),
                   height: 1.5,
                 ),
               ),
@@ -481,30 +504,28 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
+/// زر إعادة المحاولة لتحميل المنشورات
 class _RetryButton extends StatelessWidget {
   final HomeController controller;
 
-  const _RetryButton({required this.controller});
+  const _RetryButton({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Get.find<ThemeController>().isDarkMode.value;
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.backgroundColorIconBack(
-            Get.find<ThemeController>().isDarkMode.value),
+        backgroundColor: AppColors.backgroundColorIconBack(isDark),
         foregroundColor: Colors.white,
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-              color: AppColors.backgroundColorIconBack(
-                      Get.find<ThemeController>().isDarkMode.value)
-                  .withOpacity(0.2)),
+            color: AppColors.backgroundColorIconBack(isDark).withOpacity(0.2),
+          ),
         ),
         elevation: 3,
-        shadowColor: AppColors.backgroundColorIconBack(
-                Get.find<ThemeController>().isDarkMode.value)
-            .withOpacity(0.3),
+        shadowColor: AppColors.backgroundColorIconBack(isDark).withOpacity(0.3),
       ),
       onPressed: () async {
         controller.isGetDataFirstTime.value = false;
@@ -528,10 +549,12 @@ class _RetryButton extends StatelessWidget {
   }
 }
 
+/// نموذج عنصر الـ Skeleton (مؤشر التحميل) عند انتظار البيانات
 class _SkeletonPostItem extends StatelessWidget {
   final bool isDarkMode;
 
-  const _SkeletonPostItem({required this.isDarkMode});
+  const _SkeletonPostItem({Key? key, required this.isDarkMode})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -583,11 +606,4 @@ class _SkeletonPostItem extends StatelessWidget {
       ),
     );
   }
-}
-
-class PriceDetails {
-  final String priceValue;
-  final bool hasPrice;
-
-  PriceDetails({required this.priceValue, required this.hasPrice});
 }

@@ -29,119 +29,96 @@ import 'add_comment_desktok.dart';
 import 'rate_post_screen.dart';
 import 'top_section_details_post_desktop.dart';
 
-class PostDetailsDeskTop extends StatefulWidget {
-  PostDetailsDeskTop({Key? key}) : super(key: key);
+class PostDetailsDeskTop extends StatelessWidget {
+  const PostDetailsDeskTop({Key? key}) : super(key: key);
 
-  @override
-  State<PostDetailsDeskTop> createState() => _PostDetailsDeskTopState();
-}
-
-class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
   @override
   Widget build(BuildContext context) {
+    // نتوقع أن بيانات المنشور مُمرّرة عبر Get.arguments
+
     final ThemeController themeController = Get.find();
-    final isDark = themeController.isDarkMode.value;
-    final textColor = AppColors.textColor(isDark);
-    final cardColor = AppColors.cardColor(isDark);
-    final backgroundColor = AppColors.backgroundColor(isDark);
-    final borderColor = AppColors.borderColor(isDark);
+    final HomeController controller = Get.find();
+    final bool isDark = themeController.isDarkMode.value;
+    final Color textColor = AppColors.textColor(isDark);
+    final Color cardColor = AppColors.cardColor(isDark);
+    final Color bgColor = isDark ? Colors.black : Colors.white;
+    final Color borderColor = AppColors.borderColor(isDark);
+// دوال مساعدة لاستخراج اسم القسم من البيانات
 
-    return GetX<HomeController>(
-      builder: (controller) => Scaffold(
-        body: SafeArea(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: controller.selectedPost.value == null
-                ? const SizedBox.shrink()
-                : Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    color: backgroundColor,
-                    child: Column(
-                      children: [
-                        TopSectionDetailsPostDeskTop(),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            controller:
-                                controller.scrollController, // ربط الكونترولر
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: bgColor,
+          child: Column(
+            children: [
+              TopSectionDetailsPostDeskTop(),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: controller.scrollController, // ربط الكونترولر
 
-                            padding: EdgeInsets.only(bottom: 20.h),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildImageSection(context, controller),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w, vertical: 8.h),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      _buildTitleSection(controller, textColor),
-                                      SizedBox(height: 12.h),
-                                      _buildCategoryBreadcrumbs(
-                                          controller,
-                                          textColor,
-                                          cardColor,
-                                          themeController),
-                                      _buildRatingSection(controller, textColor,
-                                          context, isDark),
-                                      SizedBox(height: 2.h),
-                                      _buildSponsoredPostsSection(),
-                                      SizedBox(height: 2.h),
-                                      _buildExpandableSections(
-                                          context,
-                                          controller,
-                                          themeController,
-                                          textColor,
-                                          cardColor,
-                                          borderColor,
-                                          isDark),
-                                      if (_isAuctionPost(controller))
-                                        Column(
-                                          children: [
-                                            _buildAuctionSection(
-                                                controller,
-                                                cardColor,
-                                                borderColor,
-                                                isDark,
-                                                textColor),
-                                            _buildBidButton(controller, isDark),
-                                          ],
-                                        ),
-                                      SizedBox(height: 2.h),
-                                      _buildSectionCard(
-                                          title: "ناشر المنشور",
-                                          content: _buildPublisherInfo(
-                                              controller,
-                                              textColor,
-                                              themeController),
-                                          cardColor: cardColor,
-                                          borderColor: borderColor,
-                                          isDark: isDark,
-                                          textColor: textColor),
-                                      _buildPublisher(),
-                                      _buildCommentsSection(
-                                          controller,
-                                          textColor,
-                                          cardColor,
-                                          borderColor,
-                                          isDark),
-                                      _buildCommentButton(isDark),
-                                      SizedBox(
-                                        height: 80.h,
-                                      ),
-                                      FooterDesktop(),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildImageSection(context, controller),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 8.h),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildTitleSection(controller, textColor),
+                            SizedBox(height: 12.h),
+                            _buildCategoryBreadcrumbs(controller, textColor,
+                                cardColor, themeController),
+                            _buildRatingSection(
+                                controller, textColor, context, isDark),
+                            SizedBox(height: 2.h),
+                            _buildSponsoredPostsSection(),
+                            SizedBox(height: 2.h),
+                            _buildExpandableSections(
+                                context,
+                                controller,
+                                themeController,
+                                textColor,
+                                cardColor,
+                                borderColor,
+                                isDark),
+                            if (_isAuctionPost(controller))
+                              Column(
+                                children: [
+                                  _buildAuctionSection(controller, cardColor,
+                                      borderColor, isDark, textColor),
+                                  _buildBidButton(controller, isDark),
+                                ],
+                              ),
+                            SizedBox(height: 2.h),
+                            _buildSectionCard(
+                                title: "ناشر المنشور",
+                                content: _buildPublisherInfo(
+                                    controller, textColor, themeController),
+                                cardColor: cardColor,
+                                borderColor: borderColor,
+                                isDark: isDark,
+                                textColor: textColor),
+                            _buildPublisher(),
+                            _buildCommentsSection(controller, textColor,
+                                cardColor, borderColor, isDark),
+                            _buildCommentButton(isDark),
+                            SizedBox(
+                              height: 80.h,
                             ),
-                          ),
+                            FooterDesktop(),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -149,9 +126,19 @@ class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
   }
 
   Widget _buildImageSection(BuildContext context, HomeController controller) {
-    final images = controller.selectedPost.value?.images?.split(',') ?? [];
-    if (images.isEmpty) return _buildPlaceholder(); // Fallback للصور الفارغة
+    // الحصول على سلسلة الصور من البيانات
+    final imagesString = controller.selectedPost.value?.images;
 
+    // تحويلها إلى قائمة من String بعد التقسيم، مع إزالة الفراغات الزائدة من كل عنصر
+    final List<String> images =
+        (imagesString != null && imagesString.trim().isNotEmpty)
+            ? imagesString.split(',').map((e) => e.trim()).toList()
+            : [];
+
+    // إذا كانت القائمة فارغة، عرض العنصر البديل (Placeholder)
+    if (images.isEmpty) return _buildPlaceholder();
+
+    // عرض الصور باستخدام // ImagesViewer حسب النظام
     return kIsWeb
         ? Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
@@ -165,7 +152,7 @@ class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5),
                   child: ImagesViewer(
-                    images: images,
+                    images: images, // هنا القائمة من النوع List<String>
                   ),
                 ),
               ),
@@ -189,9 +176,10 @@ class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
               ),
               child: ImagesViewer(
                 fullWidth: true,
-                images: images,
+                images: images, // القائمة المُعدلة
               ),
-            ));
+            ),
+          );
   }
 
   Widget _buildPlaceholder() {
@@ -207,6 +195,12 @@ class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
   }
 
   Widget _buildTitleSection(HomeController controller, Color textColor) {
+    // نتحقق من توافر بيانات التراجم بحيث لا يحدث Null Exception
+    final title = controller.selectedPost.value?.translations != null &&
+            controller.selectedPost.value!.translations.isNotEmpty
+        ? controller.selectedPost.value!.translations.first.title
+        : "عنوان المنشور غير متوفر";
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,7 +211,7 @@ class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
               child: MouseRegion(
                 cursor: kIsWeb ? SystemMouseCursors.text : MouseCursor.defer,
                 child: Text(
-                  controller.postTitle,
+                  title,
                   style: TextStyle(
                     fontSize: kIsWeb ? 24 : 20.sp,
                     fontFamily: AppTextStyles.DinarOne,
@@ -501,16 +495,60 @@ class _PostDetailsDeskTopState extends State<PostDetailsDeskTop> {
 
   Widget _buildCategoryBreadcrumbs(HomeController controller, Color textColor,
       Color backGround, ThemeController themeController) {
+    // دوال مساعدة لاستخراج الاسم من العلاقة باستخدام الوصول عبر الخاصية وليس المصفوفة
+    String extractCategoryName(dynamic category) {
+      if (category != null &&
+          category.translations != null &&
+          category.translations is List &&
+          category.translations.isNotEmpty) {
+        return category.translations.first.name ?? "";
+      }
+      return "";
+    }
+
+    String extractSubcategoryName(dynamic subcategory) {
+      if (subcategory != null &&
+          subcategory.translations != null &&
+          subcategory.translations is List &&
+          subcategory.translations.isNotEmpty) {
+        return subcategory.translations.first.name ?? "";
+      }
+      return "";
+    }
+
+    String extractSubcategoryLevelTwoName(dynamic subcategoryLevelTwo) {
+      if (subcategoryLevelTwo != null &&
+          subcategoryLevelTwo.translations != null &&
+          subcategoryLevelTwo.translations is List &&
+          subcategoryLevelTwo.translations.isNotEmpty) {
+        return subcategoryLevelTwo.translations.first.name ?? "";
+      }
+      return "";
+    }
+
+    // استخراج بيانات المنشور المختار في المتحكم
+    final selectedPost = controller.selectedPost.value;
+    final String categoryName = selectedPost != null
+        ? extractCategoryName(selectedPost.category)
+        : "غير متوفر";
+    final String subcategoryName = selectedPost != null
+        ? extractSubcategoryName(selectedPost.subcategory)
+        : "غير متوفر";
+    // تأكد من استخدام الخاصية التي تُرجع كائن (وليس رقم الـ ID)
+    final String subcategoryLevelTwoName = selectedPost != null
+        ? extractSubcategoryLevelTwoName(selectedPost.subcategoryLevelTwo)
+        : "غير متوفر";
+
     return Wrap(
       spacing: kIsWeb ? 12 : 8.w,
       runSpacing: kIsWeb ? 10 : 7.h,
       children: [
-        _buildBreadcrumbItem(controller.categoryName, textColor, backGround,
+        _buildBreadcrumbItem(
+            categoryName, textColor, backGround, controller, themeController),
+        _buildBreadcrumbItem(subcategoryName, textColor, backGround, controller,
+            themeController),
+        _buildBreadcrumbItem(subcategoryLevelTwoName, textColor, backGround,
             controller, themeController),
-        _buildBreadcrumbItem(controller.subcategoryName, textColor, backGround,
-            controller, themeController),
-        _buildBreadcrumbItem(controller.subcategoryLevelTwoName, textColor,
-            backGround, controller, themeController),
       ],
     );
   }
@@ -1921,6 +1959,11 @@ class __SponsoredPostsCarouselState extends State<_SponsoredPostsCarousel> {
                 onTap: () async {
                   homeController.setSelectedPost(post);
                   homeController.scrollToTop(); // دالة التمرير للأعلى
+                  Get.toNamed(
+                    '/post/${post.id}', // المسار مع المعلمة الديناميكية
+
+                    arguments: post, // إرسال الكائن كامل
+                  );
                 },
                 child: Stack(
                   children: [
@@ -2350,6 +2393,11 @@ class ___PublisherPostsState extends State<_PublisherPosts> {
                 onTap: () async {
                   homeController.setSelectedPost(post);
                   homeController.scrollToTop(); // دالة التمرير للأعلى
+                  Get.toNamed(
+                    '/post/${post.id}', // المسار مع المعلمة الديناميكية
+
+                    arguments: post, // إرسال الكائن كامل
+                  );
                 },
                 child: Stack(
                   children: [

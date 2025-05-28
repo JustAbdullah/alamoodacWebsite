@@ -16,29 +16,34 @@ class ChoseMessagesDeskTop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeController themeController = Get.find();
-    final Settingscontroller settingsController = Get.find();
+    // استخراج المتغيرات الرئيسية
+    final ThemeController themeController = Get.find<ThemeController>();
+    final Settingscontroller settingsController =
+        Get.find<Settingscontroller>();
+    final LoadingController loadingController = Get.find<LoadingController>();
+    // استخراج حجم الشاشة مرة واحدة
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final bool isDark = themeController.isDarkMode.value;
 
     return GetX<Settingscontroller>(
       builder: (controller) => Visibility(
         visible: controller.showMessages.value,
         child: Scaffold(
           body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.92,
-            color: AppColors.backgroundColor(themeController.isDarkMode.value),
+            width: screenWidth,
+            height: screenHeight * 0.92,
+            color: AppColors.backgroundColor(isDark),
             child: Column(
               children: [
-                // Header Section
-                _buildHeader(themeController, controller),
-
-                // Content Section
+                _buildHeader(themeController),
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: () => settingsController.fetchMessages(
-                      Get.find<LoadingController>().currentUser?.id ?? 0,
+                      loadingController.currentUser?.id ?? 0,
                     ),
-                    child: _buildMessageList(themeController, controller),
+                    child:
+                        _buildMessageList(themeController, settingsController),
                   ),
                 ),
               ],
@@ -49,8 +54,9 @@ class ChoseMessagesDeskTop extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(
-      ThemeController themeController, Settingscontroller controller) {
+  Widget _buildHeader(ThemeController themeController) {
+    // استخراج حالة الوضع الداكن هنا
+    final bool isDark = themeController.isDarkMode.value;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 25.h),
       child: Column(
@@ -58,43 +64,44 @@ class ChoseMessagesDeskTop extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // زر العودة
               InkWell(
                 onTap: () {
-                  controller.showMessages.value = false;
+                  // إخفاء الرسائل والرجوع للخلف
+                  Get.find<Settingscontroller>().showMessages.value = false;
                   Get.back();
                 },
                 child: Container(
                   padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
-                    color: AppColors.backgroundColorIconBack(
-                            themeController.isDarkMode.value)
+                    color: AppColors.backgroundColorIconBack(isDark)
                         .withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Image.asset(
-                      Get.find<ChangeLanguageController>()
-                                  .currentLocale
-                                  .value
-                                  .languageCode ==
-                              "ar"
-                          ? ImagesPath.back
-                          : ImagesPath.arrowLeft,
-                      width: 24.w,
-                      height: 24.h,
-                      color: AppColors.textColor(
-                          themeController.isDarkMode.value)),
+                    Get.find<ChangeLanguageController>()
+                                .currentLocale
+                                .value
+                                .languageCode ==
+                            "ar"
+                        ? ImagesPath.back
+                        : ImagesPath.arrowLeft,
+                    width: 24.w,
+                    height: 24.h,
+                    color: AppColors.textColor(isDark),
+                  ),
                 ),
               ),
               Text(
                 "الرسائل والتنبيهات".tr,
                 style: TextStyle(
                   fontFamily: AppTextStyles.DinarOne,
-                  color: AppColors.textColor(themeController.isDarkMode.value),
+                  color: AppColors.textColor(isDark),
                   fontSize: 19.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 40), // للحفاظ على التوازن في التصميم
+              const SizedBox(width: 40), // عنصر فارغ للتوازن
             ],
           ),
           SizedBox(height: 20.h),
@@ -104,19 +111,19 @@ class ChoseMessagesDeskTop extends StatelessWidget {
   }
 
   Widget _buildMessageList(
-      ThemeController themeController, Settingscontroller controller) {
-    if (controller.isLoadingMessages.value) {
-      return Center(child: CircularProgressIndicator());
+      ThemeController themeController, Settingscontroller settingsController) {
+    final bool isDark = themeController.isDarkMode.value;
+    if (settingsController.isLoadingMessages.value) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    if (controller.messages.isEmpty) {
+    if (settingsController.messages.isEmpty) {
       return Center(
         child: Text(
           "لا توجد رسائل جديدة".tr,
           style: TextStyle(
             fontSize: 16.sp,
-            color: AppColors.textColor(themeController.isDarkMode.value)
-                .withOpacity(0.5),
+            color: AppColors.textColor(isDark).withOpacity(0.5),
           ),
         ),
       );
@@ -124,17 +131,20 @@ class ChoseMessagesDeskTop extends StatelessWidget {
 
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
-      itemCount: controller.messages.length,
-      separatorBuilder: (context, index) =>
-          Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+      itemCount: settingsController.messages.length,
+      separatorBuilder: (context, index) => Divider(
+        height: 1,
+        color: Colors.grey.withOpacity(0.2),
+      ),
       itemBuilder: (context, index) => _buildMessageItem(
-          themeController, controller.messages[index], context),
+          themeController, settingsController.messages[index], context),
     );
   }
 
   Widget _buildMessageItem(ThemeController themeController,
       MessageModel message, BuildContext context) {
-    final isArabic =
+    // استخراج اللغة مرة واحدة
+    final bool isArabic =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
             "ar";
 
@@ -147,7 +157,7 @@ class ChoseMessagesDeskTop extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 8,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),

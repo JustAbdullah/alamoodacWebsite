@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,7 +22,8 @@ class TopSectionDetailsPostDeskTop extends StatelessWidget {
     // تحديد الألوان بناءً على الوضع المظلم
     final mainColor = themeController.isDarkMode.value
         ? AppColors.yellowColor // لون بديل للوضع المظلم
-        : AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value);
+        : AppColors.backgroundColorIconBack(
+            Get.find<ThemeController>().isDarkMode.value);
 
     final textColor = themeController.isDarkMode.value
         ? AppColors.whiteColor // لون النص في الوضع المظلم
@@ -66,7 +66,12 @@ class TopSectionDetailsPostDeskTop extends StatelessWidget {
                   onTap: () {
                     homeController.currentPageIndex.value = 0;
                     homeController.showDetailsPost.value = false;
-                        Get.back(); 
+                    if (homeController.isGoFromLink.value == 1) {
+                      homeController.isGoFromLink.value = 0;
+                      Get.toNamed('/Decider');
+                    } else {
+                      Get.back();
+                    }
                   },
                   splashColor: mainColor.withOpacity(0.1),
                   child: Container(

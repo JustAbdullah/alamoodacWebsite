@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -16,12 +15,13 @@ class CustomCardPostDeskTop extends StatefulWidget {
   final String title; // عنوان القسم
   final RxBool isLoading; // حالة التحميل
   final RxList<Post> postsList; // قائمة المنشورات
- void Function()? onTap;
-   CustomCardPostDeskTop({
+  void Function()? onTap;
+  CustomCardPostDeskTop({
     Key? key,
     required this.title,
     required this.isLoading,
-    required this.postsList,  required this.onTap,
+    required this.postsList,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class CustomCardPostDeskTop extends StatefulWidget {
 }
 
 class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
-   final controller = Get.find<HomeController>();
+  final controller = Get.find<HomeController>();
   final ThemeController themeController = Get.find();
 
   @override
@@ -54,26 +54,25 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
 
   Widget _buildWebHeader() {
     return InkWell(
-        onTap:widget. onTap,
-        child: Row(
+      onTap: widget.onTap,
+      child: Row(
         children: [
           Icon(
-                  Icons.category  ,
-                  color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-                  size: 28.sp,
-                ),
-            
-           
-            SizedBox(width: 8.w),
-            Text(
+            Icons.category,
+            color: AppColors.backgroundColorIconBack(
+                Get.find<ThemeController>().isDarkMode.value),
+            size: 28.sp,
+          ),
+          SizedBox(width: 8.w),
+          Text(
             widget.title.tr,
-              style: TextStyle(
-                fontFamily: AppTextStyles.DinarOne,
-                color: AppColors.textColor(themeController.isDarkMode.value),
+            style: TextStyle(
+              fontFamily: AppTextStyles.DinarOne,
+              color: AppColors.textColor(themeController.isDarkMode.value),
               fontSize: 21.sp,
-                fontWeight: FontWeight.bold,
-              ),
+              fontWeight: FontWeight.bold,
             ),
+          ),
         ],
       ),
     );
@@ -96,7 +95,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
         child: Skeletonizer(
           child: Container(
             width: 260.w, // تصغير عرض الكرت
-            margin: EdgeInsets.symmetric(vertical: 8.h), // تقليل المسافة الرأسية
+            margin:
+                EdgeInsets.symmetric(vertical: 8.h), // تقليل المسافة الرأسية
             child: Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -178,7 +178,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
             Icon(
               Icons.search_off_outlined,
               size: 60.sp, // تصغير حجم الأيقونة
-              color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+              color: AppColors.backgroundColorIconBack(
+                  themeController.isDarkMode.value),
             ),
             SizedBox(height: 15.h), // تقليل المسافة
             Column(
@@ -188,7 +189,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
                   style: TextStyle(
                     fontSize: 20.sp, // تصغير حجم النص
                     fontFamily: AppTextStyles.DinarOne,
-                    color: AppColors.textColor(themeController.isDarkMode.value),
+                    color:
+                        AppColors.textColor(themeController.isDarkMode.value),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -208,13 +210,16 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
             SizedBox(height: 20.h), // تقليل المسافة
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+                backgroundColor: AppColors.backgroundColorIconBack(
+                    themeController.isDarkMode.value),
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h), // تصغير الحشو
+                padding: EdgeInsets.symmetric(
+                    horizontal: 30.w, vertical: 12.h), // تصغير الحشو
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // تصغير الزوايا
                   side: BorderSide(
-                    color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value)
+                    color: AppColors.backgroundColorIconBack(
+                            themeController.isDarkMode.value)
                         .withOpacity(0.3),
                   ),
                 ),
@@ -227,7 +232,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.refresh_rounded, size: 20.sp), // تصغير حجم الأيقونة
+                  Icon(Icons.refresh_rounded,
+                      size: 20.sp), // تصغير حجم الأيقونة
                   SizedBox(width: 10.w), // تقليل المسافة
                   Text(
                     'إعادة المحاولة'.tr,
@@ -246,72 +252,74 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
   }
 
   Widget _buildWebpostsLists() {
-  return ScrollConfiguration(
-    behavior: ScrollConfiguration.of(context).copyWith(
-      dragDevices: {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      },
-    ),
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      itemCount: widget.postsList.length,
-      itemBuilder: (context, index) {
-        final post = widget.postsList[index];
-        final priceDetails = _getPriceDetails(post);
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: widget.postsList.length,
+        itemBuilder: (context, index) {
+          final post = widget.postsList[index];
+          final priceDetails = _getPriceDetails(post);
 
-        // نستخدم RxBool لحالة التمرير للماوس
-        final isHovered = false.obs;
+          // نستخدم RxBool لحالة التمرير للماوس
+          final isHovered = false.obs;
 
-        return Obx(() => MouseRegion(
-              onEnter: (_) => isHovered.value = true,
-              onExit: (_) => isHovered.value = false,
-              cursor: SystemMouseCursors.click,
-              child: AnimatedScale(
-                scale: isHovered.value ? 1.04 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                child: Container(
-                  width: 260.w,
-                  margin: EdgeInsets.only(right: 15.w),
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    color: AppColors.cardColor(themeController.isDarkMode.value),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(15),
-                      onTap: () => _handlePostTap(post),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(flex: 2, child: _buildWebImageSection(post)),
-                          _buildWebPostInfo(post, priceDetails),
-                        ],
+          return Obx(() => MouseRegion(
+                onEnter: (_) => isHovered.value = true,
+                onExit: (_) => isHovered.value = false,
+                cursor: SystemMouseCursors.click,
+                child: AnimatedScale(
+                  scale: isHovered.value ? 1.04 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: Container(
+                    width: 260.w,
+                    margin: EdgeInsets.only(right: 15.w),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      color:
+                          AppColors.cardColor(themeController.isDarkMode.value),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(15),
+                        onTap: () => _handlePostTap(post),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                flex: 2, child: _buildWebImageSection(post)),
+                            _buildWebPostInfo(post, priceDetails),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ));
-      },
-    ),
-  );
-}
-
+              ));
+        },
+      ),
+    );
+  }
 
   Widget _buildWebImageSection(Post post) {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(15)), // تصغير زوايا الصورة
+          borderRadius: BorderRadius.vertical(
+              top: Radius.circular(15)), // تصغير زوايا الصورة
           child: SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ImagesViewer(
-              fullWidth: true ,
+              fullWidth: true,
               images: post.images.split(','),
             ),
           ),
@@ -339,7 +347,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
 
   Widget _buildWebPostInfo(Post post, PriceDetails priceDetails) {
     final isDarkMode = themeController.isDarkMode.value;
-    final hasValidPrice = priceDetails.hasPrice && priceDetails.priceValue != '0';
+    final hasValidPrice =
+        priceDetails.hasPrice && priceDetails.priceValue != '0';
 
     return Padding(
       padding: EdgeInsets.all(15.w), // تقليل الحشو الداخلي
@@ -366,11 +375,13 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
             duration: const Duration(milliseconds: 300),
             child: hasValidPrice
                 ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), // تصغير الحشو
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12.w, vertical: 6.h), // تصغير الحشو
                     decoration: BoxDecoration(
                       color: isDarkMode
                           ? AppColors.yellowColor.withOpacity(0.1)
-                          : AppColors.backgroundColorIconBack(isDarkMode).withOpacity(0.1),
+                          : AppColors.backgroundColorIconBack(isDarkMode)
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10), // تصغير الزوايا
                     ),
                     child: Row(
@@ -392,13 +403,15 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
                                 ? AppColors.whiteColor
                                 : AppColors.backgroundColorIconBack(isDarkMode),
                             fontWeight: FontWeight.bold,
+                            fontFamily: AppTextStyles.Cairo,
                           ),
                         ),
                       ],
                     ),
                   )
                 : Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), // تصغير الحشو
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12.w, vertical: 6.h), // تصغير الحشو
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10), // تصغير الزوايا
@@ -407,7 +420,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.info_outline_rounded,
-                            size: 16.sp, color: Colors.grey), // تصغير حجم الأيقونة
+                            size: 16.sp,
+                            color: Colors.grey), // تصغير حجم الأيقونة
                         SizedBox(width: 6.w), // تقليل المسافة
                         Text(
                           'بدون سعر'.tr,
@@ -429,7 +443,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
 
   Widget _buildWebInfoBadge(IconData icon, String value, {Color? color}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h), // تصغير الحشو
+      padding:
+          EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h), // تصغير الحشو
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.5),
         borderRadius: BorderRadius.circular(20), // تصغير الزوايا
@@ -444,7 +459,8 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16.sp, color: color ?? Colors.white), // تصغير حجم الأيقونة
+          Icon(icon,
+              size: 16.sp, color: color ?? Colors.white), // تصغير حجم الأيقونة
           SizedBox(width: 5.w), // تقليل المسافة
           Text(
             value,
@@ -452,6 +468,7 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
               fontSize: 14.sp, // تصغير حجم النص
               color: Colors.white,
               fontWeight: FontWeight.bold,
+             fontFamily: AppTextStyles.Cairo,
             ),
           ),
         ],
@@ -475,16 +492,17 @@ class _CustomCardPostDeskTopState extends State<CustomCardPostDeskTop> {
     }
   }
 
-void _handlePostTap(Post post) {
-  final controller = Get.find<HomeController>();
-  controller.setSelectedPost(post);
-  
-  Get.toNamed(
-    '/post/${post.id}', // المسار مع المعلمة الديناميكية
-   
-    arguments: post, // إرسال الكائن كامل
-  );
-}}
+  void _handlePostTap(Post post) {
+    final controller = Get.find<HomeController>();
+    controller.setSelectedPost(post);
+
+    Get.toNamed(
+      '/post/${post.id}', // المسار مع المعلمة الديناميكية
+
+      arguments: post, // إرسال الكائن كامل
+    );
+  }
+}
 
 class PriceDetails {
   final String priceValue;

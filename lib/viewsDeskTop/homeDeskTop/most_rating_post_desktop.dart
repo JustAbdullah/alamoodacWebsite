@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,7 +10,7 @@ import '../../core/constant/app_text_styles.dart';
 import '../../core/constant/appcolors.dart';
 import '../../core/data/model/post.dart';
 import '../../customWidgets/custom_image_malt.dart';
- 
+
 class MostRatingPostDesktop extends StatefulWidget {
   const MostRatingPostDesktop({super.key});
 
@@ -20,58 +19,58 @@ class MostRatingPostDesktop extends StatefulWidget {
 }
 
 class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
-   final controller = Get.find<HomeController>();
+  final controller = Get.find<HomeController>();
   final ThemeController themeController = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    return    Obx((){
-    return  Container(
-      width: MediaQuery.of(context).size.width,
-      height: 380.h, // تم تقليل الارتفاع قليلاً
-      color: AppColors.backgroundColor(themeController.isDarkMode.value),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWebHeader(),
-            SizedBox(height: 15.h), // تقليل المسافة هنا
-            Expanded(child: _buildContentSection()),
-          ],
+    return Obx(() {
+      return Container(
+        width: MediaQuery.of(context).size.width,
+        height: 380.h, // تم تقليل الارتفاع قليلاً
+        color: AppColors.backgroundColor(themeController.isDarkMode.value),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildWebHeader(),
+              SizedBox(height: 15.h), // تقليل المسافة هنا
+              Expanded(child: _buildContentSection()),
+            ],
+          ),
         ),
-      ),
-    );});
+      );
+    });
   }
 
   Widget _buildWebHeader() {
     return Row(
       children: [
         Icon(
-                Icons.rate_review_sharp
-                ,
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-                size: 28.sp,
-              ),
-          
-         
-          SizedBox(width: 8.w),
-          Text(
-         "المنشورات الأعلى تقييم".tr,
-            style: TextStyle(
-              fontFamily: AppTextStyles.DinarOne,
-              color: AppColors.textColor(themeController.isDarkMode.value),
+          Icons.rate_review_sharp,
+          color: AppColors.backgroundColorIconBack(
+              Get.find<ThemeController>().isDarkMode.value),
+          size: 28.sp,
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          "المنشورات الأعلى تقييم".tr,
+          style: TextStyle(
+            fontFamily: AppTextStyles.DinarOne,
+            color: AppColors.textColor(themeController.isDarkMode.value),
             fontSize: 21.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          )
+            fontWeight: FontWeight.bold,
+          ),
+        )
       ],
     );
   }
 
   Widget _buildContentSection() {
     return Obx(() {
-      if (controller.LoadingPostsMostRating.value) return _buildWebShimmerLoader();
+      if (controller.LoadingPostsMostRating.value)
+        return _buildWebShimmerLoader();
       if (controller.postsListMostRating.isEmpty) return _buildWebEmptyState();
       return _buildWebpostsListMostRating();
     });
@@ -86,7 +85,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
         child: Skeletonizer(
           child: Container(
             width: 260.w, // تصغير عرض الكرت
-            margin: EdgeInsets.symmetric(vertical: 8.h), // تقليل المسافة الرأسية
+            margin:
+                EdgeInsets.symmetric(vertical: 8.h), // تقليل المسافة الرأسية
             child: Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -168,7 +168,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
             Icon(
               Icons.search_off_outlined,
               size: 60.sp, // تصغير حجم الأيقونة
-              color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+              color: AppColors.backgroundColorIconBack(
+                  themeController.isDarkMode.value),
             ),
             SizedBox(height: 15.h), // تقليل المسافة
             Column(
@@ -178,7 +179,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
                   style: TextStyle(
                     fontSize: 20.sp, // تصغير حجم النص
                     fontFamily: AppTextStyles.DinarOne,
-                    color: AppColors.textColor(themeController.isDarkMode.value),
+                    color:
+                        AppColors.textColor(themeController.isDarkMode.value),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -198,13 +200,16 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
             SizedBox(height: 20.h), // تقليل المسافة
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+                backgroundColor: AppColors.backgroundColorIconBack(
+                    themeController.isDarkMode.value),
                 foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h), // تصغير الحشو
+                padding: EdgeInsets.symmetric(
+                    horizontal: 30.w, vertical: 12.h), // تصغير الحشو
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12), // تصغير الزوايا
                   side: BorderSide(
-                    color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value)
+                    color: AppColors.backgroundColorIconBack(
+                            themeController.isDarkMode.value)
                         .withOpacity(0.3),
                   ),
                 ),
@@ -217,7 +222,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.refresh_rounded, size: 20.sp), // تصغير حجم الأيقونة
+                  Icon(Icons.refresh_rounded,
+                      size: 20.sp), // تصغير حجم الأيقونة
                   SizedBox(width: 10.w), // تقليل المسافة
                   Text(
                     'إعادة المحاولة'.tr,
@@ -236,72 +242,74 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
   }
 
   Widget _buildWebpostsListMostRating() {
-  return ScrollConfiguration(
-    behavior: ScrollConfiguration.of(context).copyWith(
-      dragDevices: {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      },
-    ),
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      itemCount: controller.postsListMostRating.length,
-      itemBuilder: (context, index) {
-        final post = controller.postsListMostRating[index];
-        final priceDetails = _getPriceDetails(post);
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: controller.postsListMostRating.length,
+        itemBuilder: (context, index) {
+          final post = controller.postsListMostRating[index];
+          final priceDetails = _getPriceDetails(post);
 
-        // نستخدم RxBool لحالة التمرير للماوس
-        final isHovered = false.obs;
+          // نستخدم RxBool لحالة التمرير للماوس
+          final isHovered = false.obs;
 
-        return Obx(() => MouseRegion(
-              onEnter: (_) => isHovered.value = true,
-              onExit: (_) => isHovered.value = false,
-              cursor: SystemMouseCursors.click,
-              child: AnimatedScale(
-                scale: isHovered.value ? 1.04 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                child: Container(
-                  width: 260.w,
-                  margin: EdgeInsets.only(right: 15.w),
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    color: AppColors.cardColor(themeController.isDarkMode.value),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(15),
-                      onTap: () => _handlePostTap(post),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(flex: 2, child: _buildWebImageSection(post)),
-                          _buildWebPostInfo(post, priceDetails),
-                        ],
+          return Obx(() => MouseRegion(
+                onEnter: (_) => isHovered.value = true,
+                onExit: (_) => isHovered.value = false,
+                cursor: SystemMouseCursors.click,
+                child: AnimatedScale(
+                  scale: isHovered.value ? 1.04 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: Container(
+                    width: 260.w,
+                    margin: EdgeInsets.only(right: 15.w),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      color:
+                          AppColors.cardColor(themeController.isDarkMode.value),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(15),
+                        onTap: () => _handlePostTap(post),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                flex: 2, child: _buildWebImageSection(post)),
+                            _buildWebPostInfo(post, priceDetails),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ));
-      },
-    ),
-  );
-}
-
+              ));
+        },
+      ),
+    );
+  }
 
   Widget _buildWebImageSection(Post post) {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(15)), // تصغير زوايا الصورة
+          borderRadius: BorderRadius.vertical(
+              top: Radius.circular(15)), // تصغير زوايا الصورة
           child: SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: ImagesViewer(
-              fullWidth: true ,
+              fullWidth: true,
               images: post.images.split(','),
             ),
           ),
@@ -329,7 +337,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
 
   Widget _buildWebPostInfo(Post post, PriceDetails priceDetails) {
     final isDarkMode = themeController.isDarkMode.value;
-    final hasValidPrice = priceDetails.hasPrice && priceDetails.priceValue != '0';
+    final hasValidPrice =
+        priceDetails.hasPrice && priceDetails.priceValue != '0';
 
     return Padding(
       padding: EdgeInsets.all(15.w), // تقليل الحشو الداخلي
@@ -356,11 +365,13 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
             duration: const Duration(milliseconds: 300),
             child: hasValidPrice
                 ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), // تصغير الحشو
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12.w, vertical: 6.h), // تصغير الحشو
                     decoration: BoxDecoration(
                       color: isDarkMode
                           ? AppColors.yellowColor.withOpacity(0.1)
-                          : AppColors.backgroundColorIconBack(isDarkMode).withOpacity(0.1),
+                          : AppColors.backgroundColorIconBack(isDarkMode)
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10), // تصغير الزوايا
                     ),
                     child: Row(
@@ -382,13 +393,15 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
                                 ? AppColors.whiteColor
                                 : AppColors.backgroundColorIconBack(isDarkMode),
                             fontWeight: FontWeight.bold,
+                            fontFamily: AppTextStyles.Cairo,
                           ),
                         ),
                       ],
                     ),
                   )
                 : Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), // تصغير الحشو
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12.w, vertical: 6.h), // تصغير الحشو
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10), // تصغير الزوايا
@@ -397,7 +410,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.info_outline_rounded,
-                            size: 16.sp, color: Colors.grey), // تصغير حجم الأيقونة
+                            size: 16.sp,
+                            color: Colors.grey), // تصغير حجم الأيقونة
                         SizedBox(width: 6.w), // تقليل المسافة
                         Text(
                           'بدون سعر'.tr,
@@ -419,7 +433,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
 
   Widget _buildWebInfoBadge(IconData icon, String value, {Color? color}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h), // تصغير الحشو
+      padding:
+          EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h), // تصغير الحشو
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.5),
         borderRadius: BorderRadius.circular(20), // تصغير الزوايا
@@ -434,7 +449,8 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16.sp, color: color ?? Colors.white), // تصغير حجم الأيقونة
+          Icon(icon,
+              size: 16.sp, color: color ?? Colors.white), // تصغير حجم الأيقونة
           SizedBox(width: 5.w), // تقليل المسافة
           Text(
             value,
@@ -442,6 +458,7 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
               fontSize: 14.sp, // تصغير حجم النص
               color: Colors.white,
               fontWeight: FontWeight.bold,
+              fontFamily: AppTextStyles.Cairo,
             ),
           ),
         ],
@@ -464,17 +481,19 @@ class _MostRatingPostDesktopState extends State<MostRatingPostDesktop> {
       return PriceDetails(priceValue: '', hasPrice: false);
     }
   }
-void _handlePostTap(Post post) {
-  final controller = Get.find<HomeController>();
-  
-  controller.setSelectedPost(post);
- 
-  Get.toNamed(
-    '/post/${post.id}', // المسار مع المعلمة الديناميكية
-   
-    arguments: post, // إرسال الكائن كامل
-  );
-}}
+
+  void _handlePostTap(Post post) {
+    final controller = Get.find<HomeController>();
+
+    controller.setSelectedPost(post);
+
+    Get.toNamed(
+      '/post/${post.id}', // المسار مع المعلمة الديناميكية
+
+      arguments: post, // إرسال الكائن كامل
+    );
+  }
+}
 
 class PriceDetails {
   final String priceValue;

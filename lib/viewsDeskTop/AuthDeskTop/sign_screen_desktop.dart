@@ -8,6 +8,8 @@ import '../../core/constant/appcolors.dart';
 import '../../core/constant/images_path.dart';
 import '../../customWidgets/custome_textfiled.dart';
 
+import '../SettingsDeskTop/chose_terms_desktop.dart';
+import '../SidePopup.dart';
 import 'login_screen_desktop.dart';
 
 class SignupPopup extends StatelessWidget {
@@ -90,8 +92,8 @@ class SignupPopup extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
-                                controller.textControllerName.clear();
-                        controller.textControllerPassword.clear();
+                              controller.textControllerName.clear();
+                              controller.textControllerPassword.clear();
                               Get.back(); // إغلاق نافذة التسجيل
                               Get.dialog(
                                 LoginPopup(), // فتح نافذة تسجيل الدخول
@@ -116,7 +118,12 @@ class SignupPopup extends StatelessWidget {
                         cursor: SystemMouseCursors.click,
                         child: InkWell(
                           onTap: () {
-                            // boutTermsPrivacyPage()
+                            showSidePopup(
+                              context: context,
+                              child: const AboutTermsPrivacyPageDeskTopPage(),
+                              widthPercent: 0.50,
+                              useSideAlignment: true,
+                            );
                           },
                           child: Text(
                             "بالاستمرار أنت توافق على الشروط والأحكام".tr,

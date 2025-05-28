@@ -40,7 +40,7 @@ class HomeController extends GetxController
     with GetSingleTickerProviderStateMixin {
   ////////////////////////////////
   var currentAdIndex = 0.obs;
-
+  RxInt isGoFromLink = 0.obs;
   //////////////////////
 
   final RxBool isDesktop = false.obs;
@@ -112,7 +112,7 @@ class HomeController extends GetxController
       isInitialized = true;
 
       if (pendingPostId != null) {
-        fetchPostDetails(pendingPostId!);
+        fetchPostDetails(int.parse(pendingPostId!));
         pendingPostId = null;
       }
       await loadSelectedRoute(); // 1. تحميل المسار أولاً
@@ -562,6 +562,7 @@ class HomeController extends GetxController
     postTitle = selectedPost.value?.translations.isNotEmpty == true
         ? selectedPost.value?.translations.first.title ?? ''
         : "";
+
     if (int.parse(post.categoryId) == 8) {
       fetchAuctionByPostId(post.id.toString());
     }
@@ -2503,6 +2504,28 @@ class HomeController extends GetxController
   }
 
   ///////////////////مشاركة المنشور...................
+  void handleDirectLink(String postId) async {
+    try {
+      final language =
+          Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+      final post = await getPostById(int.parse(postId), language);
+
+      if (post != null) {
+        selectedPost.value = post;
+        showDetailsPost.value = true;
+        Get.offNamed('/post/$postId');
+        _updateHistory(postId);
+      }
+    } catch (e) {
+      Get.offAllNamed('/Decider');
+    }
+  }
+
+  void _updateHistory(String postId) {
+    html.window.history.replaceState(
+        {'type': 'post', 'id': postId}, 'Post $postId', '/post/$postId');
+  }
+
   Future<Post?> getPostById(int postId, String language) async {
     try {
       final response = await http.get(
@@ -2523,21 +2546,28 @@ class HomeController extends GetxController
     }
   }
 
-  void fetchPostDetails(var postId) async {
-    showDetailsPost.value = true;
+  // في HomeController
+  Future<void> fetchPostDetails(int postId) async {
+    // showDetailsPost.value = true;
     try {
-      // جلب بيانات المنشور من الـ API أو الكاش
+      // جلب البيانات بشكل غير متزامن
       Post? post = await getPostById(
-          postId,
-          Get.find<ChangeLanguageController>()
-              .currentLocale
-              .value
-              .languageCode);
+        postId,
+        Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
+      );
       if (post != null) {
         selectedPost.value = post;
-        showDetailsPost.value = true;
-        Get.toNamed('/post/$postId',
-            arguments: post); // الانتقال إلى شاشة التفاصيل
+        fetchPublisherList(
+            selectedPost.value?.storeID ?? "",
+            Get.find<ChangeLanguageController>()
+                .currentLocale
+                .value
+                .languageCode);
+        incrementViewsPost(selectedPost.value?.id ?? 0);
+        fetchComments(selectedPost.value?.id ?? 0);
+        if (int.parse(post.categoryId) == 8) {
+          fetchAuctionByPostId(post.id.toString());
+        }
       } else {
         print("❌ المنشور غير موجود!");
       }
@@ -2547,12 +2577,16 @@ class HomeController extends GetxController
   }
 
   ////////////......زر المشاركة............////////////////
-  void sharePost(var postId) {
-    // إنشاء الرابط باستخدام معرف المنشور
+  void sharePost(int postId) {
     final String deepLink = 'https://alamoodac.com/post/$postId';
-    print(deepLink);
-    // مشاركة الرابط باستخدام share_plus
     Share.share('شاهد هذا المنشور: $deepLink');
+
+    // إضافة الرابط لتاريخ المتصفح
+    html.window.history.pushState(
+      {'type': 'post', 'id': postId},
+      'Post $postId',
+      deepLink,
+    );
   }
 
 //////////////////////////////////
@@ -2778,6 +2812,70 @@ class HomeController extends GetxController
       print("Error loading posts: $e");
     } finally {
       loadingPublisherData.value = false;
+    }
+  }
+
+  //////////////////////////////////////////......Messages...................//////////
+
+  /// رسالة ترحيبية عند إنشاء حساب جديد
+  static const welcomeAccountMessage = {
+    "ar":
+        "مرحباً بك في تطبيقنا! تم إنشاء حسابك بنجاح، ونحن سعداء بانضمامك إلينا.",
+    "en":
+        "Welcome to our app! Your account has been created successfully, and we are delighted to have you with us."
+  };
+
+  /// رسالة عند طلب باقة (نوضح للمستخدم الرجاء الانتظار)
+  static const packageRequestMessage = {
+    "ar": "طلبك قيد المعالجة. يرجى الانتظار حتى يتم تفعيل باقتك.",
+    "en":
+        "Your package request is being processed. Please wait until your package is activated."
+  };
+
+  /// رسالة عند إنشاء بيانات منشور جديد (منشور تحت المراجعة)
+  static const postCreationMessage = {
+    "ar":
+        "شكرًا لإنشاء منشورك! منشورك الآن تحت المراجعة وسيتم نشره بعد الموافقة.",
+    "en":
+        "Thank you for creating your post! Your post is now under review and will be published once approved."
+  };
+
+  /// رسالة عند إنشاء بيانات ناشر جديد (يمكن النشر الآن)
+  static const publisherCreationMessage = {
+    "ar":
+        "تم إنشاء بيانات الناشر بنجاح. يمكنك الآن النشر باستخدام بيانات الناشر الجديدة، شكرًا لانضمامك إلينا.",
+    "en":
+        "Your publisher profile has been created successfully. You can now publish using your new publisher data. Thank you for joining us."
+  };
+
+  Future<void> sendMessage({
+    required var userId,
+    required int whatType, // true للموافقة، false للرفض
+  }) async {
+    const url = 'https://alamoodac.com/modac/public/messages';
+
+    final message = whatType == 1
+        ? welcomeAccountMessage
+        : whatType == 2
+            ? packageRequestMessage
+            : whatType == 3
+                ? postCreationMessage
+                : publisherCreationMessage;
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'user_id': userId,
+        'message_ar': message['ar'],
+        'message_en': message['en'],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print("✅ Message sent successfully");
+    } else {
+      print("❌ Failed to send message: ${response.body}");
     }
   }
 }

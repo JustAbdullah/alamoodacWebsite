@@ -10,6 +10,8 @@ class AppColors {
   static const darkBackgroundColor = Color(0xFF121212);
   /////////// The App Main Color ///////////////////////
   static const Color TheMain = Color(0xFF001A6E);
+  static const Color TheMainLightUse = Color.fromARGB(255, 24, 60, 176);
+
   static const Color blueLight = Color(0xFF4CC9FE);
   static const Color blueDark = Color(0xFF1976D2);
 
@@ -67,7 +69,7 @@ class AppColors {
   static Color primaryDark = Color(0xFF2A2D3E);
   static Color primaryLight = Color(0xFF3C4156);
   static Color accentColor = Color(0xFFF5A623);
-static Color cardBackground(bool isDark) => 
+  static Color cardBackground(bool isDark) =>
       isDark ? Colors.grey[850]! : Colors.white;
   static Color primaryText = Color(0xFF2A2D3E);
   static Color secondaryText = Color(0xFF6B7280);
@@ -108,29 +110,26 @@ static Color cardBackground(bool isDark) =>
   static const Color linkedin = Color(0xFF0A66C2);
 
   static Gradient get personalGradient => LinearGradient(
-    colors: [Color(0xFF6B46C1), Color(0xFF553C9A)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+        colors: [Color(0xFF6B46C1), Color(0xFF553C9A)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
   static Gradient get commercialGradient => LinearGradient(
-    colors: [Color(0xFF4299E1), Color(0xFF3182CE)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+        colors: [Color(0xFF4299E1), Color(0xFF3182CE)],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
 
- 
-  static Color titleColor(bool isDark) => 
+  static Color titleColor(bool isDark) =>
       isDark ? Colors.white : Colors.grey[800]!;
 
-  static Color subtitleColor(bool isDark) => 
+  static Color subtitleColor(bool isDark) =>
       isDark ? Colors.grey[400]! : Colors.grey[600]!;
 
-  static Color chipBackground(bool isDark) => 
+  static Color chipBackground(bool isDark) =>
       isDark ? Colors.grey[800]! : Colors.grey[100]!;
 
-  static Color chipTextColor(bool isDark) => 
+  static Color chipTextColor(bool isDark) =>
       isDark ? Colors.grey[300]! : Colors.grey[700]!;
-
-  
 }

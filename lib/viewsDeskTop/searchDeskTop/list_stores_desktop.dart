@@ -98,25 +98,30 @@ class ListStoresDesktop extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.search_off, size: 80.sp, color: AppColors.textGrey),
-        SizedBox(height: 24.h),
-        Text("لا يوجد نتائج",
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textGrey,
-            )),
-        SizedBox(height: 8.h),
-        Text("حاول تعديل معايير البحث الخاصة بك",
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: AppColors.textGrey.withOpacity(0.8),
-            )),
-      ],
-    );
+    final themeController = Get.find<ThemeController>();
+
+    return Obx(() {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off, size: 80.sp, color: AppColors.textGrey),
+          SizedBox(height: 24.h),
+          Text("لا يوجد نتائج",
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textColor(themeController.isDarkMode.value),
+              )),
+          SizedBox(height: 8.h),
+          Text("حاول تعديل معايير البحث الخاصة بك",
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: AppColors.textColor(themeController.isDarkMode.value)
+                    .withOpacity(0.8),
+              )),
+        ],
+      );
+    });
   }
 }
 
@@ -185,6 +190,8 @@ class _StoreHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeController = Get.find<ThemeController>();
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -202,25 +209,30 @@ class _StoreHeader extends StatelessWidget {
         ),
         SizedBox(width: 12.w),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(store.translations.first.name,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  )),
-              SizedBox(height: 4.h),
-              Text(store.translations.first.description,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.textSecondary,
-                  )),
-            ],
-          ),
+          child: Obx(() {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(store.translations.first.name,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color:
+                          AppColors.textColor(themeController.isDarkMode.value),
+                    )),
+                SizedBox(height: 4.h),
+                Text(store.translations.first.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color:
+                          AppColors.textColor(themeController.isDarkMode.value)
+                              .withOpacity(0.8),
+                    )),
+              ],
+            );
+          }),
         ),
         _AccountTypeChip(accountType: store.accountType),
       ],

@@ -17,7 +17,8 @@ class PromotedadpageDeskTopPage extends StatefulWidget {
   const PromotedadpageDeskTopPage({super.key});
 
   @override
-  _PromotedadpageDeskTopPageState createState() => _PromotedadpageDeskTopPageState();
+  _PromotedadpageDeskTopPageState createState() =>
+      _PromotedadpageDeskTopPageState();
 }
 
 class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
@@ -74,23 +75,24 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
 
   @override
   Widget build(BuildContext context) {
-    return    Obx((){
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 380.h,
-      color: AppColors.backgroundColor(themeController.isDarkMode.value),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWebHeader(),
-            SizedBox(height: 15.h),
-            Expanded(child: _buildContentSection()),
-          ],
+    return Obx(() {
+      return Container(
+        width: MediaQuery.of(context).size.width,
+        height: 380.h,
+        color: AppColors.backgroundColor(themeController.isDarkMode.value),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildWebHeader(),
+              SizedBox(height: 15.h),
+              Expanded(child: _buildContentSection()),
+            ],
+          ),
         ),
-      ),
-    );});
+      );
+    });
   }
 
   Widget _buildWebHeader() {
@@ -98,7 +100,8 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
       children: [
         Icon(
           Icons.rocket_launch_rounded,
-          color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+          color: AppColors.backgroundColorIconBack(
+              themeController.isDarkMode.value),
           size: 30.sp,
         ),
         SizedBox(width: 12.w),
@@ -143,17 +146,17 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    flex: 2,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: themeController.isDarkMode.value
-                            ? Colors.grey[800]
-                            : Colors.grey[200],
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(15),
+                      flex: 2,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: themeController.isDarkMode.value
+                              ? Colors.grey[800]
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(15),
+                          ),
                         ),
-                      ),
-                   ) ),
+                      )),
                   Padding(
                     padding: EdgeInsets.all(15.w),
                     child: Column(
@@ -214,7 +217,8 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
             Icon(
               Icons.ads_click_rounded,
               size: 60.sp,
-              color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+              color: AppColors.backgroundColorIconBack(
+                  themeController.isDarkMode.value),
             ),
             SizedBox(height: 15.h),
             Column(
@@ -224,7 +228,8 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontFamily: AppTextStyles.DinarOne,
-                    color: AppColors.textColor(themeController.isDarkMode.value),
+                    color:
+                        AppColors.textColor(themeController.isDarkMode.value),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -244,13 +249,15 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
             SizedBox(height: 20.h),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+                backgroundColor: AppColors.backgroundColorIconBack(
+                    themeController.isDarkMode.value),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
-                    color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value)
+                    color: AppColors.backgroundColorIconBack(
+                            themeController.isDarkMode.value)
                         .withOpacity(0.3),
                   ),
                 ),
@@ -318,14 +325,17 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          color: AppColors.cardColor(themeController.isDarkMode.value),
+                          color: AppColors.cardColor(
+                              themeController.isDarkMode.value),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(15),
                             onTap: () => _handlePostTap(post),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(flex: 2, child: _buildWebImageSection(post)),
+                                Expanded(
+                                    flex: 2,
+                                    child: _buildWebImageSection(post)),
                                 _buildWebPostInfo(post, priceDetails),
                               ],
                             ),
@@ -335,9 +345,11 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
                           top: 12.h,
                           left: 12.w,
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 5.h),
                             decoration: BoxDecoration(
-                              color: AppColors.backgroundColorIconBack(themeController.isDarkMode.value),
+                              color: AppColors.backgroundColorIconBack(
+                                  themeController.isDarkMode.value),
                               borderRadius: BorderRadius.circular(8),
                               boxShadow: [
                                 BoxShadow(
@@ -413,7 +425,8 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
 
   Widget _buildWebPostInfo(Post post, PriceDetails priceDetails) {
     final isDarkMode = themeController.isDarkMode.value;
-    final hasValidPrice = priceDetails.hasPrice && priceDetails.priceValue != '0';
+    final hasValidPrice =
+        priceDetails.hasPrice && priceDetails.priceValue != '0';
 
     return Padding(
       padding: EdgeInsets.all(15.w),
@@ -440,11 +453,13 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
             duration: const Duration(milliseconds: 300),
             child: hasValidPrice
                 ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: isDarkMode
                           ? AppColors.yellowColor.withOpacity(0.1)
-                          : AppColors.backgroundColorIconBack(isDarkMode).withOpacity(0.1),
+                          : AppColors.backgroundColorIconBack(isDarkMode)
+                              .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Row(
@@ -459,7 +474,8 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
                         ),
                         SizedBox(width: 6.w),
                         Text(
-                          homeController.getConvertedPrice(priceDetails.priceValue),
+                          homeController
+                              .getConvertedPrice(priceDetails.priceValue),
                           style: TextStyle(
                             fontSize: 16.sp,
                             color: isDarkMode
@@ -472,7 +488,8 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
                     ),
                   )
                 : Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
@@ -552,11 +569,11 @@ class _PromotedadpageDeskTopPageState extends State<PromotedadpageDeskTopPage>
   void _handlePostTap(Post post) {
     homeController.setSelectedPost(post);
     homeController.showDetailsPost.value = true;
-      Get.toNamed(
-    '/post/${post.id}', // المسار مع المعلمة الديناميكية
-   
-    arguments: post, // إرسال الكائن كامل
-  );
+    Get.toNamed(
+      '/post/${post.id}', // المسار مع المعلمة الديناميكية
+
+      arguments: post, // إرسال الكائن كامل
+    );
   }
 }
 

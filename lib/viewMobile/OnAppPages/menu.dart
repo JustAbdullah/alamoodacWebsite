@@ -9,6 +9,7 @@ import '../../controllers/LoadingController.dart';
 import '../../controllers/ThemeController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/subscriptionController.dart';
+import '../../controllers/userDahsboardController.dart';
 import '../../core/localization/changelanguage.dart';
 import '../Auth/login_screen.dart';
 
@@ -50,7 +51,7 @@ class Menu extends StatelessWidget {
                               child: InkWell(
                                 onTap: () {
                                   controller.isChosedHome();
-                                  Get.toNamed(
+                                  Get.offNamed(
                                     '/mobile', // المسار مع المعلمة الديناميكية
                                     // إرسال الكائن كامل
                                   );
@@ -161,7 +162,26 @@ class Menu extends StatelessWidget {
                                         duration: const Duration(seconds: 3),
                                       );
                                     } else {
-                                      Get.toNamed(
+                                      Userdahsboardcontroller
+                                          userdahsboardcontroller =
+                                          Get.put(Userdahsboardcontroller());
+                                      userdahsboardcontroller.fetchStroePuscher(
+                                          Get.find<ChangeLanguageController>()
+                                              .currentLocale
+                                              .value
+                                              .languageCode);
+                                      final subController =
+                                          Get.put(SubscriptionController());
+                                      subController.fetchUserSubscriptions(
+                                          Get.find<LoadingController>()
+                                                  .currentUser
+                                                  ?.id ??
+                                              0,
+                                          Get.find<ChangeLanguageController>()
+                                              .currentLocale
+                                              .value
+                                              .languageCode);
+                                      Get.offNamed(
                                         '/dashboard-mobile/',
                                       );
                                       controller.isChosedInfo();
@@ -216,7 +236,7 @@ class Menu extends StatelessWidget {
                           InkWell(
                             onTap: () {
                               controller.isChosedSearch();
-                              Get.toNamed(
+                              Get.offNamed(
                                 '/search-mobile', // المسار مع المعلمة الديناميكية
                                 // إرسال الكائن كامل
                               );
@@ -273,7 +293,7 @@ class Menu extends StatelessWidget {
                           InkWell(
                             onTap: () {
                               controller.isChosedMenu();
-                              Get.toNamed(
+                              Get.offNamed(
                                 '/settings-mobile', // المسار مع المعلمة الديناميكية
                                 // إرسال الكائن كامل
                               );
@@ -403,7 +423,7 @@ class Menu extends StatelessWidget {
                                   .value
                                   .languageCode);
                           controller.isChosedAddPost();
-                          Get.toNamed(
+                          Get.offNamed(
                             '/add-post-mobile', // المسار مع المعلمة الديناميكية
                             // إرسال الكائن كامل
                           );

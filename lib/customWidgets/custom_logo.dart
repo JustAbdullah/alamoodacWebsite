@@ -14,13 +14,18 @@ class CustomLogo extends StatelessWidget {
 
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 500),
-      child: Image.asset(
-        themeController.isDarkMode.value
-            ? ImagesPath.logoDark
-            : ImagesPath.logo,
-        height: 70.h, // زيادة الحجم
-        fit: BoxFit.contain,
-        key: ValueKey<bool>(themeController.isDarkMode.value),
+      child: InkWell(
+        onTap: () {
+          Get.toNamed('/Decider');
+        },
+        child: Image.asset(
+          themeController.isDarkMode.value
+              ? ImagesPath.logoDark
+              : ImagesPath.logo,
+          height: 70.h, // زيادة الحجم
+          fit: BoxFit.contain,
+          key: ValueKey<bool>(themeController.isDarkMode.value),
+        ),
       ),
     );
   }

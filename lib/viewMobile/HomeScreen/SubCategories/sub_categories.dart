@@ -26,43 +26,36 @@ class SubCategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetX<HomeController>(
-      builder: (controller) => AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: controller.showTheSubCategories.value
-            ? Scaffold(
-                body: SafeArea(
-                  child: Column(
-                    children: [
-                      // المحتوى الرئيسي: AppBar + القائمة
-                      Expanded(
-                        child: CustomScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          slivers: [
-                            SliverAppBar(
-                              automaticallyImplyLeading: false,
-                              pinned: true,
-                              collapsedHeight: 280.h,
-                              expandedHeight: 280.h,
-                              flexibleSpace: _buildTopSection(controller),
-                            ),
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: PostsSub(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const _BottomNavigationSection(),
-                    ],
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // المحتوى الرئيسي: AppBar + القائمة
+            Expanded(
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverAppBar(
+                    automaticallyImplyLeading: false,
+                    pinned: true,
+                    collapsedHeight: 280.h,
+                    expandedHeight: 280.h,
+                    flexibleSpace: _buildTopSection(_homeController),
                   ),
-                ),
-                floatingActionButton: const SearchBoxSub(),
-              )
-            : const SizedBox.shrink(),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: PostsSub(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const _BottomNavigationSection(),
+          ],
+        ),
       ),
+      floatingActionButton: const SearchBoxSub(),
     );
   }
 

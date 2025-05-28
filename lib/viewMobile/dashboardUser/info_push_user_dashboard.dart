@@ -2,36 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
-import '../../../../controllers/ThemeController.dart';
-import '../../../../core/constant/appcolors.dart';
-import '../../../../core/data/model/Stores.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// ملفات التحكم
+import '../../../../controllers/ThemeController.dart';
 import '../../../../controllers/userDahsboardController.dart';
 import '../../core/localization/changelanguage.dart';
+
+// النماذج والثوابت
+import '../../../../core/constant/appcolors.dart';
+import '../../../../core/data/model/Stores.dart';
 
 class InfoPushInUserDashBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-    final controller = Get.find<Userdahsboardcontroller>();
-    return _Body(controller: controller, themeController: themeController);
+    final isDark = Get.find<ThemeController>().isDarkMode.value;
+    final textColor = AppColors.textColor(isDark);
+    return _Body(
+      controller: Get.find<Userdahsboardcontroller>(),
+      themeController: Get.find<ThemeController>(),
+      textColor: textColor,
+    );
   }
 }
 
 class _Body extends StatelessWidget {
   final Userdahsboardcontroller controller;
   final ThemeController themeController;
-
-  const _Body({required this.controller, required this.themeController});
+  final Color textColor;
+  const _Body(
+      {required this.controller,
+      required this.themeController,
+      required this.textColor});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.LoadingStorePuscher.value) return _LoadingIndicator();
       if (controller.StorePuscherList.isEmpty) return _EmptyState();
-      return _PublishersList(controller: controller);
+      return _PublishersList(
+        controller: controller,
+        textColor: textColor,
+      );
     });
   }
 }
@@ -43,16 +55,20 @@ class _LoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(
-              color: AppColors.backgroundColorIconBack(
-                  Get.find<ThemeController>().isDarkMode.value)),
+          CircularProgressIndicator.adaptive(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation(
+              AppColors.primaryColor,
+            ),
+          ),
           SizedBox(height: 16.h),
-          Text('جاري تحميل البيانات...',
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: AppColors.backgroundColorIconBack(
+          Text(
+            'جاري تحميل البيانات...',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textColor(
                       Get.find<ThemeController>().isDarkMode.value),
-                  fontWeight: FontWeight.w500)),
+                ),
+          ),
         ],
       ),
     );
@@ -76,14 +92,6 @@ class _EmptyState extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: AppColors.textColor(isDark))),
           SizedBox(height: 8.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.w),
-            child: Text('اضغط على زر (+) لإضافة حساب جديد',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.textColor(isDark).withOpacity(0.6))),
-          ),
         ],
       ),
     );
@@ -92,8 +100,9 @@ class _EmptyState extends StatelessWidget {
 
 class _PublishersList extends StatelessWidget {
   final Userdahsboardcontroller controller;
+  final Color textColor;
 
-  const _PublishersList({required this.controller});
+  const _PublishersList({required this.controller, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
@@ -104,16 +113,19 @@ class _PublishersList extends StatelessWidget {
               .value
               .languageCode),
       child: GridView.builder(
-        padding: EdgeInsets.all(12.w),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // عدد الأعمدة حسب التصميم
-          crossAxisSpacing: 12.w,
-          mainAxisSpacing: 12.h,
-          childAspectRatio: 0.8, // تعديل النسبة حسب الحاجة
+          crossAxisCount: 2, // عنصرين في كل صف
+          mainAxisSpacing: 8.h,
+          crossAxisSpacing: 8.w,
+          childAspectRatio: 0.75, // تعديل النسبة حسب المحتوى
+          mainAxisExtent: 320.h, // تحديد ارتفاع ثابت للعنصر
         ),
         itemCount: controller.StorePuscherList.length,
         itemBuilder: (context, index) {
-          return _PublisherCard(publisher: controller.StorePuscherList[index]);
+          return _PublisherCard(
+              publisher: controller.StorePuscherList[index],
+              textColor: textColor);
         },
       ),
     );
@@ -122,25 +134,31 @@ class _PublishersList extends StatelessWidget {
 
 class _PublisherCard extends StatelessWidget {
   final Stores publisher;
-
-  const _PublisherCard({required this.publisher});
+  final Color textColor;
+  const _PublisherCard({required this.publisher, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Get.find<ThemeController>().isDarkMode.value;
-    final textColor = AppColors.textColor(isDark);
-
-    return Card(
-      color: AppColors.backgroundColor(
-          Get.find<ThemeController>().isDarkMode.value),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _ImageHeader(publisher: publisher),
-          _ContentSection(publisher: publisher, textColor: textColor),
-        ],
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {/* إضافة التفاعل المطلوب */},
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          color: AppColors.backgroundColor(
+              Get.find<ThemeController>().isDarkMode.value),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _ImageHeader(publisher: publisher)),
+              _ContentSection(publisher: publisher, textColor: textColor),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -153,36 +171,48 @@ class _ImageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-          child: CachedNetworkImage(
+    return ClipRRect(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CachedNetworkImage(
             imageUrl: publisher.image,
-            height: 180.h,
-            width: double.infinity,
-            fit: BoxFit.cover,
             placeholder: (_, __) => Container(
               color: Colors.grey[200],
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(
+                  child: CircularProgressIndicator(
+                      strokeWidth: 1.5, color: AppColors.primaryColor)),
             ),
             errorWidget: (_, __, ___) => Icon(Icons.business, size: 40.sp),
+            fit: BoxFit.cover,
           ),
-        ),
-        Positioned(
-          top: 8.w,
-          right: 8.w,
-          child: _AccountTypeChip(type: publisher.accountType),
-        ),
-        Positioned(
-          top: 8.w,
-          left: 8.w,
-          child: _ActionButtons(
-            idStore: publisher.id,
-            type: publisher.accountType,
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.black54, Colors.transparent],
+                ),
+              ),
+            ),
           ),
-        ),
-      ],
+          Positioned(
+            top: 8.w,
+            right: 8.w,
+            child: _AccountTypeChip(type: publisher.accountType),
+          ),
+          Positioned(
+            top: 8.w,
+            left: 8.w,
+            child: _ActionButtons(
+              idStore: publisher.id,
+              type: publisher.accountType,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -197,10 +227,7 @@ class _AccountTypeChip extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color: type == 'commercial'
-            ? AppColors.backgroundColorIconBack(
-                Get.find<ThemeController>().isDarkMode.value)
-            : Colors.grey[600],
+        color: type == 'commercial' ? AppColors.primaryColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
@@ -217,32 +244,16 @@ class _ActionButtons extends StatelessWidget {
   final String type;
 
   const _ActionButtons({required this.idStore, required this.type});
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        /*  _ActionButton(
-          icon: Icons.edit,
-          color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-          onPressed: () {
-            Get.find<AddStorePushController>().idStoretoEdit = idStore;
-            Get.find<AddStorePushController>().accountType.value = type;
-            print("////////////////////////////////////////////////////");
-            print(Get.find<AddStorePushController>().idStoretoEdit);
-            print(Get.find<AddStorePushController>().accountType.value);
-            print("////////////////////////////////////////////////////");
-            print("////////////////////////////////////////////////////");
-            print("////////////////////////////////////////////////////");
-            Get.find<Userdahsboardcontroller>().isShowEditPusher.value = true;
-          },
-        ),*/
-        SizedBox(width: 6.w),
         _ActionButton(
           icon: Icons.delete,
           color: Colors.red,
-          onPressed: () {
-            Get.find<Userdahsboardcontroller>().deleteStore(idStore);
-          },
+          onPressed: () =>
+              Get.find<Userdahsboardcontroller>().deleteStore(idStore),
         ),
       ],
     );
@@ -252,21 +263,25 @@ class _ActionButtons extends StatelessWidget {
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final Color color;
-  void Function()? onPressed;
-  _ActionButton(
-      {required this.icon, required this.color, required this.onPressed});
+  final VoidCallback? onPressed;
+
+  const _ActionButton(
+      {required this.icon, required this.color, this.onPressed});
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    return CircleAvatar(
-      radius: 16.r,
-      backgroundColor: color.withOpacity(0.2),
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 4.w),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
       child: IconButton(
         icon: Icon(icon, size: 18.sp, color: color),
         onPressed: onPressed,
         padding: EdgeInsets.zero,
+        visualDensity: VisualDensity.compact,
+        splashRadius: 20,
       ),
     );
   }
@@ -280,14 +295,22 @@ class _ContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Get.find<ThemeController>().isDarkMode.value;
+
     return Padding(
       padding: EdgeInsets.all(12.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TitleSection(publisher: publisher, textColor: textColor),
+          _TitleSection(
+            publisher: publisher,
+            textColor: textColor,
+          ),
           SizedBox(height: 8.h),
-          _Description(publisher: publisher, textColor: textColor),
+          _Description(
+            publisher: publisher,
+            textColor: textColor,
+          ),
           SizedBox(height: 12.h),
           _SocialIcons(publisher: publisher),
         ],
@@ -304,18 +327,23 @@ class _TitleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Get.find<ThemeController>().isDarkMode.value;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(publisher.translations.first.name,
-            style: TextStyle(
-                fontSize: 16.sp, fontWeight: FontWeight.bold, color: textColor),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis),
+        Text(
+          publisher.translations.first.name,
+          style: TextStyle(
+              fontSize: 16.sp, fontWeight: FontWeight.bold, color: textColor),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         SizedBox(height: 4.h),
-        Text(publisher.city.translations.first.name,
-            style:
-                TextStyle(fontSize: 12.sp, color: textColor.withOpacity(0.8))),
+        Text(
+          publisher.city.translations.first.name,
+          style: TextStyle(fontSize: 12.sp, color: textColor.withOpacity(0.8)),
+        ),
       ],
     );
   }
@@ -329,6 +357,8 @@ class _Description extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Get.find<ThemeController>().isDarkMode.value;
+
     return Text(
       publisher.translations.first.description ?? 'لا يوجد وصف',
       style: TextStyle(fontSize: 12.sp, color: textColor.withOpacity(0.7)),
@@ -368,7 +398,6 @@ class _SocialIcon extends StatelessWidget {
   final String url;
 
   const _SocialIcon(this.icon, this.color, this.url);
-
   @override
   Widget build(BuildContext context) {
     return IconButton(
@@ -382,11 +411,17 @@ class _SocialIcon extends StatelessWidget {
 }
 
 Future<void> _launchURL(String url) async {
-  // ignore: deprecated_member_use
-  if (await canLaunch(url)) {
-    // ignore: deprecated_member_use
-    await launch(url);
-  } else {
-    Get.snackbar('خطأ', 'تعذر فتح الرابط', snackPosition: SnackPosition.BOTTOM);
+  final uri = Uri.parse(url);
+  if (!await canLaunchUrl(uri)) {
+    await Future.delayed(Duration.zero, () {
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(
+          content: Text('تعذر فتح الرابط: $url'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    });
+    return;
   }
+  await launchUrl(uri, mode: LaunchMode.externalApplication);
 }

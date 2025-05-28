@@ -27,13 +27,12 @@ class _AdSectionState extends State<AdSection>
   }
 
   void _startAutoPlay() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      final count = controller.latestBannerAdsList.length;
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      final int count = controller.latestBannerAdsList.length;
       if (count == 0) return;
 
-      final nextIndex = (controller.currentAdIndex.value + 1) % count;
+      final int nextIndex = (controller.currentAdIndex.value + 1) % count;
       controller.currentAdIndex.value = nextIndex;
-
       _pageController.animateToPage(
         nextIndex,
         duration: const Duration(milliseconds: 800),
@@ -57,28 +56,28 @@ class _AdSectionState extends State<AdSection>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // مهم عشان AutomaticKeepAliveClientMixin يشتغل
+    super.build(context); // مهم لـ AutomaticKeepAliveClientMixin
 
     return Obx(() {
       if (controller.isLoadingLatestBannerAds.value) {
         return _buildLoadingIndicator();
       }
-
       if (controller.latestBannerAdsList.isEmpty) {
         return _buildPlaceholder();
       }
-
       return _buildAdCarousel();
     });
   }
 
   Widget _buildAdCarousel() {
+    final double screenWidth = MediaQuery.of(context).size.width;
     final bool isRTL = Get.locale?.languageCode == 'ar';
+    final int adCount = controller.latestBannerAdsList.length;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Container(
-        width: MediaQuery.of(context).size.width,
+        width: screenWidth,
         height: 160.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
@@ -98,11 +97,11 @@ class _AdSectionState extends State<AdSection>
               PageView.builder(
                 controller: _pageController,
                 reverse: isRTL,
-                onPageChanged: (index) =>
+                onPageChanged: (int index) =>
                     controller.currentAdIndex.value = index,
-                itemCount: controller.latestBannerAdsList.length,
+                itemCount: adCount,
                 itemBuilder: (context, index) {
-                  final imageUrl =
+                  final String imageUrl =
                       controller.latestBannerAdsList[index].bannerImage;
                   return CachedNetworkImage(
                     imageUrl: imageUrl,
@@ -120,13 +119,11 @@ class _AdSectionState extends State<AdSection>
                 left: 0,
                 right: 0,
                 child: Obx(() {
-                  final current = controller.currentAdIndex.value;
-                  final count = controller.latestBannerAdsList.length;
-
+                  final int current = controller.currentAdIndex.value;
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      count,
+                      adCount,
                       (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: EdgeInsets.symmetric(horizontal: 4.w),
@@ -158,7 +155,7 @@ class _AdSectionState extends State<AdSection>
           ClipRRect(
             borderRadius: BorderRadius.circular(20.r),
             child: ShaderMask(
-              shaderCallback: (rect) {
+              shaderCallback: (Rect rect) {
                 return LinearGradient(
                   colors: [Colors.grey[300]!, Colors.grey[100]!],
                 ).createShader(rect);

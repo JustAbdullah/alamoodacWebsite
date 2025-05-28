@@ -7,13 +7,17 @@ import 'package:alamoadac_website/viewsDeskTop/SettingsDeskTop/show_packages_des
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+// تم إزالة استيراد flutter_vector_icons
+
 import '../../../controllers/ThemeController.dart';
 import '../../../controllers/LoadingController.dart';
 import '../../../controllers/settingsController.dart';
 import '../../../core/constant/app_text_styles.dart';
 import '../../../core/constant/appcolors.dart';
+import '../../controllers/subscriptionController.dart';
 import '../../controllers/userDahsboardController.dart';
+import '../../core/localization/changelanguage.dart';
 import '../SidePopup.dart';
 import '../dashboardUserDeskTop/home_dashboard_user_dasktop.dart';
 import 'chose_messages_desktop.dart';
@@ -55,7 +59,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                 children: [
                   _buildSectionTitle("الإعدادات العامة".tr),
                   _buildSettingItem(
-                    icon: MdiIcons.translate,
+                    icon: Icons.translate,
                     title: "اللغة",
                     onTap: () => showSidePopup(
                       context: context,
@@ -65,7 +69,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildSettingItem(
-                    icon: MdiIcons.currencyUsd,
+                    icon: Icons.attach_money,
                     title: "العملة",
                     onTap: () => showSidePopup(
                       context: context,
@@ -75,7 +79,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildSettingItem(
-                    icon: MdiIcons.shieldCheck,
+                    icon: Icons.verified_user,
                     title: "توثيق الحساب",
                     onTap: () => showSidePopup(
                       context: context,
@@ -85,7 +89,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildSettingItem(
-                    icon: MdiIcons.packageVariant,
+                    icon: Icons.work,
                     title: "الباقات",
                     onTap: () => showSidePopup(
                       context: context,
@@ -95,7 +99,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildSettingItem(
-                    icon: MdiIcons.packageCheck,
+                    icon: Icons.confirmation_number,
                     title: "الاشتراك من خلال الاكواد".tr,
                     onTap: () => showSidePopup(
                       context: context,
@@ -107,7 +111,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                   _buildDivider(),
                   _buildSectionTitle("المظهر".tr),
                   _buildSettingItem(
-                    icon: MdiIcons.themeLightDark,
+                    icon: Icons.brightness_6,
                     title: "مظهر التطبيق",
                     onTap: () => showSidePopup(
                       context: context,
@@ -119,16 +123,34 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                   _buildDivider(),
                   _buildSectionTitle("إدارة الحساب".tr),
                   _buildSettingItem(
-                      icon: MdiIcons.viewDashboard,
+                      icon: Icons.dashboard,
                       title: "لوحة التحكم",
-                      onTap: () => showSidePopup(
-                            context: context,
-                            child: const HomeDashboardUserDeskTop(),
-                            widthPercent: 1,
-                            useSideAlignment: true,
-                          )),
+                      onTap: () {
+                        Userdahsboardcontroller userdahsboardcontroller =
+                            Get.find<Userdahsboardcontroller>();
+                        userdahsboardcontroller.fetchStroePuscher(
+                            Get.find<ChangeLanguageController>()
+                                .currentLocale
+                                .value
+                                .languageCode);
+                        final subController =
+                            Get.find<SubscriptionController>();
+                        subController.fetchUserSubscriptions(
+                            Get.find<LoadingController>().currentUser?.id ?? 0,
+                            Get.find<ChangeLanguageController>()
+                                .currentLocale
+                                .value
+                                .languageCode);
+
+                        showSidePopup(
+                          context: context,
+                          child: const HomeDashboardUserDeskTop(),
+                          widthPercent: 1,
+                          useSideAlignment: true,
+                        );
+                      }),
                   _buildSettingItem(
-                    icon: MdiIcons.information,
+                    icon: Icons.business,
                     title: "بيانات الناشر",
                     onTap: () => showSidePopup(
                       context: context,
@@ -138,7 +160,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildSettingItem(
-                    icon: MdiIcons.mapMarkerPath,
+                    icon: Icons.local_offer,
                     title: "تمويل المنشورات".tr,
                     onTap: () => showSidePopup(
                       context: context,
@@ -148,37 +170,39 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildSettingItem(
-                      icon: MdiIcons.message,
-                      title: "الرسائل والتنبيهات".tr,
-                      onTap: () {
-                        settingsController.showMessages.value = true;
-                        settingsController.fetchMessages(
-                          Get.find<LoadingController>().currentUser?.id ?? 0,
-                        );
-                        showSidePopup(
-                          context: context,
-                          child: const ChoseMessagesDeskTop(),
-                          widthPercent: 0.40,
-                          useSideAlignment: true,
-                        );
-                      }),
+                    icon: Icons.notifications_active,
+                    title: "الرسائل والتنبيهات".tr,
+                    onTap: () {
+                      settingsController.showMessages.value = true;
+                      settingsController.fetchMessages(
+                        Get.find<LoadingController>().currentUser?.id ?? 0,
+                      );
+                      showSidePopup(
+                        context: context,
+                        child: const ChoseMessagesDeskTop(),
+                        widthPercent: 0.40,
+                        useSideAlignment: true,
+                      );
+                    },
+                  ),
                   _buildDivider(),
                   _buildSectionTitle("القوانين".tr),
                   _buildSettingItem(
-                      icon: MdiIcons.fileDocument,
-                      title: "الشروط والقوانين",
-                      onTap: () {
-                        showSidePopup(
-                          context: context,
-                          child: const AboutTermsPrivacyPageDeskTopPage(),
-                          widthPercent: 0.50,
-                          useSideAlignment: true,
-                        );
-                      }),
+                    icon: Icons.description,
+                    title: "الشروط والقوانين",
+                    onTap: () {
+                      showSidePopup(
+                        context: context,
+                        child: const AboutTermsPrivacyPageDeskTopPage(),
+                        widthPercent: 0.50,
+                        useSideAlignment: true,
+                      );
+                    },
+                  ),
                   _buildDivider(),
                   _buildSectionTitle("الخروج".tr),
                   _buildDangerousItem(
-                    icon: MdiIcons.delete,
+                    icon: Icons.delete_forever,
                     title: "حذف الحساب",
                     onTap: () => showSidePopup(
                       context: context,
@@ -188,14 +212,12 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                     ),
                   ),
                   _buildDangerousItem(
-                    icon: MdiIcons.logout,
+                    icon: Icons.logout,
                     title: "تسجيل الخروج",
                     onTap: () =>
                         _handleLogout(loadingController, settingsController),
                   ),
-                  SizedBox(
-                    height: 100.h,
-                  ),
+                  SizedBox(height: 100.h),
                 ],
               ),
             ),
@@ -222,8 +244,9 @@ class SettingsContentDeskTopPage extends StatelessWidget {
           fontFamily: AppTextStyles.DinarOne,
           fontSize: 24.sp,
           fontWeight: FontWeight.w800,
-          color:
-              AppColors.textColor(Get.find<ThemeController>().isDarkMode.value),
+          color: AppColors.textColor(
+            Get.find<ThemeController>().isDarkMode.value,
+          ),
         ),
       ),
     );
@@ -237,9 +260,9 @@ class SettingsContentDeskTopPage extends StatelessWidget {
         style: TextStyle(
           fontFamily: AppTextStyles.DinarOne,
           fontSize: 18.sp,
-          color:
-              AppColors.textColor(Get.find<ThemeController>().isDarkMode.value)
-                  .withOpacity(0.7),
+          color: AppColors.textColor(
+            Get.find<ThemeController>().isDarkMode.value,
+          ).withOpacity(0.7),
         ),
       ),
     );
@@ -248,24 +271,31 @@ class SettingsContentDeskTopPage extends StatelessWidget {
   Widget _buildSettingItem({
     required IconData icon,
     required String title,
-    required Function() onTap,
+    required VoidCallback onTap,
   }) {
     final themeController = Get.find<ThemeController>();
 
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 15.w),
       leading: Container(
-        padding: EdgeInsets.all(10.w),
+        padding: EdgeInsets.all(12.w), // زيادة الـ padding
         decoration: BoxDecoration(
           color: AppColors.textColor(themeController.isDarkMode.value)
-              .withOpacity(0.1),
+              .withOpacity(0.15),
           shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [
+              AppColors.oragne.withOpacity(0.3),
+              Colors.transparent.withOpacity(0.3),
+            ],
+          ),
         ),
         child: Icon(
           icon,
-          size: 24.sp,
-          color:
-              AppColors.backgroundColorIcon(themeController.isDarkMode.value),
+          size: 26.sp, // زيادة حجم الأيقونة
+          color: AppColors.backgroundColorIcon(
+            themeController.isDarkMode.value,
+          ),
         ),
       ),
       title: Text(
@@ -292,29 +322,30 @@ class SettingsContentDeskTopPage extends StatelessWidget {
   Widget _buildDangerousItem({
     required IconData icon,
     required String title,
-    required Function() onTap,
+    required VoidCallback onTap,
   }) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 15.w),
       leading: Container(
-        padding: EdgeInsets.all(10.w),
+        padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: AppColors.redColor.withOpacity(0.1),
+          color: AppColors.redColor.withOpacity(0.15),
           shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [
+              AppColors.redColor.withOpacity(0.3),
+              Colors.transparent,
+            ],
+          ),
         ),
-        child: Icon(
-          icon,
-          size: 24.sp,
-          color: AppColors.redColor,
-        ),
+        child: Icon(icon, size: 26.sp, color: AppColors.redColor),
       ),
       title: Text(
         title.tr,
         style: TextStyle(
-          fontFamily: AppTextStyles.DinarOne,
-          fontSize: 18.sp,
-          color: AppColors.redColor,
-        ),
+            fontFamily: AppTextStyles.DinarOne,
+            fontSize: 18.sp,
+            color: AppColors.redColor),
       ),
       onTap: onTap,
       shape: RoundedRectangleBorder(
@@ -331,8 +362,10 @@ class SettingsContentDeskTopPage extends StatelessWidget {
     );
   }
 
-  void _handleLogout(LoadingController loadingController,
-      Settingscontroller settingsController) {
+  void _handleLogout(
+    LoadingController loadingController,
+    Settingscontroller settingsController,
+  ) {
     if (loadingController.currentUser == null) {
       Get.snackbar(
         'خطأ'.tr,
@@ -342,7 +375,14 @@ class SettingsContentDeskTopPage extends StatelessWidget {
         colorText: Colors.white,
       );
     } else {
-      settingsController.SignOut();
+      Get.snackbar(
+        'تم الخروج'.tr,
+        "تم تسجيل الخروج بنجاح".tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      settingsController.SignOutDeskTop();
     }
   }
 }

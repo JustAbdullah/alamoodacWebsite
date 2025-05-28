@@ -251,7 +251,23 @@ class Userdahsboardcontroller extends GetxController {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         if (data['success']) {
-          Get.snackbar('Success', 'Store deleted successfully.');
+          Get.snackbar(
+            'Success',
+            'تم حـذف بيـانات الناشر- بشكل كامل',
+            snackPosition: SnackPosition.BOTTOM, // يظهر في الأسفل
+            backgroundColor: Colors.yellow.shade700, // لون أصفر واضح
+            colorText: Colors.black, // لون الخط مناسب للون الخلفية
+            margin: EdgeInsets.all(12), // مسافة من الأطراف
+            borderRadius: 10, // حواف ناعمة
+            duration: Duration(seconds: 3), // مدة العرض
+            icon:
+                Icon(Icons.delete, color: Colors.black), // أيقونة تدل على الحذف
+          );
+
+          fetchStroePuscher(Get.find<ChangeLanguageController>()
+              .currentLocale
+              .value
+              .languageCode);
 
           fetchStores(
               Get.find<LoadingController>().currentUser?.id ?? 0,

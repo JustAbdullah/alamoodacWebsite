@@ -23,48 +23,50 @@ class SearchScreenDesktop extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeCtrl = Get.find<ThemeController>();
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor(themeCtrl.isDarkMode.value),
-      body: SafeArea(
-        child: GetBuilder<Searchcontroller>(
-          builder: (searchCtrl) {
-            return CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(child: TopSectionDeskTop()),
-                
-                // Header Section
-                SliverToBoxAdapter(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: searchCtrl.showPublishers.value
-                        ? _PublishersSearchHeader(searchCtrl: searchCtrl)
-                        : _PostsSearchHeader(searchCtrl: searchCtrl),
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: AppColors.backgroundColor(themeCtrl.isDarkMode.value),
+        body: SafeArea(
+          child: GetBuilder<Searchcontroller>(
+            builder: (searchCtrl) {
+              return CustomScrollView(
+                slivers: [
+                  const SliverToBoxAdapter(child: TopSectionDeskTop()),
+
+                  // Header Section
+                  SliverToBoxAdapter(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: searchCtrl.showPublishers.value
+                          ? _PublishersSearchHeader(searchCtrl: searchCtrl)
+                          : _PostsSearchHeader(searchCtrl: searchCtrl),
+                    ),
                   ),
-                ),
 
-                // Toggle Buttons
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(vertical: 24.h,horizontal: 40.w),
-                  sliver: SliverToBoxAdapter(
-                    child: _SearchToggleButtons(searchCtrl: searchCtrl),
+                  // Toggle Buttons
+                  SliverPadding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 40.w),
+                    sliver: SliverToBoxAdapter(
+                      child: _SearchToggleButtons(searchCtrl: searchCtrl),
+                    ),
                   ),
-                ),
 
-                // Main Content
-                searchCtrl.showPublishers.value
-                    ? _PublishersContent()
-                    : _PostsContent(),
+                  // Main Content
+                  searchCtrl.showPublishers.value
+                      ? _PublishersContent()
+                      : _PostsContent(),
 
-                const SliverToBoxAdapter(child: FooterDesktop()),
-              ],
-            );
-          },
+                  const SliverToBoxAdapter(child: FooterDesktop()),
+                ],
+              );
+            },
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
-
 
 // جزء رأس البحث عن المنشورات
 class _PostsSearchHeader extends StatelessWidget {
@@ -231,18 +233,16 @@ class _PublishersSearchHeader extends StatelessWidget {
 
   void _performSearch(String value) {
     if (value.isEmpty) return;
-    
+
     searchCtrl.isSearchingPublishers.value = true;
     searchCtrl.fetchStoresList(
-      language: Get.find<ChangeLanguageController>()
-          .currentLocale
-          .value
-          .languageCode,
+      language:
+          Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
       searchName: value,
     );
   }
 }
-  
+
 // أزرار التبديل بين البحثين
 class _SearchToggleButtons extends StatelessWidget {
   final Searchcontroller searchCtrl;
@@ -254,15 +254,16 @@ class _SearchToggleButtons extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 16.h),
       child: Row(
-        
         children: [
           _AnimatedToggleButton(
             index: 0,
             label: 'المنشورات',
             icon: Icons.article_rounded,
             isActive: !searchCtrl.showPublishers.value,
-            onTap: () { searchCtrl.showPublishers.value = false;
-                searchCtrl.update();} ,
+            onTap: () {
+              searchCtrl.showPublishers.value = false;
+              searchCtrl.update();
+            },
           ),
           SizedBox(width: 14.w),
           _AnimatedToggleButton(
@@ -270,8 +271,10 @@ class _SearchToggleButtons extends StatelessWidget {
             label: 'الناشرين',
             icon: Icons.storefront_rounded,
             isActive: searchCtrl.showPublishers.value,
-            onTap: (){searchCtrl.showPublishers.value = true;
-                searchCtrl.update();},
+            onTap: () {
+              searchCtrl.showPublishers.value = true;
+              searchCtrl.update();
+            },
           ),
         ],
       ),
@@ -307,14 +310,10 @@ class _AnimatedToggleButton extends StatelessWidget {
             vertical: 16.h,
           ),
           decoration: BoxDecoration(
-            color: isActive 
-                ? AppColors.TheMain 
-                : Colors.transparent,
+            color: isActive ? AppColors.TheMain : Colors.transparent,
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(
-              color: isActive 
-                  ? Colors.transparent 
-                  : AppColors.TheMain,
+              color: isActive ? Colors.transparent : AppColors.TheMain,
               width: 2,
             ),
             boxShadow: isActive
@@ -329,10 +328,9 @@ class _AnimatedToggleButton extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(
-                icon, 
-                size: 24.w,
-                color: isActive ? Colors.white : AppColors.TheMain),
+              Icon(icon,
+                  size: 24.w,
+                  color: isActive ? Colors.white : AppColors.TheMain),
               SizedBox(width: 12.w),
               Text(
                 label.tr,
@@ -349,6 +347,7 @@ class _AnimatedToggleButton extends StatelessWidget {
     );
   }
 }
+
 // شريط التحكم في البحث
 class _SearchControlBar extends StatelessWidget {
   @override
@@ -448,7 +447,7 @@ class _PublishersContent extends StatelessWidget {
       padding: EdgeInsets.all(16.w),
       sliver: SliverToBoxAdapter(
         child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 100.w),
+          padding: EdgeInsets.symmetric(horizontal: 100.w),
           child: ListStoresDesktop(),
         ),
       ),

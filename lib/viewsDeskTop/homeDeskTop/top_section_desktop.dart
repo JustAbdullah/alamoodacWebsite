@@ -2,7 +2,6 @@ import 'package:alamoadac_website/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../controllers/LoadingController.dart';
 import '../../controllers/ThemeController.dart';
@@ -112,8 +111,8 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
             ),
             child: IconButton(
               icon: themeController.isDarkMode.value
-                  ? Icon(MdiIcons.weatherSunny, size: 24.sp)
-                  : Icon(MdiIcons.weatherNight, size: 24.sp),
+                  ? Icon(Icons.wb_sunny, size: 24.sp) // أيقونة الشمس الجديدة
+                  : Icon(Icons.nightlight_round, size: 24.sp), // أيقونة القمر
               color: Colors.white,
               onPressed: () {
                 if (themeController.isDarkMode.value) {
@@ -146,10 +145,12 @@ Widget _buildSettingsButton(HomeController controller, BuildContext context) {
         ),
       ),
       child: IconButton(
-        icon: Icon(MdiIcons.cogOutline,
-            size: 24.sp,
-            color: AppColors.iconColor(
-                Get.find<ThemeController>().isDarkMode.value)),
+        icon: Icon(
+          Icons.settings, // أيقونة الإعدادات الجديدة
+          size: 24.sp,
+          color:
+              AppColors.iconColor(Get.find<ThemeController>().isDarkMode.value),
+        ),
         onPressed: () => controller.showSettingsPopup(context),
         splashRadius: 25.r,
       ),
@@ -164,7 +165,7 @@ Widget _buildUserSection(
 ) {
   return GetBuilder<LoadingController>(
     builder: (_) {
-      final user = controller.currentUser; // الآن حقل User? عادي
+      final user = controller.currentUser;
       return AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),
         child: InkWell(
@@ -211,7 +212,7 @@ Widget _buildUserSection(
                       ),
                     ),
                     child: Icon(
-                      MdiIcons.accountOutline,
+                      Icons.person_outline, // أيقونة الحساب الجديدة
                       size: 22.sp,
                       color: Colors.white,
                     ),
@@ -232,7 +233,7 @@ Widget _buildUserSection(
                       ),
                       if (user != null)
                         Text(
-                          user?.name ?? "",
+                          user.name ?? "",
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.bold,

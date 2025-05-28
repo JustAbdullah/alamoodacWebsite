@@ -3,15 +3,19 @@ import 'package:alamoadac_website/viewMobile/Settings/show_packages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+// تم إزالة استيراد الحزمة القديمة
+// import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 
 import '../../controllers/LoadingController.dart';
 import '../../controllers/ThemeController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/settingsController.dart';
+import '../../controllers/subscriptionController.dart';
 import '../../controllers/userDahsboardController.dart';
 import '../../core/constant/app_text_styles.dart';
 import '../../core/constant/appcolors.dart';
+import '../../core/localization/changelanguage.dart';
 import '../Auth/Terms.dart';
 import '../OnAppPages/menu.dart';
 import 'chose_conis.dart';
@@ -39,19 +43,19 @@ class SettingsPage extends StatelessWidget {
 
     return GetX<HomeController>(
       builder: (controller) => AnimatedSwitcher(
-        duration: const Duration(milliseconds: 5),
-        child: controller.isMenu.value
-            ? Scaffold(
-                body: Stack(
-                  children: [
-                    _buildSettingsPanel(
-                        themeController, settingsController, loadingController),
-                    _BottomNavigationSection(),
-                  ],
+          duration: const Duration(milliseconds: 5),
+          child: Scaffold(
+            body: Stack(
+              children: [
+                _buildSettingsPanel(
+                  themeController,
+                  settingsController,
+                  loadingController,
                 ),
-              )
-            : const SizedBox.shrink(),
-      ),
+                const _BottomNavigationSection(),
+              ],
+            ),
+          )),
     );
   }
 
@@ -88,124 +92,138 @@ class SettingsPage extends StatelessWidget {
                       children: [
                         _buildSectionTitle("الإعدادات العامة".tr),
                         _buildSettingItem(
-                            icon: MdiIcons.translate,
-                            title: "اللغة",
-                            onTap: () {
-                              settingsController.showChoseLang.value = true;
-                              Get.to(() => ChoseLang());
-                            }),
+                          icon: Icons.translate, // تغيير الأيقونة
+                          title: "اللغة",
+                          onTap: () {
+                            settingsController.showChoseLang.value = true;
+                            Get.to(() => ChoseLang());
+                          },
+                        ),
                         _buildSettingItem(
-                            icon: MdiIcons.currencyUsd,
-                            title: "العملة",
-                            onTap: () {
-                              settingsController.showCoins.value = true;
-                              Get.to(() => ChoseConis());
-                            }),
+                          icon: Icons.attach_money, // تغيير الأيقونة
+                          title: "العملة",
+                          onTap: () {
+                            settingsController.showCoins.value = true;
+                            Get.to(() => ChoseConis());
+                          },
+                        ),
                         _buildSettingItem(
-                            icon: MdiIcons.shieldCheck,
-                            title: "توثيق الحساب",
-                            onTap: () {
-                              settingsController.saveAccount.value = true;
-                              Get.to(() => SaveAccount());
-                            }),
+                          icon: Icons.verified_user, // تغيير الأيقونة
+                          title: "توثيق الحساب",
+                          onTap: () {
+                            settingsController.saveAccount.value = true;
+                            Get.to(() => SaveAccount());
+                          },
+                        ),
                         _buildSettingItem(
-                          icon: MdiIcons.packageVariant,
+                          icon: Icons.work, // تغيير الأيقونة
                           title: "الباقات",
                           onTap: () {
                             settingsController.showPack.value = true;
                             Get.to(() => ShowPackages());
-                          }, // أضف المنطق المناسب هنا
+                          },
                         ),
                         _buildSettingItem(
-                          icon: MdiIcons.packageCheck,
+                          icon: Icons.confirmation_number, // تغيير الأيقونة
                           title: "الاشتراك من خلال الاكواد".tr,
                           onTap: () {
                             settingsController.isShowAddCode.value = true;
                             Get.to(() => ShowAskAddCode());
-                          }, // أضف المنطق المناسب هنا
+                          },
                         ),
-                        /* _buildSettingItem(
-                          icon: MdiIcons.mapMarker,
-                          title: "الموقع الجغرافي",
-                          onTap: () =>
-                              settingsController.showLocation.value = true,
-                        ),*/
                         _buildDivider(),
                         _buildSectionTitle("المظهر".tr),
                         _buildSettingItem(
-                            icon: MdiIcons.themeLightDark,
-                            title: "مظهر التطبيق",
-                            onTap: () {
-                              settingsController.showMode.value = true;
-                              Get.to(() => ChoseMode());
-                            }),
+                          icon: Icons.brightness_6, // تغيير الأيقونة
+                          title: "مظهر التطبيق",
+                          onTap: () {
+                            settingsController.showMode.value = true;
+                            Get.to(() => ChoseMode());
+                          },
+                        ),
                         _buildDivider(),
                         _buildSectionTitle("إدارة الحساب".tr),
                         _buildSettingItem(
-                            icon: MdiIcons.viewDashboard,
-                            title: "لوحة التحكم",
-                            onTap: () {
-                              Get.find<Userdahsboardcontroller>()
-                                  .showDashBoardUser
-                                  .value = true;
-
-                              Get.toNamed(
-                                '/dashboard-mobile', // المسار مع المعلمة الديناميكية
-                                // إرسال الكائن كامل
-                              );
-                            }),
-                        _buildSettingItem(
-                            icon: MdiIcons.information,
-                            title: "بيانات الناشر",
-                            onTap: () {
-                              settingsController.showPusher.value = true;
-                              Get.to(() => ChosePusher());
-                            }),
-                        _buildSettingItem(
-                            icon: MdiIcons.mapMarkerPath,
-                            title: "تمويل المنشورات".tr,
-                            onTap: () {
-                              settingsController.showAskToPromotedAd.value =
-                                  true;
-                              Get.to(() => ShowAskPromoted());
-                            }),
-                        _buildSettingItem(
-                            icon: MdiIcons.message,
-                            title: "الرسائل والتنبيهات".tr,
-                            onTap: () {
-                              settingsController.showMessages.value = true;
-                              settingsController.fetchMessages(
+                          icon: Icons.dashboard, // تغيير الأيقونة
+                          title: "لوحة التحكم",
+                          onTap: () {
+                            Userdahsboardcontroller userdahsboardcontroller =
+                                Get.find<Userdahsboardcontroller>();
+                            userdahsboardcontroller.fetchStroePuscher(
+                                Get.find<ChangeLanguageController>()
+                                    .currentLocale
+                                    .value
+                                    .languageCode);
+                            final subController =
+                                Get.find<SubscriptionController>();
+                            subController.fetchUserSubscriptions(
                                 Get.find<LoadingController>().currentUser?.id ??
                                     0,
-                              );
-                              Get.to(() => ChoseMessages());
-                            }),
+                                Get.find<ChangeLanguageController>()
+                                    .currentLocale
+                                    .value
+                                    .languageCode);
+                            Get.find<Userdahsboardcontroller>()
+                                .showDashBoardUser
+                                .value = true;
+                            Get.toNamed('/dashboard-mobile');
+                          },
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.business, // تغيير الأيقونة
+                          title: "بيانات الناشر",
+                          onTap: () {
+                            settingsController.showPusher.value = true;
+                            Get.to(() => ChosePusher());
+                          },
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.local_offer, // تغيير الأيقونة
+                          title: "تمويل المنشورات".tr,
+                          onTap: () {
+                            settingsController.showAskToPromotedAd.value = true;
+                            Get.to(() => ShowAskPromoted());
+                          },
+                        ),
+                        _buildSettingItem(
+                          icon: Icons.notifications_active, // تغيير الأيقونة
+                          title: "الرسائل والتنبيهات".tr,
+                          onTap: () {
+                            settingsController.showMessages.value = true;
+                            settingsController.fetchMessages(
+                              Get.find<LoadingController>().currentUser?.id ??
+                                  0,
+                            );
+                            Get.to(() => ChoseMessages());
+                          },
+                        ),
                         _buildDivider(),
                         _buildSectionTitle("القوانين".tr),
                         _buildSettingItem(
-                            icon: MdiIcons.fileDocument,
-                            title: "الشروط والقوانين",
-                            onTap: () => Get.to(() => AboutTermsPrivacyPage())),
+                          icon: Icons.description, // تغيير الأيقونة
+                          title: "الشروط والقوانين",
+                          onTap: () => Get.to(() => AboutTermsPrivacyPage()),
+                        ),
                         _buildDivider(),
                         _buildSectionTitle("الخروج".tr),
                         _buildDangerousItem(
-                            icon: MdiIcons.delete,
-                            title: "حذف الحساب",
-                            onTap: () {
-                              settingsController.showAskToDeleteAccount.value =
-                                  true;
-                              Get.to(() => ShowAskDeleteAccount());
-                            }),
-                        _buildDangerousItem(
-                            icon: MdiIcons.logout,
-                            title: "تسجيل الخروج",
-                            onTap: () {
-                              _handleLogout(
-                                  loadingController, settingsController);
-                            }),
-                        SizedBox(
-                          height: 100.h,
+                          icon: Icons.delete_forever, // تغيير الأيقونة
+                          title: "حذف الحساب",
+                          onTap: () {
+                            settingsController.showAskToDeleteAccount.value =
+                                true;
+                            Get.to(() => ShowAskDeleteAccount());
+                          },
                         ),
+                        _buildDangerousItem(
+                          icon: Icons.logout, // تغيير الأيقونة
+                          title: "تسجيل الخروج",
+                          onTap: () {
+                            _handleLogout(
+                                loadingController, settingsController);
+                          },
+                        ),
+                        SizedBox(height: 100.h),
                       ],
                     ),
                   ),
@@ -245,8 +263,9 @@ class SettingsPage extends StatelessWidget {
           fontFamily: AppTextStyles.DinarOne,
           fontSize: 24.sp,
           fontWeight: FontWeight.w800,
-          color:
-              AppColors.textColor(Get.find<ThemeController>().isDarkMode.value),
+          color: AppColors.textColor(
+            Get.find<ThemeController>().isDarkMode.value,
+          ),
         ),
       ),
     );
@@ -260,9 +279,9 @@ class SettingsPage extends StatelessWidget {
         style: TextStyle(
           fontFamily: AppTextStyles.DinarOne,
           fontSize: 18.sp,
-          color:
-              AppColors.textColor(Get.find<ThemeController>().isDarkMode.value)
-                  .withOpacity(0.7),
+          color: AppColors.textColor(
+            Get.find<ThemeController>().isDarkMode.value,
+          ).withOpacity(0.7),
         ),
       ),
     );
@@ -271,7 +290,7 @@ class SettingsPage extends StatelessWidget {
   Widget _buildSettingItem({
     required IconData icon,
     required String title,
-    required Function() onTap,
+    required VoidCallback onTap,
   }) {
     final themeController = Get.find<ThemeController>();
 
@@ -284,10 +303,12 @@ class SettingsPage extends StatelessWidget {
               .withOpacity(0.1),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon,
-            size: 24.sp,
-            color: AppColors.backgroundColorIcon(
-                themeController.isDarkMode.value)),
+        child: Icon(
+          icon,
+          size: 24.sp,
+          color:
+              AppColors.backgroundColorIcon(themeController.isDarkMode.value),
+        ),
       ),
       title: Text(
         title.tr,
@@ -313,7 +334,7 @@ class SettingsPage extends StatelessWidget {
   Widget _buildDangerousItem({
     required IconData icon,
     required String title,
-    required Function() onTap,
+    required VoidCallback onTap,
   }) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 15.w),
@@ -348,8 +369,10 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  void _handleLogout(LoadingController loadingController,
-      Settingscontroller settingsController) {
+  void _handleLogout(
+    LoadingController loadingController,
+    Settingscontroller settingsController,
+  ) {
     if (loadingController.currentUser == null) {
       Get.snackbar(
         'خطأ'.tr,
@@ -359,7 +382,14 @@ class SettingsPage extends StatelessWidget {
         colorText: Colors.white,
       );
     } else {
-      settingsController.SignOut();
+      Get.snackbar(
+        'تم الخروج'.tr,
+        "تم تسجيل الخروج بنجاح".tr,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      settingsController.SignOutMobile();
     }
   }
 }
@@ -373,7 +403,8 @@ class _BottomNavigationSection extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Container(
         color: AppColors.backgroundColor(
-            Get.find<ThemeController>().isDarkMode.value),
+          Get.find<ThemeController>().isDarkMode.value,
+        ),
         width: MediaQuery.of(context).size.width,
         height: 70.h,
         child: const Menu(),
