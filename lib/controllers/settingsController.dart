@@ -369,61 +369,64 @@ class Settingscontroller extends GetxController {
   }
 
   RxBool isShowAddCode = false.obs;
+  /////////////////////////
   RxBool showMessages = false.obs;
   var messages = <MessageModel>[].obs;
   var isLoadingMessages = false.obs;
-
-  // 2️⃣ دالة جلب الرسائل
-  Future<void> fetchMessages(int userId) async {
+  Future<void> fetchMessages(int idUser) async {
+    print("ISGetDataMessage");
     isLoadingMessages.value = true;
+
+    final String endpoint =
+        'https://alamoodac.com/modac/public/messages/user/$idUser';
+
     try {
-      final Uri url =
-          Uri.parse('https://alamoodac.com/modac/public/messages/user/$userId');
-      // إضافة timeout لتفادي الانتظار الطويل
-      final response = await http.get(url).timeout(const Duration(seconds: 10));
+      print("ISGetDataMessageOne.....................");
+      // نضع مهلة 10 ثواني، وبعدها نرمي TimeoutException
+      final response = await http
+          .get(Uri.parse(endpoint))
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException('Request to $endpoint timed out');
+      });
 
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> body = json.decode(response.body);
-        // التأكد من نجاح العملية
-        if (body['success'] == true) {
-          final data = body['data'];
-          if (data is List) {
-            messages.value = data
-                .map((item) =>
-                    MessageModel.fromJson(item as Map<String, dynamic>))
-                .toList();
-            // يمكنك تحديث متغير showMessages بحسب وجود بيانات
-            showMessages.value = messages.isNotEmpty;
-          } else {
-            print('❌ البيانات ليست من النوع List');
-            messages.value = [];
-            showMessages.value = false;
-          }
+        // لو الاستجابة من Laravel ترجع success=false والـ status=404
+        if (body['success'] == true && body['data'] is List) {
+          final List<dynamic> data = body['data'];
+          messages.value =
+              data.map((json) => MessageModel.fromJson(json)).toList();
+          print("ISGetDataMessageDone: ${messages.length} messages");
         } else {
-          print('❌ فشل الاستجابة من الخادم: ${body['error']}');
-          messages.value = [];
-          showMessages.value = false;
+          print(
+              "ISGetDataMessageEmptyOrError: ${body['message'] ?? 'no data'}");
+          messages.clear();
         }
       } else {
-        print('❌ خطأ في الاستجابة: ${response.statusCode}');
-        messages.value = [];
-        showMessages.value = false;
+        print('ISGetDataMessageHTTPError: ${response.statusCode}');
+        messages.clear();
       }
-    } on TimeoutException catch (e) {
-      print('❌ انتهاء مهلة الاتصال: $e');
-    } catch (e) {
-      print('❌ حدث خطأ أثناء جلب الرسائل: $e');
+    } on TimeoutException catch (te) {
+      print('❌ TimeoutException: $te');
+      messages.clear();
+    } catch (e, st) {
+      print('❌ Exception fetching messages: $e');
+      print(st);
+      messages.clear();
     } finally {
       isLoadingMessages.value = false;
+      print("ISGetDataMessageEnd");
     }
   }
 
+  ///
+  RxBool isLoadingMessagesDelete = false.obs;
   Future<void> deleteMessage(int messageId) async {
     // مؤقت حذف فردي (يمكنك إضافة obs لحالة حذف منفرد إذا أحببت)
-    isLoadingMessages.value = true;
+    isLoadingMessagesDelete.value = true;
     try {
       final url =
           Uri.parse('https://alamoodac.com/modac/public/messages/$messageId');
@@ -468,7 +471,7 @@ class Settingscontroller extends GetxController {
         colorText: Colors.white,
       );
     } finally {
-      isLoadingMessages.value = false;
+      isLoadingMessagesDelete.value = false;
     }
   }
 }

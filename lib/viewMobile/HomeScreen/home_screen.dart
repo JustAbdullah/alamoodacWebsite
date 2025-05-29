@@ -104,33 +104,127 @@ class _HomeScreenState extends State<HomeScreen>
           }
         }
 
-        // إعداد قائمة الأقسام المختلفة
         final List<SectionData<Post>> sections = [
           SectionData<Post>(
-            "المول الإلكتروني".tr,
-            controller.LoadingPostsCateOne,
-            controller.postsListCateOne,
-            () => _handleSectionTap(controller.postsListCateOne),
-          ),
+              "المول الإلكتروني".tr,
+              controller.LoadingPostsCateOne,
+              controller.postsListCateOne,
+              () => _handleSectionTap(controller.postsListCateOne)),
           SectionData<Post>(
-            "سوق المستعمل".tr,
-            controller.LoadingPostsCateTwo,
-            controller.postsListCateTwo,
-            () => _handleSectionTap(controller.postsListCateTwo),
-          ),
+              "سوق المستعمل".tr,
+              controller.LoadingPostsCateTwo,
+              controller.postsListCateTwo,
+              () => _handleSectionTap(controller.postsListCateTwo)),
           SectionData<Post>(
-            "مركبات للبيع والايجار".tr,
-            controller.LoadingPostsCateThree,
-            controller.postsListCateThree,
-            () => _handleSectionTap(controller.postsListCateThree),
-          ),
-          // باقي الأقسام (يُمكنك إضافة الأقسام الأخرى بنفس النمط)
+              "مركبات للبيع والايجار".tr,
+              controller.LoadingPostsCateThree,
+              controller.postsListCateThree,
+              () => _handleSectionTap(controller.postsListCateThree)),
           SectionData<Post>(
-            "الحيوانات الأليفة".tr,
-            controller.LoadingPostsCateTwentyFour,
-            controller.postsListCateTwentyFour,
-            () => _handleSectionTap(controller.postsListCateTwentyFour),
-          ),
+              "المهن والحرف".tr,
+              controller.LoadingPostsCateFour,
+              controller.postsListCateFour,
+              () => _handleSectionTap(controller.postsListCateFour)),
+          SectionData<Post>(
+              "منتجات من البيت".tr,
+              controller.LoadingPostsCateFive,
+              controller.postsListCateFive,
+              () => _handleSectionTap(controller.postsListCateFive)),
+          SectionData<Post>(
+              "عقارات للبيع والإيجار".tr,
+              controller.LoadingPostsCateSix,
+              controller.postsListCateSix,
+              () => _handleSectionTap(controller.postsListCateSix)),
+          SectionData<Post>(
+              "عروض وصفقات".tr,
+              controller.LoadingPostsCateSeven,
+              controller.postsListCateSeven,
+              () => _handleSectionTap(controller.postsListCateSeven)),
+          SectionData(
+              "المزاد الإلكتروني".tr,
+              controller.LoadingPostsCateEight,
+              controller.postsListCateEight,
+              () => _handleSectionTap(controller.postsListCateEight)),
+          SectionData<Post>(
+              "متجر المنتجات العالمية".tr,
+              controller.LoadingPostsCateNine,
+              controller.postsListCateNine,
+              () => _handleSectionTap(controller.postsListCateNine)),
+          SectionData<Post>(
+              "الإعلانات الرسمية".tr,
+              controller.LoadingPostsCateTen,
+              controller.postsListCateTen,
+              () => _handleSectionTap(controller.postsListCateTen)),
+          SectionData<Post>(
+              "سوق الجملة والتوكيلات".tr,
+              controller.LoadingPostsCateEleven,
+              controller.postsListCateEleven,
+              () => _handleSectionTap(controller.postsListCateEleven)),
+          SectionData<Post>(
+              "فرص عمل".tr,
+              controller.LoadingPostsCateTwelve,
+              controller.postsListCateTwelve,
+              () => _handleSectionTap(controller.postsListCateTwelve)),
+          SectionData<Post>(
+              "أفكار ومشاريع للتمويل".tr,
+              controller.LoadingPostsCateThrteen,
+              controller.postsListCateThrteen,
+              () => _handleSectionTap(controller.postsListCateThrteen)),
+          SectionData<Post>(
+              "المطاعم".tr,
+              controller.LoadingPostsCateFourTeen,
+              controller.postsListCateFourTeen,
+              () => _handleSectionTap(controller.postsListCateFourTeen)),
+          SectionData<Post>(
+              "دليل الشركات".tr,
+              controller.LoadingPostsCateFifteen,
+              controller.postsListCateFifteen,
+              () => _handleSectionTap(controller.postsListCateFifteen)),
+          SectionData<Post>(
+              "منتجات من المرزعة".tr,
+              controller.LoadingPostsCateSixteen,
+              controller.postsListCateSixteen,
+              () => _handleSectionTap(controller.postsListCateSixteen)),
+          SectionData<Post>(
+              "الخدمات التعليمية".tr,
+              controller.LoadingPostsCateSeventeen,
+              controller.postsListCateSeventeen,
+              () => _handleSectionTap(controller.postsListCateSeventeen)),
+          SectionData<Post>(
+              "عمال يوميين".tr,
+              controller.LoadingPostsCateEighteen,
+              controller.postsListCateEighteen,
+              () => _handleSectionTap(controller.postsListCateEighteen)),
+          SectionData<Post>(
+              "خدمات الذكاء الاصطناعي".tr,
+              controller.LoadingPostsCateNineteen,
+              controller.postsListCateNineteen,
+              () => _handleSectionTap(controller.postsListCateNineteen)),
+          SectionData<Post>(
+              "الانشاءات مواد البناء".tr,
+              controller.LoadingPostsCateTwenty,
+              controller.postsListCateTwenty,
+              () => _handleSectionTap(controller.postsListCateTwenty)),
+          SectionData<Post>(
+              "الالات والمعدات".tr,
+              controller.LoadingPostsCateTwentyOne,
+              controller.postsListCateTwentyOne,
+              () => _handleSectionTap(controller.postsListCateTwentyOne)),
+          SectionData<Post>(
+              "الزراعة والحيوان".tr,
+              controller.LoadingPostsCateTwentyTwo,
+              controller.postsListCateTwentyTwo,
+              () => _handleSectionTap(controller.postsListCateTwentyTwo)),
+          SectionData<Post>(
+              "الصالونات الصحية والرياضية".tr,
+              controller.LoadingPostsCateTwentyThree,
+              controller.postsListCateTwentyThree,
+              () => _handleSectionTap(controller.postsListCateTwentyThree)),
+          SectionData<Post>(
+              "الحيوانات الأليفة".tr,
+              controller.LoadingPostsCateTwentyFour,
+              controller.postsListCateTwentyFour,
+              () => _handleSectionTap(controller.postsListCateTwentyFour)),
         ];
 
         return Scaffold(

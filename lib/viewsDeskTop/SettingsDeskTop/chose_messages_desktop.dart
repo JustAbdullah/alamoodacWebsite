@@ -16,46 +16,46 @@ class ChoseMessagesDeskTop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخراج المتغيرات الرئيسية
     final ThemeController themeController = Get.find<ThemeController>();
     final Settingscontroller settingsController =
         Get.find<Settingscontroller>();
     final LoadingController loadingController = Get.find<LoadingController>();
-    // استخراج حجم الشاشة مرة واحدة
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
     final bool isDark = themeController.isDarkMode.value;
 
-    return GetX<Settingscontroller>(
-      builder: (controller) => Visibility(
-        visible: controller.showMessages.value,
-        child: Scaffold(
-          body: Container(
-            width: screenWidth,
-            height: screenHeight * 0.92,
-            color: AppColors.backgroundColor(isDark),
-            child: Column(
-              children: [
-                _buildHeader(themeController),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: () => settingsController.fetchMessages(
-                      loadingController.currentUser?.id ?? 0,
-                    ),
-                    child:
-                        _buildMessageList(themeController, settingsController),
-                  ),
-                ),
-              ],
+    // تحميل الرسائل عند فتح الصفحة لأول مرة
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      settingsController.fetchMessages(
+        loadingController.currentUser?.id ?? 0,
+      );
+    });
+
+    return Scaffold(
+      body: Container(
+        width: screenWidth,
+        height: screenHeight * 0.92,
+        color: AppColors.backgroundColor(isDark),
+        child: Column(
+          children: [
+            _buildHeader(themeController),
+            Expanded(
+              child: RefreshIndicator(
+                  onRefresh: () => settingsController.fetchMessages(
+                        loadingController.currentUser?.id ?? 0,
+                      ),
+                  child: Obx(() {
+                    return _buildMessageList(
+                        themeController, settingsController);
+                  })),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildHeader(ThemeController themeController) {
-    // استخراج حالة الوضع الداكن هنا
     final bool isDark = themeController.isDarkMode.value;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 25.h),
@@ -64,10 +64,8 @@ class ChoseMessagesDeskTop extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // زر العودة
               InkWell(
                 onTap: () {
-                  // إخفاء الرسائل والرجوع للخلف
                   Get.find<Settingscontroller>().showMessages.value = false;
                   Get.back();
                 },
@@ -101,7 +99,7 @@ class ChoseMessagesDeskTop extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 40), // عنصر فارغ للتوازن
+              const SizedBox(width: 40),
             ],
           ),
           SizedBox(height: 20.h),
@@ -117,13 +115,18 @@ class ChoseMessagesDeskTop extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // التعديل هنا: استخدام showMessages بدلاً من التحقق من القائمة الفارغة
     if (settingsController.messages.isEmpty) {
       return Center(
-        child: Text(
-          "لا توجد رسائل جديدة".tr,
-          style: TextStyle(
-            fontSize: 16.sp,
-            color: AppColors.textColor(isDark).withOpacity(0.5),
+        child: Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Text(
+            "لا توجد رسائل جديدة".tr,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: AppColors.textColor(isDark).withOpacity(0.5),
+            ),
           ),
         ),
       );
@@ -143,7 +146,6 @@ class ChoseMessagesDeskTop extends StatelessWidget {
 
   Widget _buildMessageItem(ThemeController themeController,
       MessageModel message, BuildContext context) {
-    // استخراج اللغة مرة واحدة
     final bool isArabic =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
             "ar";
@@ -220,8 +222,11 @@ class ChoseMessagesDeskTop extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: Icon(Icons.delete_outline,
-                    color: Colors.redAccent, size: 24.w),
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: Colors.redAccent,
+                  size: 24.w,
+                ),
                 onPressed: () => _confirmDelete(context, message.id),
               ),
             ],
@@ -256,18 +261,22 @@ class ChoseMessagesDeskTop extends StatelessWidget {
   }
 
   void _showMessageDetails(BuildContext context, MessageModel message) {
+    final bool isArabic =
+        Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
+            "ar";
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text("تفاصيل الرسالة".tr),
-        content: Text(
-          Get.find<ChangeLanguageController>()
-                      .currentLocale
-                      .value
-                      .languageCode ==
-                  "ar"
-              ? message.messageAr
-              : message.messageEn,
+        content: SingleChildScrollView(
+          child: Text(
+            isArabic ? message.messageAr : message.messageEn,
+            style: TextStyle(
+              fontSize: 15.sp,
+              height: 1.5,
+            ),
+          ),
         ),
         actions: [
           TextButton(
@@ -280,6 +289,6 @@ class ChoseMessagesDeskTop extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}';
+    return '${date.day}/${date.month}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 }

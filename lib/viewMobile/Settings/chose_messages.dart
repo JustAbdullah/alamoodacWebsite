@@ -16,12 +16,17 @@ class ChoseMessages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استخراج متغيرات رئيسية مرة واحدة
     final ThemeController themeController = Get.find<ThemeController>();
     final Settingscontroller settingsController =
         Get.find<Settingscontroller>();
 
-    // استخراج حجم الشاشة مرة واحدة.
+    // استدعاء الرسائل عند فتح الصفحة لأول مرة
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      settingsController.fetchMessages(
+        Get.find<LoadingController>().currentUser?.id ?? 0,
+      );
+    });
+
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
@@ -35,11 +40,13 @@ class ChoseMessages extends StatelessWidget {
             _buildHeader(themeController),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: () => settingsController.fetchMessages(
-                  Get.find<LoadingController>().currentUser?.id ?? 0,
-                ),
-                child: _buildMessageList(themeController, settingsController),
-              ),
+                  onRefresh: () => settingsController.fetchMessages(
+                        Get.find<LoadingController>().currentUser?.id ?? 0,
+                      ),
+                  child: Obx(() {
+                    return _buildMessageList(
+                        themeController, settingsController);
+                  })),
             ),
           ],
         ),
@@ -48,7 +55,6 @@ class ChoseMessages extends StatelessWidget {
   }
 
   Widget _buildHeader(ThemeController themeController) {
-    // استخراج حالة الوضع الداكن هنا
     final bool isDark = themeController.isDarkMode.value;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 25.h),
@@ -58,10 +64,7 @@ class ChoseMessages extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               InkWell(
-                onTap: () {
-                  // الانتقال إلى صفحة الإعدادات
-                  Get.toNamed('/settings-mobile/');
-                },
+                onTap: () => Get.toNamed('/settings-mobile/'),
                 child: Container(
                   padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
@@ -92,7 +95,7 @@ class ChoseMessages extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 40), // عنصر فارغ للحفاظ على توازن التصميم
+              const SizedBox(width: 40),
             ],
           ),
           SizedBox(height: 20.h),
@@ -104,17 +107,24 @@ class ChoseMessages extends StatelessWidget {
   Widget _buildMessageList(
       ThemeController themeController, Settingscontroller controller) {
     if (controller.isLoadingMessages.value) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
 
+    // التعديل هنا: استخدام showMessages بدلاً من التحقق من القائمة الفارغة
     if (controller.messages.isEmpty) {
       return Center(
-        child: Text(
-          "لا توجد رسائل جديدة".tr,
-          style: TextStyle(
-            fontSize: 16.sp,
-            color: AppColors.textColor(themeController.isDarkMode.value)
-                .withOpacity(0.5),
+        child: Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Text(
+            "لا توجد رسائل جديدة".tr,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: AppColors.textColor(themeController.isDarkMode.value)
+                  .withOpacity(0.5),
+            ),
           ),
         ),
       );
@@ -137,7 +147,6 @@ class ChoseMessages extends StatelessWidget {
 
   Widget _buildMessageItem(ThemeController themeController,
       MessageModel message, BuildContext context) {
-    // استخراج اللغة مرة واحدة
     final bool isArabic =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
             "ar";
@@ -253,18 +262,22 @@ class ChoseMessages extends StatelessWidget {
   }
 
   void _showMessageDetails(BuildContext context, MessageModel message) {
+    final bool isArabic =
+        Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
+            "ar";
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text("تفاصيل الرسالة".tr),
-        content: Text(
-          Get.find<ChangeLanguageController>()
-                      .currentLocale
-                      .value
-                      .languageCode ==
-                  "ar"
-              ? message.messageAr
-              : message.messageEn,
+        content: SingleChildScrollView(
+          child: Text(
+            isArabic ? message.messageAr : message.messageEn,
+            style: TextStyle(
+              fontSize: 15.sp,
+              height: 1.5,
+            ),
+          ),
         ),
         actions: [
           TextButton(
@@ -277,6 +290,6 @@ class ChoseMessages extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}';
+    return '${date.day}/${date.month}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 }
