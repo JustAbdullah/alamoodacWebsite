@@ -230,7 +230,7 @@ class ShowPackages extends StatelessWidget {
                       ),
                       SizedBox(width: 8.w),
                       Text(
-                        "دولار".tr,
+                        "دينار عراقي".tr,
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: AppColors.textColor(
@@ -634,7 +634,7 @@ class ShowPackages extends StatelessWidget {
           ),
           SizedBox(height: 10.h),
           Text(
-            "${package.price} ${"دولار".tr}",
+            "${package.price} ${"دينار عراقي".tr}",
             style: TextStyle(
               fontSize: 28.sp,
               fontWeight: FontWeight.bold,
@@ -719,7 +719,9 @@ class ShowPackages extends StatelessWidget {
       25,
       26,
       27,
-      28
+      28,
+      29,
+      30
     ]; // المعرفات الخاصة بالباقة التجارية
     List<int> economicCategoryIds = [
       2,

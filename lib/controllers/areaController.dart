@@ -4,7 +4,7 @@ import '../core/data/model/Area.dart';
 
 class AreaController extends GetxController {
   final idOfArea = Rx<int?>(null); // يجب أن يكون Rx<int?> وليس RxInt?
-
+  Rx<String?> selectedAreaName = Rx<String?>(null); // تغيير هنا
   final Map<int, List<Area>> cityAreas = {
     /// 1. بغداد (تمت إضافة 10 مناطق جديدة)
     1: [
@@ -1427,21 +1427,45 @@ class AreaController extends GetxController {
 
     /// 37 - Diyarbakır (ديار بكر)
     37: [
-      Area(id: 3701, name: "Merkez - مركز", cityId: 37),
-      Area(id: 3702, name: "Bağlar - باغلار", cityId: 37),
-      Area(id: 3703, name: "Bismil - بيسميل", cityId: 37),
-      Area(id: 3704, name: "Çermik - تشيرميك", cityId: 37),
-      Area(id: 3705, name: "Çınar - تشينار", cityId: 37),
-      Area(id: 3706, name: "Çüngüş - تشونغوش", cityId: 37),
-      Area(id: 3707, name: "Dicle - ديكل", cityId: 37),
-      Area(id: 3708, name: "Eğil - إيجيل", cityId: 37),
-      Area(id: 3709, name: "Ergani - ارقاني", cityId: 37),
-      Area(id: 3710, name: "Hani - هاني", cityId: 37),
-      Area(id: 3711, name: "Hazro - هازرو", cityId: 37),
-      Area(id: 3712, name: "Kocaköy - كوجاكوي", cityId: 37),
-      Area(id: 3713, name: "Lice - ليس", cityId: 37),
-      Area(id: 3714, name: "Silvan - سيلفان", cityId: 37),
-      Area(id: 3715, name: "Sur - سور", cityId: 37),
+      Area(id: 3701, name: "Adalar - جزر الأميرات", cityId: 37),
+  Area(id: 3702, name: "Arnavutköy - أرناؤوط كوي", cityId: 37),
+  Area(id: 3703, name: "Ataşehir - أتاشهير", cityId: 37),
+  Area(id: 3704, name: "Avcılar - أفجلار", cityId: 37),
+  Area(id: 3705, name: "Bağcılar - باغجلار", cityId: 37),
+  Area(id: 3706, name: "Bahçelievler - بهجةليفلر", cityId: 37),
+  Area(id: 3707, name: "Bakırköy - بكركوي", cityId: 37),
+  Area(id: 3708, name: "Başakşehir - باشاك شهير", cityId: 37),
+  Area(id: 3709, name: "Bayrampaşa - بيرم باشا", cityId: 37),
+  Area(id: 3710, name: "Beşiktaş - بشكتاش", cityId: 37),
+  Area(id: 3711, name: "Beykoz - بيكوز", cityId: 37),
+  Area(id: 3712, name: "Beylikdüzü - بيليك دوزو", cityId: 37),
+  Area(id: 3713, name: "Beyoğlu - بي أوغلو", cityId: 37),
+  Area(id: 3714, name: "Büyükçekmece - بيوك شكمجة", cityId: 37),
+  Area(id: 3715, name: "Çatalca - تشاتالجا", cityId: 37),
+  Area(id: 3716, name: "Çekmeköy - تشكمك كوي", cityId: 37),
+  Area(id: 3717, name: "Esenler - إسنلر", cityId: 37),
+  Area(id: 3718, name: "Esenyurt - إسينيورت", cityId: 37),
+  Area(id: 3719, name: "Eyüpsultan - أيوب سلطان", cityId: 37),
+  Area(id: 3720, name: "Fatih - الفاتح", cityId: 37),
+  Area(id: 3721, name: "Gaziosmanpaşa - غازي عثمان باشا", cityId: 37),
+  Area(id: 3722, name: "Güngören - غونغورن", cityId: 37),
+  Area(id: 3723, name: "Kadıköy - كاديكوي", cityId: 37),
+  Area(id: 3724, name: "Kağıthane - كاغيت خانه", cityId: 37),
+  Area(id: 3725, name: "Kartal - كارتال", cityId: 37),
+  Area(id: 3726, name: "Küçükçekmece - كوجوك شكمجة", cityId: 37),
+  Area(id: 3727, name: "Maltepe - مالتبه", cityId: 37),
+  Area(id: 3728, name: "Pendik - بينديك", cityId: 37),
+  Area(id: 3729, name: "Sancaktepe - سانجاق تبه", cityId: 37),
+  Area(id: 3730, name: "Sarıyer - صاريير", cityId: 37),
+  Area(id: 3731, name: "Silivri - سيليفري", cityId: 37),
+  Area(id: 3732, name: "Sultanbeyli - سلطان بيلي", cityId: 37),
+  Area(id: 3733, name: "Sultangazi - سلطان غازي", cityId: 37),
+  Area(id: 3734, name: "Şile - شيله", cityId: 37),
+  Area(id: 3735, name: "Şişli - شيشلي", cityId: 37),
+  Area(id: 3736, name: "Tuzla - توزلا", cityId: 37),
+  Area(id: 3737, name: "Ümraniye - عمرانية", cityId: 37),
+  Area(id: 3738, name: "Üsküdar - أسكودار", cityId: 37),
+  Area(id: 3739, name: "Zeytinburnu - زيتين بورنو", cityId: 37),
     ],
 
     /// 38 - İzmir (إزمير)
@@ -1962,5 +1986,13 @@ class AreaController extends GetxController {
     return cityAreasSy[cityId] ?? [];
   }
 
-  RxString selectedAreaName = ''.obs;
+  void resetArea() {
+    idOfArea.value = 0;
+    selectedAreaName.value = null;
+  }
+
+  void setSelectedArea(int id, String name) {
+    idOfArea.value = id;
+    selectedAreaName.value = name;
+  }
 }

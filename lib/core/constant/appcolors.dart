@@ -16,7 +16,8 @@ class AppColors {
   static const Color blueDark = Color(0xFF1976D2);
 
   static const Color brown = Color(0xFFF4D2A1D);
-  static const Color oragne = Color(0xFFFDFA047);
+  static const Color oragne = Color(0xFFDC3F3A);
+ // static const Color oragne = Color(0xFFFDFA047);
 
   /////////////// White Colors /////////////////////////
   static const Color whiteColor = Color.fromARGB(255, 255, 255, 255);
@@ -132,4 +133,6 @@ class AppColors {
 
   static Color chipTextColor(bool isDark) =>
       isDark ? Colors.grey[300]! : Colors.grey[700]!;
+          static const Color redColorLogo=  Color(0xFFDC3F3A);
+
 }

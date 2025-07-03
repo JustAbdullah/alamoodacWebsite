@@ -13,6 +13,7 @@ class Post {
   final String createdAt;
   var lon;
   var lat;
+  var expires_at;
   final String rating;
   String is_show;
 
@@ -49,6 +50,7 @@ class Post {
     required this.user,
     required this.city,
     required this.store, // إضافة متجر
+ required this.expires_at,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -83,6 +85,7 @@ class Post {
       user: User.fromJson(json['user'] ?? {}),
       city: TheCitys.fromJson(json['city'] ?? {}),
       store: Store.fromJson(json['store'] ?? {}), // إضافة متجر
+   expires_at: json['expires_at'] ,
     );
   }
 }

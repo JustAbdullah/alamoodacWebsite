@@ -281,6 +281,8 @@ class AddpostCarController extends GetxController {
         loading.value = false;
         Get.snackbar("نجحت العملية".tr, "تم إنشاء المنشور بنجاح".tr,
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green);
+              Get.find<LoadingController>().currentUser?.free_post_used == 0?
+       Get.find<LoadingController>(). useFreePost( Get.find<LoadingController>().currentUser?.id??0):null;
       } else {
         print("Failed to create post. Status Code: ${response.statusCode}");
         print("Response Body: ${response.body}");
@@ -467,7 +469,11 @@ class AddpostCarController extends GetxController {
 
       return;
     }
-
+String? expiresAt =  Get.find<LoadingController>().currentUser?.free_post_used == 0
+    ? DateTime.now()
+        .add(const Duration(days: 30))
+        .toIso8601String()    // مثال: "2025-07-25T14:12:00.000"
+    : null;
     // تجميع البيانات
     var postData = {
       'store_id': storeId,
@@ -495,7 +501,8 @@ class AddpostCarController extends GetxController {
                 'translated_detail_value': convertArabicToEnglishNumbers(
                     translation['translated_detail_value']),
               };
-            }).toList(),
+            }).toList(),         'expires_at': expiresAt,
+
           };
         }
         return detail; // إرجاع البيانات الأخرى بدون تعديل

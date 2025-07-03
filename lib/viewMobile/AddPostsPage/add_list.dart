@@ -48,76 +48,56 @@ class AddList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SubscriptionController scriptionController =
+     // === Controllers (ثبات كما هو) ===
+    final SubscriptionController scriptionController =
         Get.put(SubscriptionController());
-
-    /////////////................Two.............//////////////
-
-    AddpostUsedController addpostUsedController =
-        Get.put(AddpostUsedController());
-
-    AddpostCarController addpostCarController = Get.put(AddpostCarController());
-    /////////////................Four.............//////////////
-
-    AddpostProfessionController addpostProfessionController =
-        Get.put(AddpostProfessionController());
-
-    /////////.........................Seven..................../
-    Addpostcontrollerrealestate addpostcontrollerrealestate =
-        Get.put(Addpostcontrollerrealestate());
-
-    Addpostcontrollerauction addpostcontrollerauction =
-        Get.put(Addpostcontrollerauction());
-
-    Addpostcontrollerall addpostcontrollerall = Get.put(Addpostcontrollerall());
-    ////////////////////العمــال اليومين.....18......//////////////////
-    Addpostdailyworkercontroller addpostdailyworkercontroller =
+    final addpostUsedController = Get.put(AddpostUsedController());
+    final addpostCarController = Get.put(AddpostCarController());
+    final addpostProfessionController = Get.put(AddpostProfessionController());
+    final addpostcontrollerrealestate = Get.put(Addpostcontrollerrealestate());
+    final addpostcontrollerauction = Get.put(Addpostcontrollerauction());
+    final addpostcontrollerall = Get.put(Addpostcontrollerall());
+    final addpostdailyworkercontroller =
         Get.put(Addpostdailyworkercontroller());
-    /////////////////14......................المطاعم.......................////////
-    Addpostrestaurantcontroller addpostrestaurantcontroller =
-        Get.put(Addpostrestaurantcontroller());
-
-////////////////////..............15...............دليل الشركات .....///////////////////
-    Addpostcontrollercompany addpostcontrollercompany =
-        Get.put(Addpostcontrollercompany());
-    ////////////////////..............17............... التعليمية.....///////////////////
-    Addpostcontrollereducational addpostcontrollereducational =
+    final addpostrestaurantcontroller = Get.put(Addpostrestaurantcontroller());
+    final addpostcontrollercompany = Get.put(Addpostcontrollercompany());
+    final addpostcontrollereducational =
         Get.put(Addpostcontrollereducational());
-//////.............................23 صالونات...........//////////
-    Addpostsalonscontroller addpostsalonscontroller =
-        Get.put(Addpostsalonscontroller());
-
-    final ThemeController themeController = Get.find();
+    final addpostsalonscontroller = Get.put(Addpostsalonscontroller());
+    final themeController = Get.find<ThemeController>();
+    final loadingController = Get.find<LoadingController>();
 
     final Map<int, String> singlePostPrice = {
-      1: '\$100',
-      2: '\$20',
-      3: '\$100',
-      4: '\$20',
-      5: '\$20',
-      6: '\$100',
-      7: '\$20',
-      8: '\$20',
+      1: 'باقة تجارية',
+      2: 'باقة اقتصادية',
+      3: 'باقة تجارية',
+      4: 'باقة اقتصادية',
+      5: 'باقة اقتصادية',
+      6: 'باقة تجارية',
+      7: 'باقة اقتصادية',
+      8: 'باقة اقتصادية',
       9: 'غير متوفر'.tr,
       10: 'غير متوفر'.tr,
-      11: '\$100',
-      12: '\$20',
-      13: '\$20',
-      14: '\$100',
-      15: '\$100',
-      16: '\$20',
-      17: '\$100',
+      11: 'باقة تجارية',
+      12: 'باقة اقتصادية',
+      13: 'باقة اقتصادية',
+      14: 'باقة تجارية',
+      15: 'باقة تجارية',
+      16: 'باقة اقتصادية',
+      17: 'باقة تجارية',
       18: 'مجاني'.tr,
-      19: '\$20',
-      20: '\$100',
-      21: '\$100',
-      22: '\$100',
-      23: '\$100',
-      24: '\$20',
-      25: '\$100',
-      26: '\$100',
-      27: '\$100',
-      28: '\$100',
+      19: 'باقة اقتصادية',
+      20: 'باقة تجارية',
+      21: 'باقة تجارية',
+      22: 'باقة تجارية',
+      23: 'باقة تجارية',
+      24: 'باقة اقتصادية',
+      25: 'باقة تجارية',
+      26: 'باقة تجارية',
+      27: 'باقة تجارية',
+      28: 'باقة تجارية',
+          29: 'باقة تجارية',
+      30: 'باقة تجارية',
 
       // أضف باقي المعرفات حسب الحاجة
     };
@@ -150,6 +130,14 @@ class AddList extends StatelessWidget {
           Get.to(() => AddProfessions());
           break;
         case 6:
+          addpostcontrollerrealestate
+            ..idCate = category.id
+            ..nameOfCatee.value = name
+            ..fetchSubcategories(category.id)
+            ..showAdd.value = true;
+          Get.to(() => AddRealEstates());
+          break;
+           case 30:
           addpostcontrollerrealestate
             ..idCate = category.id
             ..nameOfCatee.value = name
@@ -367,7 +355,27 @@ class AddList extends StatelessWidget {
                                                 const Duration(seconds: 3),
                                           );
                                           return;
-                                        }
+                                        } // ➕ 1.1️⃣ شرط الإضافة المجانية: إذا لم يستخدم المستخدم فرصته المجانية بعد
+if (user.free_post_used == 0) {
+    // نعلم أنه استخدم الفرصة
+    // نفتح القسم مباشرة
+   if ((category.id == 9 || category.id == 10) &&
+                                    user.id != 80) {
+                                  Get.snackbar(
+                                    'غير مسموح'.tr,
+                                    'هذا القسم للأدمِن فقط'.tr,
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.redAccent,
+                                    colorText: Colors.white,
+                                    duration: const Duration(seconds: 3),
+                                  );
+                                  return;
+                                }
+
+                                // 6️⃣ كل الشروط تمام، افتح القسم
+                                _openCategory(category);
+    return;
+  }
 print("Two In InkWell");
                                         // 2️⃣ حالة daily worker (category 18)
                                         if (controller.showMessage.value)
@@ -683,82 +691,72 @@ print("Two In InkWell");
 
                                               // توضيح السعر كباقة منفردة
                                               if (price.isNotEmpty)
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      "السعر".tr,
-                                                      style: TextStyle(
-                                                        fontFamily:
-                                                            AppTextStyles
-                                                                .DinarOne,
-                                                        fontSize: 12.sp,
-                                                        color: AppColors
-                                                            .textColorOne(
-                                                                themeController
-                                                                    .isDarkMode
-                                                                    .value),
-                                                      ),
-                                                    ),
-                                                    SizedBox(height: 4.h),
-                                                    Container(
-                                                      padding:
-                                                          EdgeInsets.symmetric(
-                                                              horizontal: 8.w,
-                                                              vertical: 4.h),
-                                                      decoration: BoxDecoration(
-                                                        color: price ==
-                                                                'مجاني'.tr
-                                                            ? Colors.green
-                                                                .withOpacity(
-                                                                    0.2)
-                                                            : price ==
-                                                                    'غير متوفر'
-                                                                        .tr
-                                                                ? Colors.red
-                                                                    .withOpacity(
-                                                                        0.2)
-                                                                : price ==
-                                                                        '\$20'
-                                                                            .tr
-                                                                    ? Colors
-                                                                        .orange
-                                                                        .withOpacity(
-                                                                            0.2)
-                                                                    : Colors
-                                                                        .blue
-                                                                        .withOpacity(
-                                                                            0.2),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.r),
-                                                      ),
-                                                      child: Text(
-                                                        price,
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                              AppTextStyles
-                                                                  .DinarOne,
-                                                          fontSize: 14.sp,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                   Visibility(
+                                          visible: scriptionController.isHaveSubscriptions.value,
+                                         
+                                                  child: Column(
+                                                    children: [
+                                                       
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.symmetric(
+                                                                horizontal: 8.w,
+                                                                vertical: 4.h),
+                                                        decoration: BoxDecoration(
                                                           color: price ==
                                                                   'مجاني'.tr
                                                               ? Colors.green
+                                                                  .withOpacity(
+                                                                      0.2)
                                                               : price ==
                                                                       'غير متوفر'
                                                                           .tr
                                                                   ? Colors.red
+                                                                      .withOpacity(
+                                                                          0.2)
                                                                   : price ==
-                                                                          '\$20'
+                                                                          'باقة اقتصادية'
                                                                               .tr
                                                                       ? Colors
                                                                           .orange
+                                                                          .withOpacity(
+                                                                              0.2)
                                                                       : Colors
-                                                                          .blue,
+                                                                          .blue
+                                                                          .withOpacity(
+                                                                              0.2),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8.r),
+                                                        ),
+                                                        child: Text(
+                                                          price,
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                AppTextStyles
+                                                                    .DinarOne,
+                                                            fontSize: 14.sp,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: price ==
+                                                                    'مجاني'.tr
+                                                                ? Colors.green
+                                                                : price ==
+                                                                        'غير متوفر'
+                                                                            .tr
+                                                                    ? Colors.red
+                                                                    : price ==
+                                                                            'باقة اقتصادية'
+                                                                                .tr
+                                                                        ? Colors
+                                                                            .orange
+                                                                        : Colors
+                                                                            .blue,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                             ],
                                           ),

@@ -276,6 +276,7 @@ class SearchBox extends StatelessWidget {
       case 3:
         return const CarsType();
       case 6:
+        return const RealestateType(); case 30:
         return const RealestateType();
       case 1:
       case 2:

@@ -32,13 +32,9 @@ class ImagesViewer extends StatefulWidget {
 
 class _ImagesViewerState extends State<ImagesViewer> {
   final ThemeController themeController = Get.find();
-
   late final PageController _pageController;
   late final PhotoViewController _photoController;
   late final PhotoViewScaleStateController _scaleController;
-
-  // هذا مثال لتعريف متغير _data وتخزين قائمة الصور فيه
-  late final List<String> _data;
 
   static const double _zoomStep = 1.2;
   int _currentPageIndex = 0;
@@ -46,18 +42,35 @@ class _ImagesViewerState extends State<ImagesViewer> {
   @override
   void initState() {
     super.initState();
-    // تهيئة _data باستخدام البيانات المُمرّرة من الـ widget
-    _data = widget.images;
     _pageController = PageController(viewportFraction: 0.9999)
       ..addListener(_updateCurrentPage);
     _photoController = PhotoViewController();
     _scaleController = PhotoViewScaleStateController();
+
+    // Precache أول صورتين
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (int i = 0; i < widget.images.length && i < 2; i++) {
+        precacheImage(
+          CachedNetworkImageProvider(widget.images[i]),
+          context,
+        );
+      }
+    });
   }
 
   void _updateCurrentPage() {
     final newPage = _pageController.page?.round() ?? 0;
     if (newPage != _currentPageIndex) {
       setState(() => _currentPageIndex = newPage);
+      // معاينة مسبقة للصور المجاورة
+      for (var idx in [newPage - 1, newPage + 1]) {
+        if (idx >= 0 && idx < widget.images.length) {
+          precacheImage(
+            CachedNetworkImageProvider(widget.images[idx]),
+            context,
+          );
+        }
+      }
     }
   }
 
@@ -65,16 +78,14 @@ class _ImagesViewerState extends State<ImagesViewer> {
     final current = _photoController.scale ?? 1.0;
     final minAllowed = PhotoViewComputedScale.contained.multiplier * 0.8;
     final maxAllowed = PhotoViewComputedScale.covered.multiplier * 2.5;
-    final next = (current * _zoomStep).clamp(minAllowed, maxAllowed);
-    _photoController.scale = next;
+    _photoController.scale = (current * _zoomStep).clamp(minAllowed, maxAllowed);
   }
 
   void _zoomOut() {
     final current = _photoController.scale ?? 1.0;
     final minAllowed = PhotoViewComputedScale.contained.multiplier * 0.8;
     final maxAllowed = PhotoViewComputedScale.covered.multiplier * 2.5;
-    final next = (current / _zoomStep).clamp(minAllowed, maxAllowed);
-    _photoController.scale = next;
+    _photoController.scale = (current / _zoomStep).clamp(minAllowed, maxAllowed);
   }
 
   @override
@@ -87,9 +98,9 @@ class _ImagesViewerState extends State<ImagesViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (_data.isEmpty) {
+    if (widget.images.isEmpty) {
       return SizedBox(
-        height: 200.h,
+        height: widget.minHeight.h,
         child: Center(
           child: Text(
             "لا توجد صور متاحة",
@@ -103,127 +114,134 @@ class _ImagesViewerState extends State<ImagesViewer> {
       );
     }
 
-    return Semantics(
-      label: 'عارض الصور، ${_data.length} صور',
-      child: SizedBox(
-        height: widget.maxHeight.h,
-        child: Stack(
-          children: [
-            PhotoViewGallery.builder(
-              pageController: _pageController,
-              itemCount: _data.length,
-              scrollPhysics: const ClampingScrollPhysics(),
-              allowImplicitScrolling: true,
-              gaplessPlayback: true,
-              backgroundDecoration: BoxDecoration(
-                color: themeController.isDarkMode.value
-                    ? AppColors.balckColorTypeFour
-                    : AppColors.whiteColor,
-              ),
-              builder: (context, index) {
-                final initialScale = widget.fullWidth
-                    ? PhotoViewComputedScale.covered
-                    : PhotoViewComputedScale.contained;
-                return PhotoViewGalleryPageOptions.customChild(
-                  controller: widget.enableZoom ? _photoController : null,
-                  scaleStateController:
-                      widget.enableZoom ? _scaleController : null,
-                  child: CachedNetworkImage(
-                    imageUrl: _data[index],
-                    imageBuilder: (ctx, img) => Image(
-                      image: img,
-                      fit: widget.fullWidth ? BoxFit.cover : BoxFit.contain,
-                      filterQuality: FilterQuality.low,
-                    ),
-                    placeholder: (ctx, url) => const Center(
-                      child: SizedBox(
-                        width: 30,
-                        height: 30,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                    errorWidget: (ctx, url, error) => Container(
-                      color: Colors.grey.shade300,
-                      child: Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          size: 40.sp,
-                          color: AppColors.blueLight,
-                        ),
+    return SizedBox(
+      height: widget.maxHeight.h,
+      child: Stack(
+        children: [
+          PhotoViewGallery.builder(
+            pageController: _pageController,
+            itemCount: widget.images.length,
+            scrollPhysics: const ClampingScrollPhysics(),
+            allowImplicitScrolling: true,
+            gaplessPlayback: true,
+            backgroundDecoration: BoxDecoration(
+              color: themeController.isDarkMode.value
+                  ? AppColors.balckColorTypeFour
+                  : AppColors.whiteColor,
+            ),
+            builder: (context, index) {
+              final initialScale = widget.fullWidth
+                  ? PhotoViewComputedScale.covered
+                  : PhotoViewComputedScale.contained;
+              return PhotoViewGalleryPageOptions.customChild(
+                controller: widget.enableZoom ? _photoController : null,
+                scaleStateController:
+                    widget.enableZoom ? _scaleController : null,
+                child: CachedNetworkImage(
+                  imageUrl: widget.images[index],
+                  imageBuilder: (ctx, img) => Image(
+                    image: img,
+                    fit: widget.fullWidth ? BoxFit.cover : BoxFit.contain,
+                    filterQuality: FilterQuality.low,
+                  ),
+                  placeholder: (ctx, url) => const Center(
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.blueLight,
                       ),
                     ),
                   ),
-                  initialScale: initialScale,
-                  minScale: widget.enableZoom
-                      ? PhotoViewComputedScale.contained * 0.8
-                      : PhotoViewComputedScale.contained,
-                  maxScale: widget.enableZoom
-                      ? PhotoViewComputedScale.covered * 2.5
-                      : PhotoViewComputedScale.contained,
-                );
-              },
+                  errorWidget: (ctx, url, error) => Container(
+                    color: Colors.grey.shade300,
+                    child: Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 40.sp,
+                        color: AppColors.blueLight,
+                      ),
+                    ),
+                  ),
+                  // تحسينات الأداء
+                  memCacheWidth: (MediaQuery.of(context).size.width * 2).toInt(),
+                  maxWidthDiskCache: (MediaQuery.of(context).size.width * 2).toInt(),
+                  useOldImageOnUrlChange: true,
+                  fadeInDuration: const Duration(milliseconds: 200),
+                  fadeOutDuration: const Duration(milliseconds: 200),
+                  cacheKey: '${widget.images[index]}_${widget.maxHeight.toInt()}',
+                ),
+                initialScale: initialScale,
+                minScale: widget.enableZoom
+                    ? PhotoViewComputedScale.contained * 0.8
+                    : PhotoViewComputedScale.contained,
+                maxScale: widget.enableZoom
+                    ? PhotoViewComputedScale.covered * 2.5
+                    : PhotoViewComputedScale.contained,
+              );
+            },
+          ),
+          Positioned(
+            bottom: 12.h,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SmoothPageIndicator(
+                controller: _pageController,
+                count: widget.images.length,
+                effect: ExpandingDotsEffect(
+                  activeDotColor: AppColors.oragne,
+                  dotColor: Colors.grey.shade400,
+                  dotHeight: 8,
+                  dotWidth: 8,
+                  expansionFactor: 3,
+                ),
+                onDotClicked: (idx) => _pageController.animateToPage(
+                  idx,
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                ),
+              ),
             ),
+          ),
+          if (widget.enableZoom)
             Positioned(
-              bottom: 12.h,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: SmoothPageIndicator(
-                  controller: _pageController,
-                  count: _data.length,
-                  effect: ExpandingDotsEffect(
-                    activeDotColor: AppColors.oragne,
-                    dotColor: Colors.grey.shade400,
-                    dotHeight: 8,
-                    dotWidth: 8,
-                    expansionFactor: 3,
+              bottom: 16.h,
+              right: 16.w,
+              child: Column(
+                children: [
+                  FloatingActionButton(
+                    backgroundColor: AppColors.backgroundColor(
+                        themeController.isDarkMode.value),
+                    mini: true,
+                    heroTag: 'zoomIn',
+                    onPressed: _zoomIn,
+                    child: Icon(
+                      Icons.add,
+                      size: 15.sp,
+                      color: AppColors.backgroundColorIconBack(
+                          themeController.isDarkMode.value),
+                    ),
                   ),
-                  onDotClicked: (idx) => _pageController.animateToPage(
-                    idx,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
+                  SizedBox(height: 2.h),
+                  FloatingActionButton(
+                    backgroundColor: AppColors.backgroundColor(
+                        themeController.isDarkMode.value),
+                    mini: true,
+                    heroTag: 'zoomOut',
+                    onPressed: _zoomOut,
+                    child: Icon(
+                      Icons.remove,
+                      size: 15.sp,
+                      color: AppColors.backgroundColorIconBack(
+                          themeController.isDarkMode.value),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-            if (widget.enableZoom)
-              Positioned(
-                bottom: 16.h,
-                right: 16.w,
-                child: Column(
-                  children: [
-                    FloatingActionButton(
-                      backgroundColor: AppColors.backgroundColor(
-                          themeController.isDarkMode.value),
-                      mini: true,
-                      heroTag: 'zoomIn',
-                      onPressed: _zoomIn,
-                      child: Icon(
-                        Icons.add,
-                        size: 15.sp,
-                        color: AppColors.backgroundColorIconBack(
-                            themeController.isDarkMode.value),
-                      ),
-                    ),
-                    SizedBox(height: 2.h),
-                    FloatingActionButton(
-                      backgroundColor: AppColors.backgroundColor(
-                          themeController.isDarkMode.value),
-                      mini: true,
-                      heroTag: 'zoomOut',
-                      onPressed: _zoomOut,
-                      child: Icon(
-                        Icons.remove,
-                        size: 15.sp,
-                        color: AppColors.backgroundColorIconBack(
-                            themeController.isDarkMode.value),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

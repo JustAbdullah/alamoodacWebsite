@@ -237,6 +237,7 @@ class SearchBoxSub extends StatelessWidget {
       case 3:
         return const CarsTypeSub();
       case 6:
+        return const RealestateTypeSub();    case 30:
         return const RealestateTypeSub();
       case 1:
       case 2:

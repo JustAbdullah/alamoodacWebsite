@@ -79,6 +79,8 @@ class SubscriptionController extends GetxController {
 ///////////////////
 
   var subscriptions = <Subscription>[].obs;
+    RxBool isHaveSubscriptions = false.obs;
+
   var isLoading = false.obs;
   final baseUrl = 'https://alamoodac.com/modac/public/subscriptions/user';
 
@@ -96,8 +98,11 @@ class SubscriptionController extends GetxController {
         subscriptions.value = data
             .map((e) => Subscription.fromJson(e as Map<String, dynamic>))
             .toList();
+                      isHaveSubscriptions.value =true;
+
       } else if (response.statusCode == 404) {
-        subscriptions.clear();
+        subscriptions.clear();   isHaveSubscriptions.value =false;
+
       } else {}
     } catch (e) {
     } finally {

@@ -44,35 +44,44 @@ class SearchScreen extends StatelessWidget {
 
                         Padding(
                           padding: EdgeInsets.symmetric(
-                              vertical: 2.h, horizontal: 12.w),
-                          child: Obx(() {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                ToggleIconButton(
-                                  label: 'المنشورات'.tr,
-                                  icon: Icons.article,
-                                  active:
-                                      !searchcontroller.showPublishers.value,
-                                  onTap: () => searchcontroller
-                                      .showPublishers.value = false,
-                                  themeController: themeController,
-                                ),
-                                SizedBox(
-                                  width: 5.w,
-                                ),
-                                ToggleIconButton(
-                                  label: 'الناشرين'.tr,
-                                  icon: Icons.people,
-                                  active: searchcontroller.showPublishers.value,
-                                  onTap: () => searchcontroller
-                                      .showPublishers.value = true,
-                                  themeController: themeController,
-                                ),
-                              ],
-                            );
-                          }),
+                              vertical: 10.h, horizontal: 12.w),
+                          child: Container(
+                            padding: EdgeInsets.all(4.w),
+                            decoration: BoxDecoration(
+                              color: themeController.isDarkMode.value
+                                  ? Colors.grey[900]
+                                  : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: Obx(() {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildToggleButton(
+                                    context,
+                                    label: 'المنشورات'.tr,
+                                    icon: Icons.article,
+                                    isActive: !searchcontroller.showPublishers.value,
+                                    onTap: () => searchcontroller
+                                        .showPublishers.value = false,
+                                    themeController: themeController,
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  _buildToggleButton(
+                                    context,
+                                    label: 'الناشرين'.tr,
+                                    icon: Icons.people,
+                                    isActive: searchcontroller.showPublishers.value,
+                                    onTap: () => searchcontroller
+                                        .showPublishers.value = true,
+                                    themeController: themeController,
+                                  ),
+                                ],
+                              );
+                            }),
+                          ),
                         ),
+                        SizedBox(height: 8.h),
                         // الجزء السفلي (قابل للتمرير)
                         Expanded(child: Obx(() {
                           return searchcontroller.showPublishers.value
@@ -87,6 +96,63 @@ class SearchScreen extends StatelessWidget {
                 _BottomNavigationSection()
               ]),
             )));
+  }
+
+  Widget _buildToggleButton(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+    required ThemeController themeController,
+  }) {
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8.r),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 8.h),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? AppColors.oragne
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(
+                color: themeController.isDarkMode.value
+                    ? Colors.grey[700]!
+                    : Colors.grey[300]!,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon,
+                    size: 22.w,
+                    color: isActive
+                        ? Colors.white
+                        : AppColors.textColorOne(
+                            themeController.isDarkMode.value)),
+                SizedBox(height: 4.h),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: AppTextStyles.DinarOne,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.bold,
+                    color: isActive
+                        ? Colors.white
+                        : AppColors.textColorOne(
+                            themeController.isDarkMode.value),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -154,6 +220,8 @@ class _SortingIconsWithDropdownState extends State<SortingIconsWithDropdown> {
   }
 
   OverlayEntry _createOverlayEntry(int index) {
+    final themeController = Get.find<ThemeController>();
+    
     return OverlayEntry(
       builder: (context) => Stack(
         children: [
@@ -165,10 +233,12 @@ class _SortingIconsWithDropdownState extends State<SortingIconsWithDropdown> {
               height: double.infinity,
             ),
           ),
-          Center(
+          Positioned(
+            top: 100.h,
+            right: 20.w,
             child: Material(
               color: Colors.transparent,
-              child: _buildDropdown(categories[index]),
+              child: _buildDropdown(categories[index], themeController),
             ),
           ),
         ],
@@ -176,24 +246,33 @@ class _SortingIconsWithDropdownState extends State<SortingIconsWithDropdown> {
     );
   }
 
-  Widget _buildDropdown(SortingCategory category) {
+  Widget _buildDropdown(SortingCategory category, ThemeController themeController) {
     return Container(
-      width: 250.w,
+      width: 280.w,
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12.r),
+        color: themeController.isDarkMode.value 
+            ? Colors.grey[900] 
+            : Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 8, spreadRadius: 2),
+          BoxShadow(
+            color: Colors.black26, 
+            blurRadius: 10, 
+            spreadRadius: 1,
+            offset: Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: EdgeInsets.all(12.h),
+            padding: EdgeInsets.all(16.h),
             decoration: BoxDecoration(
-              color: Theme.of(context).dividerColor.withOpacity(0.1),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
+              color: themeController.isDarkMode.value 
+                  ? Colors.grey[800]!
+                  : Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,21 +281,27 @@ class _SortingIconsWithDropdownState extends State<SortingIconsWithDropdown> {
                     style: TextStyle(
                         fontFamily: AppTextStyles.DinarOne,
                         fontSize: 16.sp,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold)),
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: Icon(Icons.close, color: Colors.white),
                   onPressed: _removeDropdown,
-                  color: Colors.grey.shade500,
                 ),
               ],
             ),
           ),
           ...category.options.map((option) => ListTile(
                 leading: Icon(_getOptionIcon(option.value),
-                    color: Theme.of(context).iconTheme.color),
+                    color: themeController.isDarkMode.value
+                        ? Colors.grey[300]
+                        : Colors.grey[700]),
                 title: Text(option.label,
                     style: TextStyle(
-                        fontFamily: AppTextStyles.DinarOne, fontSize: 14.sp)),
+                        fontFamily: AppTextStyles.DinarOne, 
+                        fontSize: 14.sp,
+                        color: themeController.isDarkMode.value
+                            ? Colors.white
+                            : Colors.black)),
                 onTap: () {
                   _handleOptionSelection(option.value);
                   _removeDropdown();
@@ -284,35 +369,52 @@ class _SortingIconsWithDropdownState extends State<SortingIconsWithDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: List.generate(
-        categories.length,
-        (index) => Padding(
-          padding: EdgeInsets.symmetric(horizontal: 7.w),
-          child: Container(
-            alignment: Alignment.center,
-            width: 40.w,
-            height: 40.h,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(
-                  255, 205, 204, 204), // خلفية رمادية فاتحة
-              borderRadius: BorderRadius.circular(8), // زوايا مدورة
-            ),
-            // تباعد داخلي
-            child: Center(
-              child: IconButton(
-                icon: Icon(
+    final themeController = Get.find<ThemeController>();
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: themeController.isDarkMode.value 
+            ? Colors.grey[900] 
+            : Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(
+          categories.length,
+          (index) => GestureDetector(
+            onTap: () => _toggleDropdown(index),
+            child: Container(
+              width: 38.w,
+              height: 38.h,
+              decoration: BoxDecoration(
+                color: activeDropdownIndex == index
+                    ? (themeController.isDarkMode.value
+                        ? Colors.grey[700]
+                        : Colors.grey[200])
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Icon(
                   categories[index].icon,
                   color: activeDropdownIndex == index
-                      ? AppColors.backgroundColorIconBack(
-                          Get.find<ThemeController>()
-                              .isDarkMode
-                              .value) // اللون الأساسي عند النشاط
-                      : Color.fromARGB(255, 118, 117,
-                          117), // رمادي غامق للأيقونات غير النشطة
+                      ? themeController.isDarkMode.value
+                          ? Colors.white
+                          : Theme.of(context).primaryColor
+                      : themeController.isDarkMode.value
+                          ? Colors.grey[400]
+                          : Colors.grey[600],
+                  size: 22.w,
                 ),
-                onPressed: () => _toggleDropdown(index),
               ),
             ),
           ),
@@ -340,229 +442,96 @@ Widget _buildTopSection(
     Searchcontroller searchcontroller, ThemeController themeController) {
   return Column(
     children: [
-      SizedBox(height: 20.h),
-      Text(
-        "الــبحث".tr,
-        style: TextStyle(
-          fontFamily: AppTextStyles.DinarOne,
-          color: AppColors.textColor(themeController.isDarkMode.value),
-          fontSize: 20.sp,
-          fontWeight: FontWeight.bold,
-        ),
-        textAlign: TextAlign.center,
-      ),
-      Text(
-        "قم بالبحث عن ماتريد عن طريق أدوات بحث مخصصة".tr,
-        style: TextStyle(
-          fontFamily: AppTextStyles.DinarOne,
-          color: AppColors.textColor(themeController.isDarkMode.value),
-          fontSize: 17.sp,
-          fontWeight: FontWeight.w500,
-        ),
-        textAlign: TextAlign.center,
-      ),
-      SizedBox(height: 10.h),
-      SearchFieldWithCategoryDropdown(searchcontroller: searchcontroller),
-      SizedBox(height: 8.h),
+      SizedBox(height: 16.h),
+ Padding(
+        padding:  EdgeInsets.symmetric(horizontal: 15.w),
+        child: SearchFieldWithCategoryDropdown(searchcontroller: searchcontroller),
+      ),      SizedBox(height: 16.h),
       Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 0.h),
-        child: Padding(
-          padding: EdgeInsets.only(right: 5.w, left: 5.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // زر الفرز مع أيقونة
-              SizedBox(
-                height: 40.h,
-                width: 40.w,
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Row(
+          children: [
+            Expanded(
+              child: Material(
+                color: AppColors.oragne,
+                borderRadius: BorderRadius.circular(10.r),
                 child: InkWell(
                   onTap: () {
-                    searchcontroller.showMap.value = true;
+                    searchcontroller.searchingBox.value = true;
                   },
-                  child: Container(
-                    width: 40.w,
-                    height: 40.h,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: AppColors.oragne,
-                    ),
-                    child: Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                      size: 22.w,
+                  borderRadius: BorderRadius.circular(10.r),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.filter_alt, color: Colors.white),
+                        SizedBox(width: 8.w),
+                        Text(
+                          "خيارات الفلترة".tr,
+                          style: TextStyle(
+                            fontFamily: AppTextStyles.DinarOne,
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              SortingIconsWithDropdown(),
-            ],
-          ),
-        ),
-      ),
-      SizedBox(height: 5.h),
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 0.h),
-        child: Padding(
-          padding: EdgeInsets.only(right: 5.w, left: 5.w),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // زر الفرز مع أيقونة
-              TextButton.icon(
-                onPressed: () {
-                  searchcontroller.searchingBox.value = true;
+            ),
+            SizedBox(width: 10.w),
+            Material(
+              color: themeController.isDarkMode.value
+                  ? Colors.grey[800]
+                  : Colors.grey[200],
+              borderRadius: BorderRadius.circular(10.r),
+              child: InkWell(
+                onTap: () {
+                  searchcontroller.showMap.value = true;
                 },
-                style: TextButton.styleFrom(
-                  backgroundColor: AppColors.backgroundColorIconBack(
-                      Get.find<ThemeController>().isDarkMode.value),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 36.w,
-                    vertical: 5.h,
-                  ),
-                  elevation: 2,
-                  shadowColor: Colors.black26,
-                ),
-                icon: Icon(
-                  Icons.filter_list,
-                  color: Colors.white,
-                  size: 22.w,
-                ),
-                label: Text(
-                  "خيارات الفلترة".tr,
-                  style: TextStyle(
-                    fontFamily: AppTextStyles.DinarOne,
-                    color: Colors.white,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              Container(
-                width: 60.w,
-                height: 40.h,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: Colors.red.withOpacity(0.3),
-                ),
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.restart_alt_rounded,
-                      color: AppColors.redColor,
-                      size: 28.sp,
-                    ),
-                    onPressed: () {
-                      controller.resetCategorySelection();
-                    },
+                borderRadius: BorderRadius.circular(10.r),
+                child: Container(
+                  padding: EdgeInsets.all(12.w),
+                  child: Icon(
+                    Icons.location_on, 
+                    color: AppColors.oragne
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            SizedBox(width: 10.w),
+            Material(
+              color: themeController.isDarkMode.value
+                  ? Colors.grey[800]
+                  : Colors.grey[200],
+              borderRadius: BorderRadius.circular(10.r),
+              child: InkWell(
+                onTap: () {
+                  controller.resetCategorySelection();
+                },
+                borderRadius: BorderRadius.circular(10.r),
+                child: Container(
+                  padding: EdgeInsets.all(12.w),
+                  child: Icon(
+                    Icons.restart_alt, 
+                    color: Colors.red
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      SizedBox(height: 10.h),
+      SizedBox(height: 16.h),
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: SortingIconsWithDropdown(),
+      ),
+      SizedBox(height: 8.h),
     ],
   );
-}
-
-/// زر تبديل احترافي مع أيقونة وتأثير متدرّج
-class ToggleIconButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool active;
-  final VoidCallback onTap;
-  final ThemeController themeController;
-
-  const ToggleIconButton({
-    Key? key,
-    required this.label,
-    required this.icon,
-    required this.active,
-    required this.onTap,
-    required this.themeController,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // الألوان بناءً على حالة التمكين
-    final bgColor = active
-        ? AppColors.backgroundColorIconBack(themeController.isDarkMode.value)
-        : AppColors.backgroundColor(themeController.isDarkMode.value);
-    final textColor = active
-        ? Colors.white
-        : AppColors.textColor(themeController.isDarkMode.value);
-    final iconColor = active
-        ? Colors.white
-        : AppColors.textColorOne(themeController.isDarkMode.value);
-
-    return Material(
-      // لإظهار تأثير الحبر (ripple)
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(4.r),
-        splashColor: iconColor.withOpacity(0.2),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
-          decoration: BoxDecoration(
-            gradient: active
-                ? LinearGradient(
-                    colors: [
-                      bgColor.withOpacity(0.9),
-                      bgColor,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : null,
-            color: active ? null : bgColor,
-            borderRadius: BorderRadius.circular(5.r),
-            boxShadow: [
-              if (active)
-                BoxShadow(
-                  color: bgColor.withOpacity(0.4),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
-                ),
-            ],
-            border: Border.all(
-              color: AppColors.backgroundColorIconBack(
-                  themeController.isDarkMode.value),
-              width: 0.5,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20.w, color: iconColor),
-              SizedBox(width: 8.w),
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: AppTextStyles.DinarOne,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// القسم العلوي للبحث في "الناشرين" (بحث بالاسم فقط)
@@ -578,35 +547,49 @@ Widget _buildPublishersTopSection(
         style: TextStyle(
           fontFamily: AppTextStyles.DinarOne,
           color: AppColors.textColor(themeController.isDarkMode.value),
-          fontSize: 20.sp,
+          fontSize: 22.sp,
           fontWeight: FontWeight.bold,
         ),
       ),
-      SizedBox(height: 6.h),
+      SizedBox(height: 12.h),
       Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: TextField(
-          controller: searchcontroller.publisherNameController,
-          decoration: InputDecoration(
-            hintText: "أدخل اسم الناشر".tr,
-            prefixIcon: Icon(
-              Icons.person_search,
-              color: AppColors.backgroundColorIconBack(
-                  themeController.isDarkMode.value),
+        child: Material(
+          elevation: 2,
+          borderRadius: BorderRadius.circular(16.r),
+          child: TextField(
+            controller: searchcontroller.publisherNameController,
+            decoration: InputDecoration(
+              hintText: "أدخل اسم الناشر".tr,
+              prefixIcon: Icon(
+                Icons.person_search, 
+                color: themeController.isDarkMode.value
+                    ? Colors.grey[400]
+                    : Colors.grey
+              ),
+              filled: true,
+              fillColor: themeController.isDarkMode.value
+                  ? Colors.grey[900]
+                  : Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16.r),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+                vertical: 16.h,
+              ),
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
+            onSubmitted: (value) => searchcontroller.fetchStoresList(
+                language: Get.find<ChangeLanguageController>()
+                    .currentLocale
+                    .value
+                    .languageCode,
+                searchName: value.trim()),
           ),
-          onSubmitted: (value) => searchcontroller.fetchStoresList(
-              language: Get.find<ChangeLanguageController>()
-                  .currentLocale
-                  .value
-                  .languageCode,
-              searchName: value.trim()),
         ),
       ),
-      SizedBox(height: 10.h),
+      SizedBox(height: 24.h),
     ],
   );
 }
@@ -628,3 +611,4 @@ class _BottomNavigationSection extends StatelessWidget {
     );
   }
 }
+

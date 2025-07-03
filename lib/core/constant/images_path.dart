@@ -70,4 +70,11 @@ class ImagesPath {
   static const String logoDark = "$RootPath/FllogoOut.png";
   static const String instagram = "$RootPath/instagram.png";
   static const String whatsappShare = "$RootPath/whatsappShare.png";
+////
+/////
+    static const String redHome = "$RootPath/icons8-home-64.png";
+    static const String redSettings = "$RootPath/icons8-fries-menu-96.png";
+    static const String redSearch = "$RootPath/icons8-sistrix-64.png";
+    static const String redUser = "$RootPath/icons8-user-64.png";
+
 }

@@ -804,8 +804,8 @@ class _AddPostAllDeskTopState extends State<AddPostAllDeskTop> {
         children: [
           _buildSectionTitle('مراجعة المعلومات'.tr),
           _buildReviewItem('الناشر'.tr, dataUser.selectedPublisher.value),
-          _buildReviewItem('المدينة'.tr, homeController.selectedCityName.value),
-          _buildReviewItem('المنطقة'.tr, areaController.selectedAreaName.value),
+              _buildReviewItem('المدينة'.tr, homeController.selectedCityName.value??""),
+          _buildReviewItem('المنطقة'.tr, areaController.selectedAreaName.value??""),
           _buildReviewItem(
               'العنوان'.tr, controller.titleController.text.toString()),
           if (controller.isAddPrice.value)

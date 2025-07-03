@@ -5,10 +5,14 @@ import 'package:get/get.dart';
 
 import '../../controllers/LoadingController.dart';
 import '../../controllers/ThemeController.dart';
+import '../../controllers/settingsController.dart';
 import '../../core/constant/appcolors.dart';
 import '../../customWidgets/custom_flag.dart';
+import '../../customWidgets/custom_flag_desktop.dart';
 import '../../customWidgets/custom_logo.dart';
 import '../AuthDeskTop/login_screen_desktop.dart';
+import '../SettingsDeskTop/chose_route_desktop.dart';
+import '../SidePopup.dart';
 
 class TopSectionDeskTop extends StatefulWidget {
   const TopSectionDeskTop({super.key});
@@ -49,6 +53,9 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
                 children: [
                   _buildSettingsButton(homeController, context),
                   const SizedBox(width: 30),
+                  // إضافة قسم اختيار الدولة هنا
+                  _buildCountrySelector(homeController),
+                  const SizedBox(width: 30),
                   _buildUserSection(
                       loadingController, themeController, context),
                 ],
@@ -60,7 +67,7 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const CustomFlag(),
+                  const CustomFlagDeskTop(),
                   const SizedBox(width: 25),
                   _buildThemeToggle(themeController),
                   const SizedBox(width: 25),
@@ -72,6 +79,59 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
         ),
       );
     });
+  }
+
+  // دالة لبناء قسم اختيار الدولة
+  Widget _buildCountrySelector(HomeController homeController) {
+    final Settingscontroller settingsController = Get.find();
+    
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+         showSidePopup(
+                      context: context,
+                      child: const ChoseRouteDesktop(),
+                      widthPercent: 0.30,
+                      useSideAlignment: true,);
+          settingsController.showTheRoute.value = true;
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            color: AppColors.primaryColor.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: AppColors.primaryColor.withOpacity(0.2),
+              width: 1.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.location_on,
+                size: 18.sp,
+                color: AppColors.primaryColor,
+              ),
+              SizedBox(width: 10.w),
+              GetX<HomeController>(
+                builder: (controller) => Text(
+                  homeController.selectedRoute.value.tr,
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryColor,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildHoverLogo() {
@@ -111,8 +171,8 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
             ),
             child: IconButton(
               icon: themeController.isDarkMode.value
-                  ? Icon(Icons.wb_sunny, size: 24.sp) // أيقونة الشمس الجديدة
-                  : Icon(Icons.nightlight_round, size: 24.sp), // أيقونة القمر
+                  ? Icon(Icons.wb_sunny, size: 24.sp)
+                  : Icon(Icons.nightlight_round, size: 24.sp),
               color: Colors.white,
               onPressed: () {
                 if (themeController.isDarkMode.value) {
@@ -146,7 +206,7 @@ Widget _buildSettingsButton(HomeController controller, BuildContext context) {
       ),
       child: IconButton(
         icon: Icon(
-          Icons.settings, // أيقونة الإعدادات الجديدة
+          Icons.settings,
           size: 24.sp,
           color:
               AppColors.iconColor(Get.find<ThemeController>().isDarkMode.value),
@@ -212,7 +272,7 @@ Widget _buildUserSection(
                       ),
                     ),
                     child: Icon(
-                      Icons.person_outline, // أيقونة الحساب الجديدة
+                      Icons.person_outline,
                       size: 22.sp,
                       color: Colors.white,
                     ),

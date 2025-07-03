@@ -51,7 +51,7 @@ class _LoadTheWebState extends State<LoadTheWeb> {
                 ),
                 const SizedBox(height: 20),
                 const CircularProgressIndicator(
-                  backgroundColor: AppColors.oragne,
+                  backgroundColor: AppColors.redColorLogo,
                   color: AppColors.balckColorTypeFour,
                 ),
                 const SizedBox(height: 20),

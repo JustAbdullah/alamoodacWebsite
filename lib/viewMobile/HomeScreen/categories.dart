@@ -23,9 +23,11 @@ class CategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+        final double maxHeight = MediaQuery.of(context).size.height *0.65;
+
     final Size size = MediaQuery.of(context).size; // تخزين أبعاد الشاشة محلياً
     return Container(
-      width: size.width,
+      width: double.infinity,
       color: AppColors.backgroundColor(themeController.isDarkMode.value),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -34,7 +36,7 @@ class CategoriesPage extends StatelessWidget {
           children: [
             _buildHeaderSection(context),
             SizedBox(height: 7.h),
-            _buildCategoriesListSection(context),
+            _buildCategoriesListSection(context,maxHeight),
           ],
         ),
       ),
@@ -61,14 +63,14 @@ class CategoriesPage extends StatelessWidget {
 
   Widget _buildToggleButton() {
     return Obx(() {
-      final bool isShow = controller.isShowTheCate.value;
+                    final show = controller.isShowTheCate.value;
       return InkWell(
-        onTap: () => controller.isShowTheCate.value = !isShow,
+         onTap: controller.showTheCate,
         child: Container(
           width: 180.w,
           height: 30.h,
           decoration: BoxDecoration(
-            color: !isShow ? AppColors.blueLight : AppColors.redColor,
+            color:  controller.isShowTheCate.value? AppColors.blueLight : AppColors.redColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Padding(
@@ -79,7 +81,7 @@ class CategoriesPage extends StatelessWidget {
                 SizedBox(
                   width: 130.w,
                   child: Text(
-                    !isShow ? "مشاهدة الأقسام".tr : "إخفاء الأقسام".tr,
+                    show ? "مشاهدة الأقسام".tr : "إخفاء الأقسام".tr,
                     style: TextStyle(
                       fontFamily: AppTextStyles.DinarOne,
                       color: AppColors.whiteColor,
@@ -91,7 +93,7 @@ class CategoriesPage extends StatelessWidget {
                   ),
                 ),
                 Image.asset(
-                  !isShow
+                  show
                       ? ImagesPath.showMoreTheCate
                       : ImagesPath.showLessTheCate,
                   width: 20.w,
@@ -106,32 +108,39 @@ class CategoriesPage extends StatelessWidget {
   }
 
   // دمج الـ Obx بحيث يكون داخل كتلة واحدة لتفادي التداخل الغير ضروري
-  Widget _buildCategoriesListSection(BuildContext context) {
+  Widget _buildCategoriesListSection(BuildContext context,  final double maxHeight ) {
     return Obx(() {
       if (!controller.isShowTheCate.value) return const SizedBox.shrink();
 
-      if (controller.isLoadingCategories.value) return _buildSkeletonLoader();
+      if (controller.isLoadingCategories.value) return _buildSkeletonLoader(maxHeight);
 
-      if (controller.categoriesList.isEmpty) return _buildEmptyState();
+      if (controller.categoriesList.isEmpty) return _buildEmptyState(maxHeight);
 
-      return _buildCategoriesList(context);
+      return _buildCategoriesList(context,maxHeight);
     });
   }
 
-  Widget _buildSkeletonLoader() {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: 6,
-      itemBuilder: (_, index) => ListTile(
-        title: Container(height: 20.h, color: Colors.grey[300]),
-        subtitle: Container(height: 15.h, color: Colors.grey[300]),
+  Widget _buildSkeletonLoader(  final double maxHeight ) {
+    return SizedBox(
+                    height: maxHeight,
+                  
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: 9,
+        itemBuilder: (_, index) => ListTile(
+          title: Container(height: 20.h, color: Colors.grey[300]),
+          subtitle: Container(height: 15.h, color: Colors.grey[300]),
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
+  Widget _buildEmptyState(  final double maxHeight ) {
+    return SizedBox(
+                    height: maxHeight,
+                  
+      child:
+    Center(
       child: Text(
         "المعــذرة البيانات حاليًا غير متاحة للعرض ..حاول مجددًا".tr,
         style: TextStyle(
@@ -141,18 +150,18 @@ class CategoriesPage extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
-    );
+     ) );
   }
 
-  Widget _buildCategoriesList(BuildContext context) {
+  Widget _buildCategoriesList(BuildContext context,  final double maxHeight ) {
     final Size size = MediaQuery.of(context)
         .size; // استخدام الحجم المحلي إذا كانت الحاجة ملحة
     return Container(
       color: AppColors.backgroundColor(themeController.isDarkMode.value),
-      width: size.width,
+                        height: maxHeight,
+
       child: ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
         itemCount: controller.categoriesList.length,
         itemBuilder: (context, index) {
           final Category category = controller.categoriesList[index];

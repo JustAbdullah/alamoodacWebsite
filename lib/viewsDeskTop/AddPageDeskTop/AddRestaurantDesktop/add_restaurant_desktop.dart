@@ -858,10 +858,8 @@ class AddRestaurantDesktop extends StatelessWidget {
             children: [
               _buildSectionTitle('مراجعة المعلومات'),
               _buildReviewItem('الناشر', dataUser.selectedPublisher.value),
-              _buildReviewItem(
-                  'المدينة', homeController.selectedCityName.value),
-              _buildReviewItem(
-                  'المنطقة', areaController.selectedAreaName.value),
+                 _buildReviewItem('المدينة'.tr, homeController.selectedCityName.value??""),
+          _buildReviewItem('المنطقة'.tr, areaController.selectedAreaName.value??""),
               _buildReviewItem('العنوان', controller.titleController.text),
               SizedBox(height: 30.h),
             ],

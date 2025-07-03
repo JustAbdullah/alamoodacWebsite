@@ -892,10 +892,8 @@ class _AddAuctionsDesktopState extends State<AddAuctionsDesktop> {
             children: [
               _buildSectionTitle('مراجعة المعلومات'.tr),
               _buildReviewItem('الناشر'.tr, dataUser.selectedPublisher.value),
-              _buildReviewItem(
-                  'المدينة'.tr, homeController.selectedCityName.value),
-              _buildReviewItem(
-                  'المنطقة'.tr, areaController.selectedAreaName.value),
+                 _buildReviewItem('المدينة'.tr, homeController.selectedCityName.value??""),
+          _buildReviewItem('المنطقة'.tr, areaController.selectedAreaName.value??""),
               _buildReviewItem('العنوان'.tr, controller.titleController.text),
               SizedBox(height: 30.h),
             ],

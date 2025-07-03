@@ -20,7 +20,7 @@ class CustomLogo extends StatelessWidget {
         },
         child: Image.asset(
           themeController.isDarkMode.value
-              ? ImagesPath.logoDark
+              ? ImagesPath.logo
               : ImagesPath.logo,
           height: 70.h, // زيادة الحجم
           fit: BoxFit.contain,

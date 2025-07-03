@@ -6,6 +6,7 @@ class User {
   final double? latitude;
   final double? longitude;
   final int isVerified; // غير قابل للnull كرقم
+  final int free_post_used; // غير قابل للnull كرقم
 
   User({
     this.id,
@@ -15,6 +16,8 @@ class User {
     this.latitude,
     this.longitude,
     required this.isVerified, // إجباري
+    required this.free_post_used
+
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -26,6 +29,8 @@ class User {
       latitude: _parseDouble(json['latitude']),
       longitude: _parseDouble(json['longitude']),
       isVerified: _parseInt(json['is_verified']) ?? 0, // 0 كقيمة افتراضية
+      free_post_used: _parseInt(json['free_post_used']) ?? 0, // 0 كقيمة افتراضية
+
     );
   }
 
@@ -52,6 +57,8 @@ class User {
       'latitude': latitude,
       'longitude': longitude,
       'is_verified': isVerified, // القيمة كرقم مباشرة
-    };
+   
+      'free_post_used':free_post_used
+ };
   }
 }

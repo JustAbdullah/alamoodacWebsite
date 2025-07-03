@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get/get.dart';
-
+///.......///
 import 'HomeDeciderView.dart';
 import 'controllers/ThemeController.dart';
 import 'controllers/home_controller.dart';
@@ -203,8 +203,8 @@ class MyApp extends StatelessWidget {
           navigatorObservers: [EnhancedNavigatorObserver()],
           title: 'على مودك',
           translations: AppTranslation(),
-          locale: langCtrl.currentLocale.value,
-          fallbackLocale: const Locale('ar'),
+  locale: langCtrl.currentLocale.value,
+  fallbackLocale: const Locale('ar'),
           initialBinding: BindingsBuilder(() {
             Get.put(HomeController(), permanent: true);
             Get.put(Searchcontroller(), permanent: true);
@@ -247,37 +247,49 @@ class MyApp extends StatelessWidget {
             GetPage(
                 name: '/dashboard-mobile/', page: () => HomeDashboardUser()),
           ],
-          builder: (context, child) => WillPopScope(
-            onWillPop: () async {
-              if (EnhancedNavigatorObserver._navigationStack.length > 1) {
-                EnhancedNavigatorObserver._navigationStack.removeLast();
-                html.window.history.back();
-                return false;
-              }
-              _showExitConfirmation();
-              return false;
-            },
-            child: Scaffold(
-              body: MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaleFactor: 0.9,
-                  padding: EdgeInsets.zero,
-                  viewPadding: EdgeInsets.zero,
-                  viewInsets: EdgeInsets.zero,
-                ),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minWidth: MediaQuery.of(context).size.width,
-                    maxWidth: MediaQuery.of(context).size.width,
-                    minHeight: MediaQuery.of(context).size.height,
-                    maxHeight: MediaQuery.of(context).size.height,
-                  ),
-                  child: Container(child: child),
-                ),
+           builder: (context, child) {
+    // 1) استخرج كود اللغة وحدد RTL
+    final langCode = Get.find<ChangeLanguageController>()
+        .currentLocale
+        .value
+        .languageCode;
+    final isRtl = ['ar', 'ku', 'fa', 'ur'].contains(langCode);
+
+    // 2) لف الـ child في Directionality
+    return Directionality(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (EnhancedNavigatorObserver._navigationStack.length > 1) {
+            EnhancedNavigatorObserver._navigationStack.removeLast();
+            html.window.history.back();
+            return false;
+          }
+          _showExitConfirmation();
+          return false;
+        },
+        child: Scaffold(
+          body: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaleFactor: 0.9,
+              padding: EdgeInsets.zero,
+              viewPadding: EdgeInsets.zero,
+              viewInsets: EdgeInsets.zero,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: MediaQuery.of(context).size.width,
+                maxWidth: MediaQuery.of(context).size.width,
+                minHeight: MediaQuery.of(context).size.height,
+                maxHeight: MediaQuery.of(context).size.height,
               ),
+              child: child,
             ),
           ),
-        ));
+        ),
+      ),
+    );
+  }));
   }
 
   void _showExitConfirmation() {

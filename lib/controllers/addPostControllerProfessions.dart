@@ -262,6 +262,8 @@ class AddpostProfessionController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         loading.value = false;
+          Get.find<LoadingController>().currentUser?.free_post_used == 0?
+       Get.find<LoadingController>(). useFreePost( Get.find<LoadingController>().currentUser?.id??0):null;
       } else {
         loading.value = false;
       }
@@ -341,7 +343,11 @@ class AddpostProfessionController extends GetxController {
       Navigator.of(context, rootNavigator: true).pop();
       return;
     }
-
+String? expiresAt =  Get.find<LoadingController>().currentUser?.free_post_used == 0
+    ? DateTime.now()
+        .add(const Duration(days: 30))
+        .toIso8601String()    // مثال: "2025-07-25T14:12:00.000"
+    : null;
     var postData = {
       'store_id': storeId,
       'user_id': Get.find<LoadingController>().currentUser?.id,
@@ -368,7 +374,8 @@ class AddpostProfessionController extends GetxController {
                 'translated_detail_value': convertArabicToEnglishNumbers(
                     translation['translated_detail_value']),
               };
-            }).toList(),
+            }).toList(),               'expires_at': expiresAt,
+
           };
         }
         return detail; // إرجاع البيانات الأخرى بدون تعديل

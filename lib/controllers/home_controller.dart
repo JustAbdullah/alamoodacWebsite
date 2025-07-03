@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -67,215 +69,232 @@ class HomeController extends GetxController
       );
     }
   }
+/////.......//
+ @override
+void onInit() {
+  super.onInit();
 
-  @override
-  void onInit() {
-    super.onInit();
-
-    html.window.onPopState.listen((event) {
-      if (Get.currentRoute != '/') {
-        isSearchFromHome.value = false;
-        Get.back();
-      } else {
-        isSearchFromHome.value = false;
-        // سلوك عند الرجوع من الصفحة الرئيسية
-        // مثلاً: عرض حوار تأكيد أو إعادة توجيه
-        Get.toNamed('/confirm-exit');
-      }
-    });
-    _initAnimations();
-    // تهيئة المتحكم بالرسوم
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    checkAndSetFullScreen();
-
-    initializeData();
-  }
-
-  void checkAndSetFullScreen() async {
-    // تفعيل وضع الشاشة الكاملة (Immersive Sticky)
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    // تغيير نمط واجهة النظام (مثل الشريط العلوي)
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // جعل شريط الحالة شفافًا
-        statusBarIconBrightness:
-            Brightness.dark, // تغيير سطوع أيقونات شريط الحالة
-      ),
-    );
-  }
-
-// دالة لإظهار واجهة النظام مرة أخرى (إظهار شريط الحالة)
-
-  Future<void> initializeData() async {
-    try {
-      isInitialized = true;
-
-      if (pendingPostId != null) {
-        fetchPostDetails(int.parse(pendingPostId!));
-        pendingPostId = null;
-      }
-      await loadSelectedRoute(); // 1. تحميل المسار أولاً
-      await makeInitial(); // 2. تهيئة الإعدادات
-
-      if (!isGetDataFirstTime.value) {
-        await fetchInitialData(); // 3. جلب البيانات الأساسية
-      }
-    } catch (e, stackTrace) {
-      print('Initialization Error: $e');
-      print(stackTrace);
-      // إعادة المحاولة أو إظهار رسالة خطأ
-    }
-  }
-
-  Future<void> fetchInitialData() async {
-    print("geTOnfetchInitialData");
-
-    final languageCode =
-        Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
-    final countryCode = _getCountryCode(selectedRoute.value);
-
-    try {
-      // تقسيم المهام إلى مجموعات أصغر لتجنب الحمل الزائد
-      final List<Future<void>> parallelTasks = [
-        _fetchWithRetry(() => fetchCategories(languageCode), retries: 2),
-        _fetchWithRetry(() => fetchLatestBannerAds()),
-        _fetchWithRetry(
-            () => promotedadController.fetchAds('active', languageCode)),
-        _fetchWithRetry(() => fetchPostsMostView(languageCode), retries: 2),
-        _fetchWithRetry(() => fetchPostsMostRating(languageCode), retries: 2),
-        _fetchWithRetry(() => fetchPosts(languageCode), retries: 2),
-        _fetchWithRetry(
-            () => Get.find<Settingscontroller>().fetchPackages(languageCode)),
-        _fetchWithRetry(() => fetchCities(countryCode, languageCode),
-            retries: 2),
-      ];
-
-      // تنفيذ المهام بشكل متوازي مع التحكم في عدد الطلبات المتزامنة
-      for (int i = 0; i < parallelTasks.length; i += 2) {
-        final batch = parallelTasks.sublist(
-            i, i + 2 > parallelTasks.length ? parallelTasks.length : i + 2);
-        await Future.wait(batch);
-        if (i + 2 < parallelTasks.length) {
-          await Future.delayed(
-              Duration(milliseconds: 200)); // تأخير بسيط بين المجموعات
-        }
-      }
-
-      // جلب الفئات بدفعات مع تحسين الأداء
-      await _fetchCategoriesInBatches(languageCode, batchSize: 5);
-
-      isGetDataFirstTime.value = true;
-    } catch (e, stackTrace) {
-      print('Failed to load initial data: $e');
-      print(stackTrace);
-      isGetDataFirstTime.value = false;
-    }
-  }
-
-  Future<void> _fetchWithRetry(Future<void> Function() request,
-      {int retries = 2}) async {
-    for (int i = 0; i <= retries; i++) {
-      try {
-        await request();
-        return;
-      } catch (e) {
-        if (i == retries) rethrow;
-        await Future.delayed(Duration(seconds: 1));
-      }
-    }
-  }
-
-  Future<void> _fetchCategoriesInBatches(String lang,
-      {int batchSize = 5}) async {
-    final totalCategories = 24;
-
-    for (int start = 1; start <= totalCategories; start += batchSize) {
-      final end = (start + batchSize - 1).clamp(1, totalCategories);
-      final futures = List.generate(
-          end - start + 1,
-          (i) => _fetchWithRetry(() => _fetchCategoryPosts(start + i, lang),
-              retries: 1));
-
-      await Future.wait(futures);
-    }
-  }
-
-  Future<void> _fetchCategoryPosts(int categoryId, String languageCode) async {
-    final Map<int, Future<void> Function(String)> categoryFetchers = {
-      1: fetchPostsCateOne,
-      2: fetchPostsCateTwo,
-      3: fetchPostsCateThree,
-      4: fetchPostsCateFour,
-      5: fetchPostsCateFive,
-      6: fetchPostsCateSix,
-      7: fetchPostsCateSeven,
-      8: fetchPostsCateEight,
-      9: fetchPostsCateNine,
-      10: fetchPostsCateTen,
-      11: fetchPostsCateEleven,
-      12: fetchPostsCateTwelve,
-      13: fetchPostsCateThrteen,
-      14: fetchPostsCateFourTeen,
-      15: fetchPostsCateFifteen,
-      16: fetchPostsCateSixteen,
-      17: fetchPostsCateSeventeen,
-      18: fetchPostsCateEighteen,
-      19: fetchPostsCateNineteen,
-      20: fetchPostsCateTwenty,
-      21: fetchPostsCateTwentyOne,
-      22: fetchPostsCateTwentyTwo,
-      23: fetchPostsCateTwentyThree,
-      24: fetchPostsCateTwentyFour,
-    };
-
-    final fetcher = categoryFetchers[categoryId];
-    if (fetcher != null) {
-      return fetcher(languageCode);
+  html.window.onPopState.listen((event) {
+    if (Get.currentRoute != '/') {
+      isSearchFromHome.value = false;
+      Get.back();
     } else {
-      return Future.error(Exception('Invalid category ID: $categoryId'));
+      isSearchFromHome.value = false;
+      Get.toNamed('/confirm-exit');
     }
-  }
+  });
+  
+  _initAnimations();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  checkAndSetFullScreen();
+  
+  initializeData();
+}
 
-  String _getCountryCode(String route) {
-    const routeMap = {
-      'العراق': 'IQ',
-      'تركيا': 'TR',
-    };
-    return routeMap[route] ?? 'SY';
-  }
+void checkAndSetFullScreen() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+}
 
-  Future<void> makeInitial() async {
-    final languageCode =
-        Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
-    await initializeDateFormatting(languageCode, null);
-  }
+Future<void> initializeData() async {
+  try {
+    isInitialized = true;
 
-  Future<void> loadSelectedRoute() async {
-    final prefs = await SharedPreferences.getInstance();
-    selectedRoute.value = prefs.getString('selectedRoute') ?? 'العراق';
-  }
+    // معالجة البند البيني بشكل غير متزامن
+    if (pendingPostId != null) {
+      final postId = int.parse(pendingPostId!);
+      pendingPostId = null;
+      unawaited(fetchPostDetails(postId));
+    }
 
-  Future<void> saveSelectedRoute(String route) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selectedRoute', route);
-    selectedRoute.value = route;
+    // تشغيل المهام غير المعتمدة على بعضها بشكل متوازي
+    await Future.wait([
+      loadSelectedRoute(),
+      makeInitial(),
+    ]);
 
-    isGetDataFirstTime.value = false; // إعادة تعيين الحالة
-    await fetchInitialData(); // إعادة جلب البيانات مع معالجة الأخطاء
-  }
-
-  Future<void> refreshData() async {
-    try {
-      isGetDataFirstTime.value = false;
+    if (!isGetDataFirstTime.value) {
       await fetchInitialData();
-    } catch (e) {
-      Get.snackbar('Error'.tr, 'Failed to refresh data'.tr);
+    }
+  } catch (e, stackTrace) {
+    print('Initialization Error: $e\n$stackTrace');
+  }
+}
+
+Future<void> fetchInitialData() async {
+  print("geTOnfetchInitialData");
+
+  final languageCode =
+      Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+  final countryCode = _getCountryCode(selectedRoute.value);
+
+  try {
+    // قائمة بمهام جلب البيانات الأساسية
+    final taskFunctions = [
+      () => _fetchWithRetry(() => fetchCategories(languageCode), retries: 2),
+      () => _fetchWithRetry(() => fetchLatestBannerAds()),
+      () => _fetchWithRetry(() => promotedadController.fetchAds('active', languageCode)),
+      () => _fetchWithRetry(() => fetchPostsMostView(languageCode), retries: 2),
+      () => _fetchWithRetry(() => fetchPostsMostRating(languageCode), retries: 2),
+      () => _fetchWithRetry(() => fetchPosts(languageCode), retries: 2),
+      () => _fetchWithRetry(() => Get.find<Settingscontroller>().fetchPackages(languageCode)),
+      () => _fetchWithRetry(() => fetchCities(countryCode, languageCode), retries: 2),
+    ];
+
+    // تنفيذ المهام مع 5 طلبات متزامنة كحد أقصى
+    await _runConcurrent(taskFunctions, concurrency: 5);
+
+    // جلب بيانات الفئات بشكل متوازي
+    await _fetchCategoriesConcurrently(languageCode, concurrency: 5);
+   await checkExpiredPosts();
+
+    isGetDataFirstTime.value = true;
+  } catch (e, stackTrace) {
+    print('Failed to load initial data: $e\n$stackTrace');
+    isGetDataFirstTime.value = false;
+  }
+}
+
+Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrency = 5}) async {
+  final queue = Queue.of(tasks);
+  final activeTasks = <Future>[];
+  
+  while (queue.isNotEmpty || activeTasks.isNotEmpty) {
+    // إضافة مهام جديدة إذا كان لدينا سعة
+    while (activeTasks.length < concurrency && queue.isNotEmpty) {
+      final task = queue.removeFirst();
+      final future = task().catchError((e) => print('Concurrent task error: $e'));
+      activeTasks.add(future);
+      future.whenComplete(() => activeTasks.remove(future));
+    }
+    
+    // الانتظار حتى يكتمل أحد المهام الحالية
+    if (activeTasks.isNotEmpty) {
+      await Future.any(activeTasks);
     }
   }
+}
 
+Future<void> _fetchCategoriesConcurrently(String lang, {int concurrency = 5}) async {
+  final totalCategories = 30;
+  final taskFunctions = <Future<void> Function()>[];
+  
+  for (int categoryId = 1; categoryId <= totalCategories; categoryId++) {
+    taskFunctions.add(() => _fetchCategoryPosts(categoryId, lang));
+  }
+  
+  await _runConcurrent(taskFunctions, concurrency: concurrency);
+}
+
+Future<void> _fetchWithRetry(Future<void> Function() request, {int retries = 2}) async {
+  for (int i = 0; i <= retries; i++) {
+    try {
+      await request();
+      return;
+    } catch (e) {
+      if (i == retries) {
+        print('Request failed after $retries attempts: $e');
+        rethrow;
+      }
+      await Future.delayed(Duration(seconds: 1));
+    }
+  }
+}
+
+
+Future<void> _fetchCategoryPosts(int categoryId, String languageCode) async {
+  final Map<int, Future<void> Function(String)> categoryFetchers = {
+    1: fetchPostsCateOne,
+    2: fetchPostsCateTwo,
+    3: fetchPostsCateThree,
+    4: fetchPostsCateFour,
+    5: fetchPostsCateFive,
+    6: fetchPostsCateSix,
+    7: fetchPostsCateSeven,
+    8: fetchPostsCateEight,
+    9: fetchPostsCateNine,
+    10: fetchPostsCateTen,
+    11: fetchPostsCateEleven,
+    12: fetchPostsCateTwelve,
+    13: fetchPostsCateThrteen,
+    14: fetchPostsCateFourTeen,
+    15: fetchPostsCateFifteen,
+    16: fetchPostsCateSixteen,
+    17: fetchPostsCateSeventeen,
+    18: fetchPostsCateEighteen,
+    19: fetchPostsCateNineteen,
+    20: fetchPostsCateTwenty,
+    21: fetchPostsCateTwentyOne,
+    22: fetchPostsCateTwentyTwo,
+    23: fetchPostsCateTwentyThree,
+    24: fetchPostsCateTwentyFour,   
+    25: fetchPostsCateTwentyFive,    
+    26: fetchPostsCateTwentySix,
+    27: fetchPostsCateTwentySeven,
+    28: fetchPostsCateTwentyEight,
+    29: fetchPostsCateTwentyNine,
+    30: fetchPostsCateThirty,
+
+
+  };
+
+
+  final fetcher = categoryFetchers[categoryId];
+  if (fetcher != null) {
+    return fetcher(languageCode);
+  } else {
+    throw Exception('Invalid category ID: $categoryId');
+  }
+}
+
+String _getCountryCode(String route) {
+  const routeMap = {
+    'العراق': 'IQ',
+    'تركيا': 'TR',
+  };
+  return routeMap[route] ?? 'SY';
+}
+
+Future<void> makeInitial() async {
+  final languageCode =
+      Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+  await initializeDateFormatting(languageCode, null);
+}
+
+Future<void> loadSelectedRoute() async {
+
+  final prefs = await SharedPreferences.getInstance();
+  selectedRoute.value = prefs.getString('selectedRoute') ?? 'العراق';
+
+  print(selectedRoute.value);
+  
+  fetchCities(_getCountryCode(selectedRoute.value),Get.find<ChangeLanguageController>().currentLocale.value.languageCode);
+   
+    await    fetchCategories( Get.find<ChangeLanguageController>().currentLocale.value.languageCode);
+}
+
+Future<void> saveSelectedRoute(String route) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('selectedRoute', route);
+  selectedRoute.value = route;
+
+}
+
+Future<void> refreshData() async {
+  try {
+    isGetDataFirstTime.value = false;
+    await fetchInitialData();
+  } catch (e) {
+    Get.snackbar('Error'.tr, 'Failed to refresh data'.tr);
+  }
+}
 ////////////////////////////////..............Show The Cate...........////////////////////
-  RxBool isShowTheCate = true.obs;
+   RxBool isShowTheCate = false.obs;
 
   showTheCate() {
     if (isShowTheCate.value == true) {
@@ -284,6 +303,7 @@ class HomeController extends GetxController
       isShowTheCate.value = true;
     }
   }
+
 
 //////////////////////////...........مسار التطبيق......................//////////.
 // تحميل المسار المحفوظ من SharedPreferences
@@ -2477,6 +2497,175 @@ class HomeController extends GetxController
     }
   }
 
+///////////////.......................TwentyFive.......................///////////////
+
+  RxBool LoadingPostsCateTwentyFive = false.obs;
+  var postsListCateTwentyFive = <Post>[].obs;
+
+// إضافة قائمة `RxInt` لكل منشور
+
+  Future<void> fetchPostsCateTwentyFive(String language) async {
+    try {
+      LoadingPostsCateTwentyFive.value = true;
+
+      final response = await http.get(Uri.parse(
+          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/25'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        postsListCateTwentyFive.value =
+            jsonData.map((post) => Post.fromJson(post)).toList();
+
+        // تهيئة قيم `RxInt` لكل منشور
+      } else {
+        throw Exception('Failed to load posts');
+      }
+    } catch (e) {
+    } finally {
+      LoadingPostsCateTwentyFive.value = false;
+    }
+  }
+///////////////.......................TwentySix.......................///////////////
+
+  RxBool LoadingPostsCateTwentySix = false.obs;
+  var postsListCateTwentySix = <Post>[].obs;
+
+// إضافة قائمة `RxInt` لكل منشور
+
+  Future<void> fetchPostsCateTwentySix(String language) async {
+    try {
+      LoadingPostsCateTwentySix.value = true;
+
+      final response = await http.get(Uri.parse(
+          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/26'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        postsListCateTwentySix.value =
+            jsonData.map((post) => Post.fromJson(post)).toList();
+
+        // تهيئة قيم `RxInt` لكل منشور
+      } else {
+        throw Exception('Failed to load posts');
+      }
+    } catch (e) {
+    } finally {
+      LoadingPostsCateTwentySix.value = false;
+    }
+  }///////////////.......................TwentySeven.......................///////////////
+
+  RxBool LoadingPostsCateTwentySeven = false.obs;
+  var postsListCateTwentySeven = <Post>[].obs;
+
+// إضافة قائمة `RxInt` لكل منشور
+
+  Future<void> fetchPostsCateTwentySeven(String language) async {
+    try {
+      LoadingPostsCateTwentySeven.value = true;
+
+      final response = await http.get(Uri.parse(
+          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/27'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        postsListCateTwentySeven.value =
+            jsonData.map((post) => Post.fromJson(post)).toList();
+
+        // تهيئة قيم `RxInt` لكل منشور
+      } else {
+        throw Exception('Failed to load posts');
+      }
+    } catch (e) {
+    } finally {
+      LoadingPostsCateTwentySeven.value = false;
+    }
+  }
+///////////////.......................TwentyEight.......................///////////////
+
+  RxBool LoadingPostsCateTwentyEight = false.obs;
+  var postsListCateTwentyEight = <Post>[].obs;
+
+// إضافة قائمة `RxInt` لكل منشور
+
+  Future<void> fetchPostsCateTwentyEight(String language) async {
+    try {
+      LoadingPostsCateTwentyEight.value = true;
+
+      final response = await http.get(Uri.parse(
+          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/28'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        postsListCateTwentyEight.value =
+            jsonData.map((post) => Post.fromJson(post)).toList();
+
+        // تهيئة قيم `RxInt` لكل منشور
+      } else {
+        throw Exception('Failed to load posts');
+      }
+    } catch (e) {
+    } finally {
+      LoadingPostsCateTwentyEight.value = false;
+    }
+  }///////////////.......................TwentyNine.......................///////////////
+
+  RxBool LoadingPostsCateTwentyNine = false.obs;
+  var postsListCateTwentyNine = <Post>[].obs;
+
+// إضافة قائمة `RxInt` لكل منشور
+
+  Future<void> fetchPostsCateTwentyNine(String language) async {
+    try {
+      LoadingPostsCateTwentyEight.value = true;
+
+      final response = await http.get(Uri.parse(
+          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/29'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        postsListCateTwentyNine.value =
+            jsonData.map((post) => Post.fromJson(post)).toList();
+
+        // تهيئة قيم `RxInt` لكل منشور
+      } else {
+        throw Exception('Failed to load posts');
+      }
+    } catch (e) {
+    } finally {
+      LoadingPostsCateTwentyNine.value = false;
+    }
+  }///////////////.......................Thirty.......................///////////////
+
+  RxBool LoadingPostsCateThirty = false.obs;
+  var postsListCateThirty = <Post>[].obs;
+
+// إضافة قائمة `RxInt` لكل منشور
+
+  Future<void> fetchPostsCateThirty(String language) async {
+    try {
+      LoadingPostsCateThirty.value = true;
+
+      final response = await http.get(Uri.parse(
+          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/30'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonData = json.decode(response.body);
+        postsListCateThirty.value =
+            jsonData.map((post) => Post.fromJson(post)).toList();
+
+        // تهيئة قيم `RxInt` لكل منشور
+      } else {
+        throw Exception('Failed to load posts');
+      }
+    } catch (e) {
+    } finally {
+      LoadingPostsCateThirty.value = false;
+    }
+  }
+  
+
+
+  /////////////////////////
   /////////////////////////
 
   RxBool hideForever = false.obs;
@@ -2650,7 +2839,7 @@ class HomeController extends GetxController
     super.onClose();
   }
 
-  RxString selectedCityName = ''.obs;
+  Rx<String?> selectedCityName = Rx<String?>(null); // تغيير هنا
   RxString selectedprice = ''.obs;
 
   ///////////////////////////
@@ -2878,4 +3067,12 @@ class HomeController extends GetxController
       print("❌ Failed to send message: ${response.body}");
     }
   }
+  Future<void> checkExpiredPosts() async {
+  final url = Uri.parse('https://alamoodac.com/modac/public/posts/check-expired');
+  await http.get(url, headers: {
+    'Accept': 'application/json',
+    // إذا كنت تستخدم مصادقة:
+    // 'Authorization': 'Bearer YOUR_TOKEN',
+  });
+}
 }

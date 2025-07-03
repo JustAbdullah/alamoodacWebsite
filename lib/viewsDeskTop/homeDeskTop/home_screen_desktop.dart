@@ -14,6 +14,7 @@ import '../../core/constant/appcolors.dart';
 
 // Custom Widgets
 
+import '../../core/data/model/post.dart';
 import '../../core/localization/changelanguage.dart';
 import 'PromotedAdPage_desktop.dart';
 import 'PromotionCard.dart';
@@ -192,9 +193,11 @@ class _HomeScreenDesktopState extends State<HomeScreenDesktop> {
   // ==========================================
   Widget _buildSmartPost(
       ThemeController themeController, HomeController controller, bool isRTL, Searchcontroller searchcontroller) {
+        
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+         
         SectionTitle(
           title: "المنشورات والبحث".tr,
           icon: Icons.category_outlined,
@@ -270,1376 +273,219 @@ class _HomeScreenDesktopState extends State<HomeScreenDesktop> {
                       const MostViewPostsDesktop(),
                       SizedBox(height: 10.h),
                       const MostRatingPostDesktop(),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "المول الإلكتروني".tr,
-                        isLoading: controller.LoadingPostsCateOne,
-                        postsList: controller.postsListCateOne,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateOne.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateOne.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateOne.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateOne.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateOne.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateOne.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                    
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "سوق المستعمل".tr,
-                        isLoading: controller.LoadingPostsCateTwo,
-                        postsList: controller.postsListCateTwo,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwo.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwo.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwo.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwo.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwo.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwo.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "مركبات للبيع والايجار".tr,
-                        isLoading: controller.LoadingPostsCateThree,
-                        postsList: controller.postsListCateThree,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateThree.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateThree.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateThree.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateThree.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateThree.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateThree.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "المهن والحرف".tr,
-                        isLoading: controller.LoadingPostsCateFour,
-                        postsList: controller.postsListCateFour,
-                       onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateFour.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateFour.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateFour.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateFour.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateFour.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateFour.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "منتجات من البيت".tr,
-                        isLoading: controller.LoadingPostsCateFive,
-                        postsList: controller.postsListCateFive,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateFive.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateFive.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateFive.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateFive.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateFive.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateFive.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "عقارات للبيع والإيجار".tr,
-                        isLoading: controller.LoadingPostsCateSix,
-                        postsList: controller.postsListCateSix,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateSix.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateSix.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateSix.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateSix.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateSix.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateSix.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "عروض وصفقات".tr,
-                        isLoading: controller.LoadingPostsCateSeven,
-                        postsList: controller.postsListCateSeven,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateSeven.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateSeven.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateSeven.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateSeven.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateSeven.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateSeven.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "المزاد الإلكتروني".tr,
-                        isLoading: controller.LoadingPostsCateEight,
-                        postsList: controller.postsListCateEight,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateEight.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateEight.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateEight.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateEight.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateEight.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateEight.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "متجر المنتجات العالمية".tr,
-                        isLoading: controller.LoadingPostsCateNine,
-                        postsList: controller.postsListCateNine,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateNine.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateNine.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateNine.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateNine.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateNine.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateNine.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الإعلانات الرسمية".tr,
-                        isLoading: controller.LoadingPostsCateTen,
-                        postsList: controller.postsListCateTen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "سوق الجملة والتوكيلات".tr,
-                        isLoading: controller.LoadingPostsCateEleven,
-                        postsList: controller.postsListCateEleven,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateEleven.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateEleven.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateEleven.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateEleven.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateEleven.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateEleven.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "فرص عمل".tr,
-                        isLoading: controller.LoadingPostsCateTwelve,
-                        postsList: controller.postsListCateTwelve,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwelve.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwelve.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwelve.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwelve.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwelve.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwelve.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "أفكار ومشاريع للتمويل".tr,
-                        isLoading: controller.LoadingPostsCateThrteen,
-                        postsList: controller.postsListCateThrteen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateThrteen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateThrteen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateThrteen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateThrteen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateThrteen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateThrteen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "المطاعم".tr,
-                        isLoading: controller.LoadingPostsCateFourTeen,
-                        postsList: controller.postsListCateFourTeen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateFourTeen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateFourTeen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateFourTeen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateFourTeen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateFourTeen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateFourTeen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "دليل الشركات".tr,
-                        isLoading: controller.LoadingPostsCateFifteen,
-                        postsList: controller.postsListCateFifteen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateFifteen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateFifteen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateFifteen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateFifteen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateFifteen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateFifteen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "منتجات من المرزعة".tr,
-                        isLoading: controller.LoadingPostsCateSixteen,
-                        postsList: controller.postsListCateSixteen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateSixteen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateSixteen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateSixteen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateSixteen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateSixteen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateSixteen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الخدمات التعليمية".tr,
-                        isLoading: controller.LoadingPostsCateSeventeen,
-                        postsList: controller.postsListCateSeventeen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateSeventeen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateSeventeen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateSeventeen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateSeventeen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateSeventeen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateSeventeen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "عمال يوميين".tr,
-                        isLoading: controller.LoadingPostsCateEighteen,
-                        postsList: controller.postsListCateEighteen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateEighteen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateEighteen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateEighteen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateEighteen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateEighteen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateEighteen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "خدمات الذكاء الاصطناعي".tr,
-                        isLoading: controller.LoadingPostsCateNineteen,
-                        postsList: controller.postsListCateNineteen,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateNineteen.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateNineteen.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateNineteen.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateNineteen.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateNineteen.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateNineteen.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الانشاءات مواد البناء",
-                        isLoading: controller.LoadingPostsCateTwenty,
-                        postsList: controller.postsListCateTwenty,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwenty.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwenty.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwenty.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwenty.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwenty.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwenty.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الالات والمعدات".tr,
-                        isLoading: controller.LoadingPostsCateTwentyOne,
-                        postsList: controller.postsListCateTwentyOne,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwentyOne.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwentyOne.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwentyOne.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwentyOne.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwentyOne.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwentyOne.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الزراعة والحيوان".tr,
-                        isLoading: controller.LoadingPostsCateTwentyTwo,
-                        postsList: controller.postsListCateTwentyTwo,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwentyTwo.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwentyTwo.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwentyTwo.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwentyTwo.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwentyTwo.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwentyTwo.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الصالونات الصحية والرياضية".tr,
-                        isLoading: controller.LoadingPostsCateTwentyThree,
-                        postsList: controller.postsListCateTwentyThree,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwentyThree.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwentyThree.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwentyThree.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwentyThree.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwentyThree.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwentyThree.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
-                      SizedBox(height: 10.h),
-                      CustomCardPostDeskTop(
-                        title: "الحيوانات الأليفة".tr,
-                        isLoading: controller.LoadingPostsCateTwentyFour,
-                        postsList: controller.postsListCateTwentyFour,onTap: 
-                        (){   
-                          
-                        controller.nameCategories.value =
-               controller.postsListCateTwentyFour.first.category.translations.first.name;
-          controller.idCategories.value =    controller.postsListCateTwentyFour.first.categoryId.toString();
-          controller.fetchSubcategories(
-        int.parse(controller.postsListCateTwentyFour.first.categoryId)  ,
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          );
-          controller.fetchPostsAll(
-            int.parse(controller.postsListCateTwentyFour.first.categoryId),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-            null,
-            null,
-          );
-
-          searchcontroller.subCategories.clear();
-          searchcontroller.isChosedAndShowTheSub.value = false;
-          searchcontroller
-              .fetchSubcategories(
-            int.parse(controller.idCategories.value),
-            Get.find<ChangeLanguageController>()
-                .currentLocale
-                .value
-                .languageCode,
-          )
-              .then((_) {
-            searchcontroller.isChosedAndShowTheSub.value = true;
-          });
-          searchcontroller.idOfCateSearchBox.value =  int.parse(controller.postsListCateTwentyFour.first.categoryId);
-          print("/......................................");
-          print(searchcontroller.idOfCateSearchBox.value);
-          print("/......................................");
-          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text =
-              controller.idCategories.value;
-
-          searchcontroller.isOpenINSubPost.value = true;
-          searchcontroller.selectedMainCategory = int.parse(controller.postsListCateTwentyFour.first.categoryId);
-
-          Get.toNamed(
-            '/Category', preventDuplicates: false, // اسمح بتكرار الصفحات
-          );},
-                        ),
+                    _buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "المول الإلكتروني".tr,
+  controller.LoadingPostsCateOne,
+  controller.postsListCateOne,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "سوق المستعمل".tr,
+  controller.LoadingPostsCateTwo,
+  controller.postsListCateTwo,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "مركبات للبيع والايجار".tr,
+  controller.LoadingPostsCateThree,
+  controller.postsListCateThree,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "عقارات للايجار".tr,
+  controller.LoadingPostsCateThirty,
+  controller.postsListCateThirty,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "عقارات للبيع".tr,
+  controller.LoadingPostsCateSix,
+  controller.postsListCateSix,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الحي الصناعي".tr,
+  controller.LoadingPostsCateTwentyEight,
+  controller.postsListCateTwentyEight,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "منتجات من البيت".tr,
+  controller.LoadingPostsCateFive,
+  controller.postsListCateFive,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "منتجات من المرزعة".tr,
+  controller.LoadingPostsCateSixteen,
+  controller.postsListCateSixteen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "المهن والحرف".tr,
+  controller.LoadingPostsCateFour,
+  controller.postsListCateFour,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "مكاتب ومؤسسات".tr,
+  controller.LoadingPostsCateTwentySeven,
+  controller.postsListCateTwentySeven,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الخدمات الطبية".tr,
+  controller.LoadingPostsCateTwentyNine,
+  controller.postsListCateTwentyNine,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الخدمات التعليمية".tr,
+  controller.LoadingPostsCateSeventeen,
+  controller.postsListCateSeventeen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الخدمات المالية".tr,
+  controller.LoadingPostsCateTwentyFive,
+  controller.postsListCateTwentyFive,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الخدمات المتنوعة".tr,
+  controller.LoadingPostsCateTwentySix,
+  controller.postsListCateTwentySix,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "خدمات الذكاء الاصطناعي".tr,
+  controller.LoadingPostsCateNineteen,
+  controller.postsListCateNineteen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "عمال يوميين".tr,
+  controller.LoadingPostsCateEighteen,
+  controller.postsListCateEighteen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "عروض وصفقات".tr,
+  controller.LoadingPostsCateSeven,
+  controller.postsListCateSeven,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "المزاد الإلكتروني".tr,
+  controller.LoadingPostsCateEight,
+  controller.postsListCateEight,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "فرص عمل".tr,
+  controller.LoadingPostsCateTwelve,
+  controller.postsListCateTwelve,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "أفكار ومشاريع للتمويل".tr,
+  controller.LoadingPostsCateThrteen,
+  controller.postsListCateThrteen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "دليل الشركات".tr,
+  controller.LoadingPostsCateFifteen,
+  controller.postsListCateFifteen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الالات والمعدات".tr,
+  controller.LoadingPostsCateTwentyOne,
+  controller.postsListCateTwentyOne,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "سوق الجملة والتوكيلات".tr,
+  controller.LoadingPostsCateEleven,
+  controller.postsListCateEleven,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الانشاءات مواد البناء",
+  controller.LoadingPostsCateTwenty,
+  controller.postsListCateTwenty,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الزراعة والحيوان".tr,
+  controller.LoadingPostsCateTwentyTwo,
+  controller.postsListCateTwentyTwo,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الحيوانات الأليفة".tr,
+  controller.LoadingPostsCateTwentyFour,
+  controller.postsListCateTwentyFour,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "مطاعم وكوفيهات".tr,
+  controller.LoadingPostsCateFourTeen,
+  controller.postsListCateFourTeen,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "الصالونات الصحية والرياضية".tr,
+  controller.LoadingPostsCateTwentyThree,
+  controller.postsListCateTwentyThree,
+),
+_buildCategoryDesktop(
+  controller,
+  searchcontroller,
+  "متجر المنتجات العالمية".tr,
+  controller.LoadingPostsCateNine,
+  controller.postsListCateNine,
+),
+Visibility(
+  visible: controller.selectedRoute.value == "العراق",
+  child: _buildCategoryDesktop(
+    controller,
+    searchcontroller,
+    "الاعلانات الرسمية".tr,
+    controller.LoadingPostsCateTen,
+    controller.postsListCateTen,
+  ),
+),
                     ],
                   ),
                 ),
@@ -1709,8 +555,70 @@ class SectionTitle extends StatelessWidget {
               ),
             ],
           ),
+          
         ],
       ),
     );
   }
+
+
 }
+Widget _buildCategoryDesktop(
+  HomeController controller,  Searchcontroller searchcontroller,
+  String title,
+  RxBool loading,
+  RxList<Post> postsList,
+) {
+  return Column(
+    children: [
+      SizedBox(height: 10.h),
+      CustomCardPostDeskTop(
+        title: title,
+        isLoading: loading,
+        postsList: postsList,
+        onTap: () {
+          final firstPost = postsList.first;
+          final categoryId = firstPost.categoryId.toString();
+          
+          controller.nameCategories.value = firstPost.category.translations.first.name;
+          controller.idCategories.value = categoryId;
+          
+          controller.fetchSubcategories(
+            int.parse(categoryId),
+            Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
+          );
+          
+          controller.fetchPostsAll(
+            int.parse(categoryId),
+            Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
+            null,
+            null,
+          );
+
+          searchcontroller.subCategories.clear();
+          searchcontroller.isChosedAndShowTheSub.value = false;
+          searchcontroller.fetchSubcategories(
+            int.parse(categoryId),
+            Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
+          ).then((_) {
+            searchcontroller.isChosedAndShowTheSub.value = true;
+          });
+          
+          searchcontroller.idOfCateSearchBox.value = int.parse(categoryId);
+          print("/......................................");
+          print(searchcontroller.idOfCateSearchBox.value);
+          print("/......................................");
+          
+          searchcontroller.detailCarControllers["القسم الرئيسي"]?.text = categoryId;
+          searchcontroller.detailRealestateControllers["القسم الرئيسي"]?.text = categoryId;
+          searchcontroller.isOpenINSubPost.value = true;
+          searchcontroller.selectedMainCategory = int.parse(categoryId);
+
+          Get.toNamed('/Category', preventDuplicates: false);
+        },
+      ),
+    ],
+  );
+}
+
+

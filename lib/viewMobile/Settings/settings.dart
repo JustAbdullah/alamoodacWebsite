@@ -25,6 +25,7 @@ import 'chose_location.dart';
 import 'chose_messages.dart';
 import 'chose_mode.dart';
 import 'chose_notiv.dart';
+import 'chose_route.dart';
 import 'chose_track.dart';
 import 'createPusher/chose_pusher.dart';
 import 'saveAccount/save_account.dart';
@@ -130,6 +131,12 @@ class SettingsPage extends StatelessWidget {
                             settingsController.isShowAddCode.value = true;
                             Get.to(() => ShowAskAddCode());
                           },
+                        ), _buildSettingItem(
+                          icon: Icons.map,
+                          title: "موقع العرض".tr,
+                          onTap: () {
+                              settingsController.showTheRoute.value = true;
+                               Get.to(() => ChoseRoute());}
                         ),
                         _buildDivider(),
                         _buildSectionTitle("المظهر".tr),
@@ -166,6 +173,10 @@ class SettingsPage extends StatelessWidget {
                             Get.find<Userdahsboardcontroller>()
                                 .showDashBoardUser
                                 .value = true;
+                                   userdahsboardcontroller.  fetchPosts  (Get.find<ChangeLanguageController>()
+                                              .currentLocale
+                                              .value
+                                              .languageCode);
                             Get.toNamed('/dashboard-mobile');
                           },
                         ),

@@ -63,7 +63,7 @@ class Menu extends StatelessWidget {
                                     children: [
                                       Image.asset(
                                         controller.isHome.value
-                                            ? ImagesPath.HomeOrange
+                                            ? ImagesPath.redHome
                                             : ImagesPath.homeOne,
                                         width: 20.w,
                                         height: 20.h,
@@ -165,6 +165,10 @@ class Menu extends StatelessWidget {
                                       Userdahsboardcontroller
                                           userdahsboardcontroller =
                                           Get.put(Userdahsboardcontroller());
+                                             userdahsboardcontroller.  fetchPosts  (Get.find<ChangeLanguageController>()
+                                              .currentLocale
+                                              .value
+                                              .languageCode);
                                       userdahsboardcontroller.fetchStroePuscher(
                                           Get.find<ChangeLanguageController>()
                                               .currentLocale
@@ -195,7 +199,7 @@ class Menu extends StatelessWidget {
                                       children: [
                                         Image.asset(
                                           controller.isInfo.value
-                                              ? ImagesPath.UserOrange
+                                              ? ImagesPath.redUser
                                               : ImagesPath.userOne,
                                           width: 20.w,
                                           height: 20.h,
@@ -255,7 +259,7 @@ class Menu extends StatelessWidget {
                                     children: [
                                       Image.asset(
                                         controller.isSearch.value
-                                            ? ImagesPath.searchOrange
+                                            ? ImagesPath.redSearch
                                             : ImagesPath.searchOne,
                                         width: 20.w,
                                         height: 20.h,
@@ -312,7 +316,7 @@ class Menu extends StatelessWidget {
                                     children: [
                                       Image.asset(
                                         controller.isMenu.value
-                                            ? ImagesPath.menuOrange
+                                            ? ImagesPath.redSettings
                                             : ImagesPath.MenuOne,
                                         width: 20.w,
                                         height: 20.h,

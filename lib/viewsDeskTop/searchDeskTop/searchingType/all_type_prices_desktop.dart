@@ -46,101 +46,96 @@ class AllTypePricesDeskTop extends StatelessWidget {
             SizedBox(
               height: 10.h,
             ),
-            DropdownFieldApi(
-              label: "اختر المدينة".tr,
-              items: [
-                "غير مدخل".tr,
-                ...homeController.citiesList
-                    .map((city) =>
-                        city.translations.firstOrNull?.name ?? "غير معروف")
-                    .toList(),
-              ],
-              selectedItem: homeController.chosedIdCity.value != null
-                  ? homeController.citiesList
-                          .firstWhereOrNull((city) =>
-                              city.id == homeController.chosedIdCity.value)
-                          ?.translations
-                          .firstOrNull
-                          ?.name ??
-                      "غير مدخل".tr
-                  : "غير مدخل".tr,
-              onChanged: (value) {
-                if (value != "غير مدخل".tr) {
-                  final selectedCity =
-                      homeController.citiesList.firstWhereOrNull(
-                    (city) => city.translations.any((t) => t.name == value),
-                  );
+             Obx(() {
+       return   DropdownFieldApi(
+            label: "اختر المدينة".tr,
+            items: [
+              "غير مدخل".tr,
+              ...homeController.citiesList
+                  .map((city) =>
+                      city.translations.firstOrNull?.name ?? "غير معروف")
+                  .toList(),
+            ],
+            selectedItem: homeController.chosedIdCity.value != null
+                ? homeController.citiesList
+                        .firstWhereOrNull((city) =>
+                            city.id == homeController.chosedIdCity.value)
+                        ?.translations
+                        .firstOrNull
+                        ?.name ??
+                    "غير مدخل".tr
+                : "غير مدخل".tr,
+            onChanged: (value) {
+              if (value != "غير مدخل".tr) {
+                 areaController.selectedAreaName.value = null;
+                final selectedCity = homeController.citiesList.firstWhereOrNull(
+                  (city) => city.translations.any((t) => t.name == value),
+                );
 
-                  if (selectedCity != null) {
-                    homeController.chosedIdCity.value = selectedCity.id;
-                    print("تم اختيار المدينة بمعرف: ${selectedCity.id}");
-                  }
-                } else {
-                  homeController.chosedIdCity.value = null; // التصحيح هنا
-                  print("تم إعادة تعيين معرف المدينة إلى null");
+                if (selectedCity != null) {
+                   areaController.selectedAreaName.value = null;
+                  homeController.chosedIdCity.value = selectedCity.id;
+                  print("تم اختيار المدينة بمعرف: ${selectedCity.id}");
                 }
-              },
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Obx(() {
-              // الحصول على كود اللغة الحالي
-              String langCode = Get.find<ChangeLanguageController>()
-                  .currentLocale
-                  .value
-                  .languageCode;
-
-              List<Area> areas = [];
-              if (homeController.chosedIdCity.value != null) {
-                // اختيار القائمة بناءً على كود اللغة
-                if (langCode == 'tr') {
-                  areas = areaController
-                      .getAreasByCityIdTr(homeController.chosedIdCity.value!);
-                } else if (langCode == 'ku') {
-                  areas = areaController
-                      .getAreasByCityIdKr(homeController.chosedIdCity.value!);
-                } else if (langCode == 'en') {
-                  areas = areaController
-                      .getAreasByCityIdEn(homeController.chosedIdCity.value!);
-                } else {
-                  // للغة العربية أو الإنجليزية نستخدم القائمة الافتراضية (العربية)
-                  areas = areaController
-                      .getAreasByCityId(homeController.chosedIdCity.value!);
-                }
+              } else {
+                areaController.selectedAreaName.value = null;
+                homeController.chosedIdCity.value = null; // التصحيح هنا
+                print("تم إعادة تعيين معرف المدينة إلى null");
               }
-
-              // تحويل قائمة المناطق إلى قائمة من أسماء المناطق
-              List<String> areaItems = areas.isNotEmpty
-                  ? areas.map((area) => area.name).toList()
-                  : ["غير مدخل".tr];
-
-              return DropdownFieldApi(
-                label: "اختر المنطقة".tr,
-                items: areaItems,
-                selectedItem: areaItems.isNotEmpty ? areaItems.first : null,
-                onChanged: (value) {
-                  // استرجاع المنطقة المُختارة بناءً على اللغة
-                  Area selectedArea;
-                  if (langCode == 'tr') {
-                    selectedArea = areaController
-                        .getAreasByCityIdTr(homeController.chosedIdCity.value!)
-                        .firstWhere((area) => area.name == value);
-                  } else if (langCode == 'ku') {
-                    selectedArea = areaController
-                        .getAreasByCityIdKr(homeController.chosedIdCity.value!)
-                        .firstWhere((area) => area.name == value);
-                  } else {
-                    selectedArea = areaController
-                        .getAreasByCityId(homeController.chosedIdCity.value!)
-                        .firstWhere((area) => area.name == value);
-                  }
-                  // تخزين معرف المنطقة المُختارة
-                  areaController.idOfArea.value = selectedArea.id;
-                  print("تم اختيار المنطقة بمعرف: ${selectedArea.id}");
-                },
-              );
-            }),
+            },
+          );}),
+          SizedBox(
+            height: 10.h,
+          ),
+        Obx(() {
+  String langCode = Get.find<ChangeLanguageController>()
+      .currentLocale
+      .value
+      .languageCode;
+  
+  String routeSelected = homeController.selectedRoute.value;
+  List<Area> areas = [];
+  
+  if (homeController.chosedIdCity.value != null) {
+    if (routeSelected == "العراق") {
+      if (langCode == 'tr') {
+        areas = areaController.getAreasByCityIdTr(homeController.chosedIdCity.value!);
+      } else if (langCode == 'ku') {
+        areas = areaController.getAreasByCityIdKr(homeController.chosedIdCity.value!);
+      } else {
+        areas = areaController.getAreasByCityId(homeController.chosedIdCity.value!);
+      }
+    } else if (routeSelected == "تركيا") {
+      areas = areaController.getAreasByCityTrIdTr(homeController.chosedIdCity.value!);
+    }
+  }
+  
+  List<String> areaItems = areas.isNotEmpty
+      ? areas.map((area) => area.name).toList()
+      : ["اختر المنطقة".tr];
+  
+  return DropdownFieldApi(
+    label: "اختر المنطقة".tr,
+    items: areaItems,
+    selectedItem: areaController.selectedAreaName.value,
+    onChanged: (value) {
+      if (value == "اختر المنطقة".tr) {
+        areaController.idOfArea.value = 0;
+        areaController.selectedAreaName.value = null;
+        return;
+      }
+      
+      try {
+        Area selectedArea = areas.firstWhere((area) => area.name == value);
+        areaController.idOfArea.value = selectedArea.id;
+        areaController.selectedAreaName.value = selectedArea.name;
+        print("تم اختيار المنطقة: ${selectedArea.name} - ID: ${selectedArea.id}");
+      } catch (e) {
+        print("لم يتم العثور على المنطقة: $value");
+      }
+    },
+  );
+}),
             SizedBox(height: 14.h),
 
             // Input: نطاق السعر

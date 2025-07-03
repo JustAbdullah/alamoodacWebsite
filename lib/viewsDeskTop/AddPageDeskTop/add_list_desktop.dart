@@ -92,34 +92,36 @@ class AddListDeskTop extends StatelessWidget {
     final homeController = Get.find<HomeController>();
 
     final Map<int, String> singlePostPrice = {
-      1: '\$100',
-      2: '\$20',
-      3: '\$100',
-      4: '\$20',
-      5: '\$20',
-      6: '\$100',
-      7: '\$20',
-      8: '\$20',
+      1: 'باقة تجارية',
+      2: 'باقة اقتصادية',
+      3: 'باقة تجارية',
+      4: 'باقة اقتصادية',
+      5: 'باقة اقتصادية',
+      6: 'باقة تجارية',
+      7: 'باقة اقتصادية',
+      8: 'باقة اقتصادية',
       9: 'غير متوفر'.tr,
       10: 'غير متوفر'.tr,
-      11: '\$100',
-      12: '\$20',
-      13: '\$20',
-      14: '\$100',
-      15: '\$100',
-      16: '\$20',
-      17: '\$100',
+      11: 'باقة تجارية',
+      12: 'باقة اقتصادية',
+      13: 'باقة اقتصادية',
+      14: 'باقة تجارية',
+      15: 'باقة تجارية',
+      16: 'باقة اقتصادية',
+      17: 'باقة تجارية',
       18: 'مجاني'.tr,
-      19: '\$20',
-      20: '\$100',
-      21: '\$100',
-      22: '\$100',
-      23: '\$100',
-      24: '\$20',
-      25: '\$100',
-      26: '\$100',
-      27: '\$100',
-      28: '\$100',
+      19: 'باقة اقتصادية',
+      20: 'باقة تجارية',
+      21: 'باقة تجارية',
+      22: 'باقة تجارية',
+      23: 'باقة تجارية',
+      24: 'باقة اقتصادية',
+      25: 'باقة تجارية',
+      26: 'باقة تجارية',
+      27: 'باقة تجارية',
+      28: 'باقة تجارية',
+      29: 'باقة تجارية',
+      30: 'باقة تجارية',
     };
 
     void _openCategory(Category category) {
@@ -151,6 +153,15 @@ class AddListDeskTop extends StatelessWidget {
           Get.to(() => AddProfessionsDesktop());
           break;
         case 6:
+          addpostcontrollerrealestate
+            ..idCate = category.id
+            ..nameOfCatee.value = name
+            ..fetchSubcategories(category.id)
+            ..showAdd.value = true;
+          Get.to(() => AddRealEstatesDesktop());
+
+          break; 
+          case 30:
           addpostcontrollerrealestate
             ..idCate = category.id
             ..nameOfCatee.value = name
@@ -618,54 +629,47 @@ class AddListDeskTop extends StatelessWidget {
 
                                   // عرض السعر
                                   if (price.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        Text(
-                                          "السعر".tr,
-                                          style: TextStyle(
-                                            fontFamily: AppTextStyles.DinarOne,
-                                            fontSize: 12.sp,
-                                            color: AppColors.textColorOne(
-                                                themeController
-                                                    .isDarkMode.value),
-                                          ),
-                                        ),
-                                        SizedBox(height: 4.h),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8.w, vertical: 4.h),
-                                          decoration: BoxDecoration(
-                                            color: price == 'مجاني'.tr
-                                                ? Colors.green.withOpacity(0.2)
-                                                : price == 'غير متوفر'.tr
-                                                    ? Colors.red
-                                                        .withOpacity(0.2)
-                                                    : price == '\$20'
-                                                        ? Colors.orange
-                                                            .withOpacity(0.2)
-                                                        : Colors.blue
-                                                            .withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(8.r),
-                                          ),
-                                          child: Text(
-                                            price,
-                                            style: TextStyle(
-                                              fontFamily:
-                                                  AppTextStyles.DinarOne,
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.bold,
+                                       Visibility(
+                                          visible: scriptionController.isHaveSubscriptions.value,
+                                          child: Column(
+                                        children: [
+                                        
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 8.w, vertical: 4.h),
+                                            decoration: BoxDecoration(
                                               color: price == 'مجاني'.tr
-                                                  ? Colors.green
+                                                  ? Colors.green.withOpacity(0.2)
                                                   : price == 'غير متوفر'.tr
                                                       ? Colors.red
-                                                      : price == '\$20'
+                                                          .withOpacity(0.2)
+                                                      : price == 'باقة اقتصادية'
                                                           ? Colors.orange
-                                                          : Colors.blue,
+                                                              .withOpacity(0.2)
+                                                          : Colors.blue
+                                                              .withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                            ),
+                                            child: Text(
+                                              price,
+                                              style: TextStyle(
+                                                fontFamily:
+                                                    AppTextStyles.DinarOne,
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: price == 'مجاني'.tr
+                                                    ? Colors.green
+                                                    : price == 'غير متوفر'.tr
+                                                        ? Colors.red
+                                                        : price == 'باقة اقتصادية'
+                                                            ? Colors.orange
+                                                            : Colors.blue,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                 ],
                               ),

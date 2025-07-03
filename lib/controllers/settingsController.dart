@@ -473,5 +473,6 @@ class Settingscontroller extends GetxController {
     } finally {
       isLoadingMessagesDelete.value = false;
     }
-  }
+  }RxBool showTheRoute = false.obs;
+
 }

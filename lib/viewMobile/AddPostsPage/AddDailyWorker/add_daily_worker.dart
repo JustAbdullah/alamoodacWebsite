@@ -388,134 +388,183 @@ class AddDailyWorker extends StatelessWidget {
       padding: EdgeInsets.all(16.w).copyWith(
         bottom: MediaQuery.of(context).viewInsets.bottom + 620.h, // ديناميكي
       ),
-      child: Form(
-        child: Column(
-          children: [
-            _buildSectionTitle('الموقع الجغرافي'),
-            FormField<String>(
-              validator: (value) =>
-                  value == "غير مدخل".tr ? 'يرجى اختيار المدينة' : null,
-              builder: (FormFieldState<String> state) {
-                return Column(
-                  children: [
-                    DropdownFieldApi(
-                      label: "اختر المدينة".tr,
-                      items: [
-                        "غير مدخل".tr,
-                        ...homeController.citiesList
-                            .map((city) =>
-                                city.translations.firstOrNull?.name ??
-                                "غير معروف")
-                            .toList(),
-                      ],
-                      selectedItem: homeController.chosedIdCity.value != null
-                          ? homeController.selectedCityName.value
-                          : "غير مدخل".tr,
-                      onChanged: (value) {
-                        state.didChange(value);
-                        if (value != "غير مدخل".tr) {
-                          final selectedCity =
-                              homeController.citiesList.firstWhereOrNull(
-                            (city) =>
-                                city.translations.any((t) => t.name == value),
-                          );
-                          homeController.chosedIdCity.value = selectedCity?.id;
-                          homeController.selectedCityName.value = value!;
-                        }
-                      },
-                    ),
-                    if (state.hasError)
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.h),
-                        child: Text(
-                          state.errorText!,
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 12.sp,
-                            fontFamily: AppTextStyles.DinarOne,
-                          ),
-                        ),
-                      )
-                  ],
-                );
-              },
-            ),
-            SizedBox(height: 20.h),
-            Obx(() {
-              final langCode = Get.find<ChangeLanguageController>()
-                  .currentLocale
-                  .value
-                  .languageCode;
-              List<Area> areas = [];
-
-              if (homeController.chosedIdCity.value != null) {
-                switch (langCode) {
-                  case 'tr':
-                    areas = areaController
-                        .getAreasByCityIdTr(homeController.chosedIdCity.value!);
-                    break;
-                  case 'ku':
-                    areas = areaController
-                        .getAreasByCityIdKr(homeController.chosedIdCity.value!);
-                    break;
-                  default:
-                    areas = areaController
-                        .getAreasByCityId(homeController.chosedIdCity.value!);
-                }
-              }
-
-              return FormField<String>(
-                validator: (value) =>
-                    value == "غير مدخل".tr ? 'يرجى اختيار المنطقة' : null,
-                builder: (FormFieldState<String> state) {
-                  return Column(
-                    children: [
-                      DropdownFieldApi(
-                        label: "اختر المنطقة".tr,
-                        items: areas.isNotEmpty
-                            ? areas.map((area) => area.name).toList()
-                            : ["غير مدخل".tr],
-                        onChanged: (value) {
-                          state.didChange(value);
-                          if (value != "غير مدخل".tr) {
-                            final selectedArea =
-                                areas.firstWhere((area) => area.name == value);
-                            areaController.idOfArea.value = selectedArea.id;
-                            areaController.selectedAreaName.value = value!;
-                          }
-                        },
-                      ),
-                      if (state.hasError)
-                        Padding(
-                          padding: EdgeInsets.only(top: 8.h),
-                          child: Text(
-                            state.errorText!,
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 12.sp,
-                              fontFamily: AppTextStyles.DinarOne,
-                            ),
-                          ),
-                        )
-                    ],
-                  );
+      child:  Form(
+  child: Column(
+    children: [
+      _buildSectionTitle('الموقع الجغرافي'.tr),
+      
+      // حقل اختيار المدينة
+     
+         Form(
+  child: Column(
+    children: [
+      _buildSectionTitle('الموقع الجغرافي'.tr),
+      
+      // حقل اختيار المدينة
+      FormField<String>(
+        validator: (value) =>
+            value == "غير مدخل".tr ? 'يرجى اختيار المدينة' : null,
+        builder: (cityState) {
+          return Column(
+            children: [
+              DropdownFieldApi(
+                label: "اختر المدينة".tr,
+                items: [
+                  "غير مدخل".tr,
+                  ...homeController.citiesList
+                      .map((city) =>
+                          city.translations.firstOrNull?.name ?? "غير معروف")
+                      .toList(),
+                ],
+                selectedItem: homeController.selectedCityName.value ?? "غير مدخل".tr,
+                onChanged: (value) {
+                  cityState.didChange(value);
+                  if (value != "غير مدخل".tr) {
+                    final selectedCity = homeController.citiesList
+                        .firstWhereOrNull((city) => city.translations
+                            .any((t) => t.name == value));
+                    
+                    if (selectedCity != null) {
+                      areaController.resetArea();
+                      homeController.chosedIdCity.value = selectedCity.id;
+                      homeController.selectedCityName.value = value;
+                    }
+                  } else {
+                    homeController.chosedIdCity.value = null;
+                    homeController.selectedCityName.value = null;
+                    areaController.resetArea();
+                  }
                 },
-              );
-            }),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.h),
-              child: Text(
-                "ملاحظة: في حال عدم وجود مدينتك اختر غير مدخل".tr,
-                style: TextStyle(
-                  color: AppColors.redColor,
-                  fontSize: 14.sp,
-                  fontFamily: AppTextStyles.DinarOne,
-                ),
               ),
-            ),
-          ],
+              if (cityState.hasError)
+                Padding(
+                  padding: EdgeInsets.only(top: 8.h),
+                  child: Text(
+                    cityState.errorText!,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 12.sp,
+                      fontFamily: AppTextStyles.DinarOne,
+                    ),
+                )),
+            ],
+          );
+        },
+      ),
+      
+      SizedBox(height: 20.h),
+      
+      // حقل اختيار المنطقة
+      Obx(() {
+        final langCode = Get.find<ChangeLanguageController>()
+            .currentLocale
+            .value
+            .languageCode;
+        
+        String routeSelected = homeController.selectedRoute.value;
+        List<Area> areas = [];
+
+        if (homeController.chosedIdCity.value != null) {
+          if (routeSelected == "العراق") {
+            switch (langCode) {
+              case 'tr':
+                areas = areaController
+                    .getAreasByCityIdTr(homeController.chosedIdCity.value!);
+                break;
+              case 'ku':
+                areas = areaController
+                    .getAreasByCityIdKr(homeController.chosedIdCity.value!);
+                break;
+              default:
+                areas = areaController
+                    .getAreasByCityId(homeController.chosedIdCity.value!);
+            }
+          } else if (routeSelected == "تركيا") {
+            areas = areaController
+                .getAreasByCityTrIdTr(homeController.chosedIdCity.value!);
+          }
+        }
+
+        // إصلاح المشكلة هنا: إنشاء قائمة ثابتة للعناصر
+        List<String> areaItems = ["اختر المنطقة".tr];
+        if (areas.isNotEmpty) {
+          areaItems.addAll(areas.map((area) => area.name).toList());
+        }
+
+        return FormField<String>(
+          validator: (value) =>
+              value == "غير مدخل".tr || value == "اختر المنطقة".tr
+                  ? 'يرجى اختيار المنطقة'
+                  : null,
+          builder: (areaState) {
+            return Column(
+              children: [
+                DropdownFieldApi(
+                  label: "اختر المنطقة".tr,
+                  items: areaItems,
+                  selectedItem: areaController.selectedAreaName.value ?? "اختر المنطقة".tr,
+                  onChanged: (value) {
+                    areaState.didChange(value);
+                    if (value != "اختر المنطقة".tr && value != "غير مدخل".tr) {
+                      try {
+                        Area selectedArea = areas.firstWhere((area) => area.name == value);
+                        areaController.selectedAreaName.value = value;
+                        areaController.idOfArea.value = selectedArea.id;
+                      } catch (e) {
+                        print("خطأ في اختيار المنطقة: $e");
+                        areaController.resetArea();
+                      }
+                    } else {
+                      areaController.resetArea();
+                    }
+                  },
+                ),
+                if (areaState.hasError)
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.h),
+                    child: Text(
+                      areaState.errorText!,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.sp,
+                        fontFamily: AppTextStyles.DinarOne,
+                      ),
+                  )),
+              ],
+            );
+          },
+        );
+      }),
+      
+      Padding(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: Text(
+          "ملاحظة: في حال عدم وجود مدينتك اختر غير مدخل".tr,
+          style: TextStyle(
+            color: AppColors.redColor,
+            fontSize: 14.sp,
+            fontFamily: AppTextStyles.DinarOne,
+          ),
         ),
       ),
+    ],
+  ),
+),
+      
+      Padding(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: Text(
+          "ملاحظة: في حال عدم وجود مدينتك اختر غير مدخل".tr,
+          style: TextStyle(
+            color: AppColors.redColor,
+            fontSize: 14.sp,
+            fontFamily: AppTextStyles.DinarOne,
+          ),
+        ),
+      ),
+    ],
+  ),
+),
     );
   }
 
@@ -755,8 +804,8 @@ class AddDailyWorker extends StatelessWidget {
         children: [
           _buildSectionTitle('مراجعة المعلومات'.tr),
           _buildReviewItem('الناشر'.tr, dataUser.selectedPublisher.value),
-          _buildReviewItem('المدينة'.tr, homeController.selectedCityName.value),
-          _buildReviewItem('المنطقة'.tr, areaController.selectedAreaName.value),
+              _buildReviewItem('المدينة'.tr, homeController.selectedCityName.value??""),
+          _buildReviewItem('المنطقة'.tr, areaController.selectedAreaName.value??""),
           _buildReviewItem('العنوان'.tr, controller.titleController.text),
           SizedBox(height: 30.h),
         ],

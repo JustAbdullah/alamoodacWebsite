@@ -3,8 +3,7 @@ import 'package:alamoadac_website/viewMobile/HomeScreen/home_screen.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/data/model/user.dart';
-import '../viewMobile/LoadingScreen/loadingApp.dart';
-import '../viewMobile/OnAppPages/on_app_pages.dart';
+import 'package:http/http.dart' as http;
 
 class LoadingController extends GetxController {
   var isLoading = RxBool(true);
@@ -83,4 +82,60 @@ class LoadingController extends GetxController {
       update(); // تنفيذ أي عملية في حال عدم وجود بيانات للمستخدم.
     }
   }
+    
+String _baseUrl ="https://alamoodac.com/modac/public";
+Future<void> useFreePost(int userId) async {
+  isLoading.value = true;
+  final uri = Uri.parse('$_baseUrl/user/$userId/use-free-post');
+
+  try {
+    final response = await http.post(uri, headers: {
+      'Content-Type': 'application/json',
+      // 'Authorization': 'Bearer YOUR_TOKEN',
+    });
+
+    if (response.statusCode == 200) {
+      final body = json.decode(response.body);
+
+      if (body['success'] == true && body['user'] != null) {
+        // نقرأ بيانات المستخدم كاملة من المفتاح 'user'
+        final updatedUser = User.fromJson(body['user']);
+        currentUser = updatedUser;
+
+        // خزّن النموذج المحدث بالكامل في SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user', jsonEncode(updatedUser.toJson()));
+
+        Get.snackbar(
+          'نجاح',
+          'تم تحديث بيانات المستخدم بنجاح',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        Get.snackbar(
+          'خطأ من السيرفر',
+          body['message'] ?? 'فشل تحديث بيانات المستخدم',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } else {
+      Get.snackbar(
+        'خطأ HTTP',
+        'رمز الحالة: ${response.statusCode}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  } catch (e) {
+    Get.snackbar(
+      'استثناء',
+      e.toString(),
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  } finally {
+    isLoading.value = false;
+    // يعيد تحميل بيانات المستخدم من SharedPreferences أو من السيرفر
+    await loadUserDataOnUpdate();
+  }
+}
+
 }

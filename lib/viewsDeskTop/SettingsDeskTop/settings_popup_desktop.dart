@@ -22,6 +22,7 @@ import '../SidePopup.dart';
 import '../dashboardUserDeskTop/home_dashboard_user_dasktop.dart';
 import 'chose_messages_desktop.dart';
 import 'chose_mode_desktop.dart';
+import 'chose_route_desktop.dart';
 import 'chose_terms_desktop.dart';
 import 'createPusher/chose_pusher_desktop.dart';
 import 'saveAccount/save_account_desktop.dart';
@@ -55,7 +56,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
             _buildHeader(context),
             Expanded(
               child: ListView(
-                padding: EdgeInsets.all(20.w),
+                padding: EdgeInsets.all(0.w),
                 children: [
                   _buildSectionTitle("الإعدادات العامة".tr),
                   _buildSettingItem(
@@ -108,6 +109,17 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       useSideAlignment: true,
                     ),
                   ),
+                   _buildSettingItem(
+                          icon: Icons.map,
+                          title: "موقع العرض".tr,
+                           onTap: () => showSidePopup(
+                      context: context,
+                      child: const ChoseRouteDesktop(),
+                      widthPercent: 0.30,
+                      useSideAlignment: true,
+                    ),
+                         
+                        ),
                   _buildDivider(),
                   _buildSectionTitle("المظهر".tr),
                   _buildSettingItem(
@@ -126,6 +138,8 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       icon: Icons.dashboard,
                       title: "لوحة التحكم",
                       onTap: () {
+                         
+                                        
                         Userdahsboardcontroller userdahsboardcontroller =
                             Get.find<Userdahsboardcontroller>();
                         userdahsboardcontroller.fetchStroePuscher(
@@ -140,7 +154,10 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                             Get.find<ChangeLanguageController>()
                                 .currentLocale
                                 .value
-                                .languageCode);
+                                .languageCode);   userdahsboardcontroller.  fetchPosts  (Get.find<ChangeLanguageController>()
+                                              .currentLocale
+                                              .value
+                                              .languageCode);
 
                         showSidePopup(
                           context: context,

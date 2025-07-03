@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -26,136 +28,175 @@ class Searchcontroller extends GetxController {
   AreaController areaController = Get.put(AreaController());
   HomeController homeController = Get.put(HomeController());
   RxBool getDataForOneTime = false.obs;
-  void onInit() {
-    super.onInit();
-    _setupDebounce();
-    _loadInitialData();
-  }
+  /////////
+ 
+void onInit() {
+  super.onInit();
+  _setupDebounce();
+  _loadInitialData();
+}
 
-  Future<void> _loadInitialData() async {
-    homeController.loadSelectedRoute();
+Future<void> _loadInitialData() async {
+  // تحميل المسار بشكل غير متزامن
+  unawaited(homeController.loadSelectedRoute());
 
-    if (getDataForOneTime.value) return;
+  if (getDataForOneTime.value) return;
 
-    await _fetchEssentialData();
-    await _fetchLocationDependentData();
+  // جلب البيانات الأساسية والموقعية بشكل متوازي
+  await Future.wait([
+    _fetchEssentialData(),
+    _fetchLocationDependentData(),
+  ]);
 
-    getDataForOneTime.value = true;
-  }
+  getDataForOneTime.value = true;
+}
 
-  void _setupDebounce() {
-    debounce(textSearching, (_) => performSearch(), time: 500.milliseconds);
-  }
+void _setupDebounce() {
+  debounce(textSearching, (_) => performSearch(), time: 500.milliseconds);
+}
 
-  Future<void> _fetchEssentialData() async {
-    final lang =
-        Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+Future<void> _fetchEssentialData() async {
+  final lang =
+      Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+  
+  // جلب الفئات والفئات الفرعية بشكل متوازي
+  await Future.wait([
+    fetchCategories(lang),
+    fetchSubcategories(3, lang),
+  ]);
+}
 
-    // جلب البيانات المتعلقة ببعضها بالتسلسل
-    await fetchCategories(lang);
-    await fetchSubcategories(3, lang);
-  }
+Future<void> _fetchLocationDependentData() async {
+  final countryCode = _getCountryCode();
+  final lang =
+      Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
 
-  Future<void> _fetchLocationDependentData() async {
-    final countryCode = _getCountryCode();
-    final lang =
-        Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
+  // جلب البيانات بشكل متوازي مع التحكم في التزامن
+  await _runConcurrent([
+    () => fetchCities(countryCode, lang),
+    () => fetchStoresList(language: lang),
+    () => _fetchInitialPosts(),
+  ], concurrency: 3);
+}
 
-    // جلب البيانات غير المرتبطة ببعضها بشكل متوازي
+String _getCountryCode() {
+  final route = homeController.selectedRoute.value;
+  return {
+        'تركيا': 'TR',
+        'سوريا': 'SY',
+        'العراق': 'IQ',
+      }[route] ??
+      'IQ';
+}
+
+Future<void> _fetchInitialPosts() async {
+  await fetchSearchPosts(
+    language:
+        Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
+    categoryId: idOfCate,
+    subcategoryId: idOfSub,
+    subcategoryLevel2Id: idOfSubTwo,
+    searchTerm: textSearching.value,
+    cityId: chosedIdCity,
+  );
+}
+
+Future<void> refreshData() async {
+  try {
+    getDataForOneTime.value = false;
+    
+    // تحديث البيانات بشكل متوازي
     await Future.wait([
-      fetchCities(countryCode, lang),
-      fetchStoresList(language: lang),
-      _fetchInitialPosts(),
+      _fetchLocationDependentData(),
+      _fetchEssentialData(),
     ]);
+  } catch (e) {
+    Get.snackbar('Error'.tr, 'Failed to refresh search data'.tr);
   }
+}
 
-  String _getCountryCode() {
-    final route = homeController.selectedRoute.value;
-    return {
-          'تركيا': 'TR',
-          'سوريا': 'SY',
-          'العراق': 'IQ',
-        }[route] ??
-        'IQ';
+/////////////////////////////...........Searching.............................///////////
+
+var searchPostsList = <Post>[].obs;
+RxBool loadingSearchPosts = false.obs;
+
+Future<void> fetchSearchPosts({
+  required String language,
+  var categoryId,
+  var subcategoryId,
+  var subcategoryLevel2Id,
+  var searchTerm,
+  var cityId,
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    searchPostsList.clear(); // مسح النتائج السابقة قبل البدء
+
+    // بناء الرابط الديناميكي بشكل آمن وفعال
+    final params = [
+      language,
+      _sanitizeParam(categoryId),
+      _sanitizeParam(subcategoryId),
+      _sanitizeParam(subcategoryLevel2Id),
+      _sanitizeParam(searchTerm, isString: true),
+      _sanitizeParam(cityId),
+    ];
+
+    final url = 'https://alamoodac.com/modac/public/search-posts/${params.join('/')}';
+    print("Fetching posts from URL: $url");
+
+    // إضافة مهلة للطلب
+    final response = await http.get(Uri.parse(url))
+        .timeout(const Duration(seconds: 15), onTimeout: () {
+      throw TimeoutException('Search request timed out');
+    });
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body) as List;
+      searchPostsList.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load search posts: ${response.statusCode}');
+    }
+  } on TimeoutException catch (_) {
+    Get.snackbar('Timeout'.tr, 'Search took too long'.tr);
+  } catch (e) {
+    print('Search Error: $e');
+  } finally {
+    loadingSearchPosts.value = false;
   }
+}
 
-  Future<void> _fetchInitialPosts() async {
-    await fetchSearchPosts(
-      language:
-          Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
-      categoryId: idOfCate,
-      subcategoryId: idOfSub,
-      subcategoryLevel2Id: idOfSubTwo,
-      searchTerm: textSearching.value,
-      cityId: chosedIdCity,
-    );
+// دالة مساعدة لتنظيم المعاملات
+String _sanitizeParam(dynamic value, {bool isString = false}) {
+  if (value == null) return 'NULL';
+  
+  if (isString) {
+    return (value is String && value.isNotEmpty) ? Uri.encodeComponent(value) : 'NULL';
+  } else {
+    return (value is num && value > 0) ? value.toString() : 'NULL';
   }
+}
 
-  Future<void> refreshData() async {
-    try {
-      // إعادة تعيين البيانات مع الاحتفاظ بالسياسة التخزينية
-      getDataForOneTime.value = false;
-      await _fetchLocationDependentData();
-      await _fetchEssentialData();
-    } catch (e) {
-      Get.snackbar('Error'.tr, 'Failed to refresh search data'.tr);
+// دالة جديدة لإدارة المهام المتزامنة
+Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrency = 3}) async {
+  final queue = Queue.of(tasks);
+  final activeTasks = <Future>[];
+  
+  while (queue.isNotEmpty || activeTasks.isNotEmpty) {
+    // إضافة مهام جديدة إذا كان لدينا سعة
+    while (activeTasks.length < concurrency && queue.isNotEmpty) {
+      final task = queue.removeFirst();
+      final future = task().catchError((e) => print('Concurrent task error: $e'));
+      activeTasks.add(future);
+      future.whenComplete(() => activeTasks.remove(future));
+    }
+    
+    // الانتظار حتى يكتمل أحد المهام الحالية
+    if (activeTasks.isNotEmpty) {
+      await Future.any(activeTasks);
     }
   }
-///////////////
-  /////////////////////////////...........Searching.............................///////////
-
-  var searchPostsList = <Post>[].obs;
-  RxBool loadingSearchPosts = false.obs;
-
-  Future<void> fetchSearchPosts({
-    required String language,
-    var categoryId,
-    var subcategoryId,
-    var subcategoryLevel2Id,
-    var searchTerm,
-    var cityId,
-  }) async {
-    try {
-      loadingSearchPosts.value = true;
-
-      // بناء الرابط الديناميكي مع اللغة كجزء رئيسي
-      String url = 'https://alamoodac.com/modac/public/search-posts/$language';
-
-      // إضافة categoryId، subcategoryId، subcategoryLevel2Id في الرابط حتى لو كانت قيمتها NULL
-      url += '/${(categoryId != null && categoryId > 0) ? categoryId : 'NULL'}';
-      url +=
-          '/${(subcategoryId != null && subcategoryId > 0) ? subcategoryId : 'NULL'}';
-      url +=
-          '/${(subcategoryLevel2Id != null && subcategoryLevel2Id > 0) ? subcategoryLevel2Id : 'NULL'}';
-
-      // إضافة searchTerm إذا كان موجودًا
-      url +=
-          '/${(searchTerm != null && searchTerm.isNotEmpty) ? searchTerm : 'NULL'}';
-
-      // إضافة cityId إذا كان موجودًا
-      url += '/${(cityId != null && cityId > 0) ? cityId : 'NULL'}';
-
-      print("Fetching posts from URL: $url");
-
-      // إجراء الطلب HTTP
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        // معالجة البيانات المستلمة وتحويلها إلى قائمة من المنشورات
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load search posts');
-      }
-    } catch (e) {
-    } finally {
-      loadingSearchPosts.value = false;
-    }
-  }
-
+}
 ////////////////////////
   Future<void> fetchCategories(String language) async {
     isLoadingCategories.value = true;

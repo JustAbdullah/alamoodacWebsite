@@ -6,11 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/ThemeController.dart';
 import '../controllers/searchController.dart';
 import '../core/constant/app_text_styles.dart';
-import '../core/constant/appcolors.dart';
 import '../core/localization/changelanguage.dart';
-import 'custome_textfiled.dart'; // تأكد من وجود تعريف TextFormFieldCustom في هذا الملف
+import 'custome_textfiled.dart';
 
-/// هذا الودجت يجمع بين حقل البحث والأيقونة التي تفتح القائمة المنسدلة لتحديد القسم
 class SearchFieldWithCategoryDropdown extends StatelessWidget {
   final Searchcontroller searchcontroller;
 
@@ -19,8 +17,7 @@ class SearchFieldWithCategoryDropdown extends StatelessWidget {
     required this.searchcontroller,
   }) : super(key: key);
 
-  /// دالة بناء القائمة المنسدلة لتحديد القسم
-  Widget _buildCategoryDropdown() {
+  /*Widget _buildCategoryDropdown() {
     return _buildDropdownSection(
       title: "عملية البحث داخل أقسام معينة".tr,
       child: DropdownFieldApi<int>(
@@ -35,7 +32,7 @@ class SearchFieldWithCategoryDropdown extends StatelessWidget {
           ),
           ...searchcontroller.categoriesList.map(
             (cat) => DropdownMenuItem<int>(
-              value: cat.id, // تأكد من أن لكل عنصر معرف (id) من نوع int
+              value: cat.id,
               child: Text(
                 cat.translations.first.name,
                 style: const TextStyle(fontSize: 19),
@@ -48,8 +45,7 @@ class SearchFieldWithCategoryDropdown extends StatelessWidget {
       ),
     );
   }
-
-  /// دالة مساعدة لبناء قسم يحتوي على عنوان وحقل داخلي (مثل Dropdown)
+*/
   Widget _buildDropdownSection({
     required String title,
     required Widget child,
@@ -71,13 +67,10 @@ class SearchFieldWithCategoryDropdown extends StatelessWidget {
     );
   }
 
-  /// دالة لمعالجة تغيير القسم المختار وإغلاق القائمة المنسدلة
   void _handleCategoryChange(int? value) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     if (value != null) {
-      // إغلاق القائمة المنسدلة (BottomSheet)
       Get.back();
-
       searchcontroller.selectIdToSearch.value = value;
       print("القسم المختار: $value");
     }
@@ -85,93 +78,99 @@ class SearchFieldWithCategoryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // تحديد اتجاه اللغة: إذا كانت اللغة عربية فإن الأيقونة على اليسار، وإلا على اليمين
-    final bool isArabic =
-        Get.find<ChangeLanguageController>().currentLocale.value.languageCode ==
-            "ar";
+    final ThemeController themeController = Get.find();
+    final bool isDarkMode = themeController.isDarkMode.value;
+    final bool isArabic = Get.find<ChangeLanguageController>()
+            .currentLocale
+            .value
+            .languageCode ==
+        "ar";
 
-    return SizedBox(
-      width: 620.w,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // حقل البحث المخصص
-          TextFormFieldCustom(
-            maxLines: 1,
-            label: "الــبحث الان".tr,
-            hint: "أدخــل هنا أسم المنشور".tr,
-            icon: Icons.search,
-            controller: searchcontroller.isSearchText,
-            fillColor: Colors.grey.shade200,
-            hintColor: Colors.grey.shade500,
-            iconColor: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-            borderColor: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-            fontColor: Colors.black,
-            obscureText: false,
-            borderRadius: 5,
-            keyboardType: TextInputType.text,
-            autofillHints: const [AutofillHints.username],
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                searchcontroller.textSearching.value = "";
-                return "".tr;
-              }
-              return null;
-            },
-            onChanged: (value) {
-              SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                  overlays: []);
-              searchcontroller.textSearching.value = value.toString();
-              searchcontroller.fetchSearchPosts(
-                language: Get.find<ChangeLanguageController>()
-                    .currentLocale
-                    .value
-                    .languageCode,
-                categoryId: searchcontroller.selectIdToSearch.value,
-                subcategoryId: null,
-                subcategoryLevel2Id: null,
-                searchTerm: searchcontroller.textSearching.value,
-                cityId: null,
-              );
-            },
-          ),
-          // أيقونة القائمة المنسدلة، موضوعة على اليسار أو اليمين بحسب اللغة
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: isArabic ? 8.0 : null,
-            right: !isArabic ? 8.0 : null,
-            child: IconButton(
-              icon: Icon(
-                Icons.arrow_drop_down,
-                color: AppColors.backgroundColorIconBack(Get.find<ThemeController>().isDarkMode.value),
-                size: 30,
-              ),
-              onPressed: () {
-                // عرض القائمة المنسدلة باستخدام BottomSheet
-                Get.bottomSheet(
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
-                    child: _buildCategoryDropdown(),
-                  ),
-                  backgroundColor: Colors.white,
-                  isScrollControlled: true,
-                );
-              },
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 4,
+            spreadRadius: 1,
+            offset: Offset(0, 2),
           ),
         ],
+      ),
+      child: TextFormFieldCustom(
+        maxLines: 1,
+        label: "الــبحث الان".tr,
+        hint: "أدخــل هنا أسم المنشور".tr,
+        icon: Icons.search,
+        controller: searchcontroller.isSearchText,
+        fillColor: isDarkMode ? Colors.grey[850]! : Colors.white,
+        hintColor: isDarkMode ? Colors.grey[500]! : Colors.grey[600]!, // إضافة ! للتأكيد على عدم القابلية للقيمة null
+        iconColor: isDarkMode ? Colors.grey[400]! : Colors.grey[600]!, // إضافة ! للتأكيد على عدم القابلية للقيمة null
+        borderColor: Colors.transparent,
+        fontColor: isDarkMode ? Colors.white : Colors.black,
+        obscureText: false,
+        borderRadius: 16,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+          vertical: 18.h,
+        ),
+        // تمت إزالة prefixIconPadding لأنها غير مدعومة
+        keyboardType: TextInputType.text,
+        autofillHints: const [AutofillHints.username],
+      /*  suffixIcon: GestureDetector(
+          onTap: () {
+            Get.bottomSheet(
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? Colors.grey[900] : Colors.white,
+                  borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24)),
+                ),
+                child: _buildCategoryDropdown(),
+              ),
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+            );
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            child: Icon(
+              Icons.filter_list,
+              size: 24.w,
+              color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
+            ),
+          ),
+        ),*/
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            searchcontroller.textSearching.value = "";
+            return "".tr;
+          }
+          return null;
+        },
+        onChanged: (value) {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+              overlays: []);
+          searchcontroller.textSearching.value = value.toString();
+          searchcontroller.fetchSearchPosts(
+            language: Get.find<ChangeLanguageController>()
+                .currentLocale
+                .value
+                .languageCode,
+            categoryId: searchcontroller.selectIdToSearch.value,
+            subcategoryId: null,
+            subcategoryLevel2Id: null,
+            searchTerm: searchcontroller.textSearching.value,
+            cityId: null,
+          );
+        },
       ),
     );
   }
 }
 
-/// تعريف DropdownFieldApi مع النوع العام T لدعم أنواع القيم المختلفة (في حالتنا int)
 class DropdownFieldApi<T> extends StatelessWidget {
   final String label;
   final List<DropdownMenuItem<T>> items;
@@ -188,19 +187,44 @@ class DropdownFieldApi<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find();
+    final isDarkMode = themeController.isDarkMode.value;
+    
     return DropdownButtonFormField<T>(
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        labelStyle: TextStyle(
+          color: isDarkMode ? Colors.grey[400] : Colors.grey[700],
+          fontSize: 16.sp,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+          ),
+        ),
+        filled: true,
+        fillColor: isDarkMode ? Colors.grey[800]! : Colors.grey[100]!,
       ),
       value: selectedItem,
       items: items,
       onChanged: onChanged,
-      // تكبير حجم الخط داخل القائمة المنسدلة
       style: TextStyle(
-          fontFamily: AppTextStyles.DinarOne,
-          fontSize: 18,
-          color: Colors.black),
+        fontFamily: AppTextStyles.DinarOne,
+        fontSize: 16.sp,
+        color: isDarkMode ? Colors.white : Colors.black,
+      ),
+      dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
+      icon: Icon(
+        Icons.arrow_drop_down,
+        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+      ),
     );
   }
 }
