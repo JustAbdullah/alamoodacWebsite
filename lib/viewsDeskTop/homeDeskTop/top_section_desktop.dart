@@ -7,7 +7,6 @@ import '../../controllers/LoadingController.dart';
 import '../../controllers/ThemeController.dart';
 import '../../controllers/settingsController.dart';
 import '../../core/constant/appcolors.dart';
-import '../../customWidgets/custom_flag.dart';
 import '../../customWidgets/custom_flag_desktop.dart';
 import '../../customWidgets/custom_logo.dart';
 import '../AuthDeskTop/login_screen_desktop.dart';
@@ -54,7 +53,7 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
                   _buildSettingsButton(homeController, context),
                   const SizedBox(width: 30),
                   // إضافة قسم اختيار الدولة هنا
-                  _buildCountrySelector(homeController),
+             //     _buildCountrySelector(homeController),
                   const SizedBox(width: 30),
                   _buildUserSection(
                       loadingController, themeController, context),
@@ -82,7 +81,7 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
   }
 
   // دالة لبناء قسم اختيار الدولة
-  Widget _buildCountrySelector(HomeController homeController) {
+  /*Widget _buildCountrySelector(HomeController homeController) {
     final Settingscontroller settingsController = Get.find();
     
     return MouseRegion(
@@ -132,7 +131,7 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
         ),
       ),
     );
-  }
+  }*/
 
   Widget _buildHoverLogo() {
     return MouseRegion(

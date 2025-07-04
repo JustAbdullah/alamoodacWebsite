@@ -34,7 +34,7 @@ class TopSection extends StatelessWidget {
           ),
           
           // قسم اختيار الدولة أسفل الشعار
-          Padding(
+      /*    Padding(
             padding: EdgeInsets.only(top: 8.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -83,12 +83,12 @@ class TopSection extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ),*/
           
           // خط فاصل
           Container(
             height: 1.h,
-            margin: EdgeInsets.only(top: 12.h),
+            margin: EdgeInsets.only(top: 8.h),
             color: Colors.grey[300],
           ),
         ],

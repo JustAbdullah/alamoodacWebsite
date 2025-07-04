@@ -109,7 +109,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       useSideAlignment: true,
                     ),
                   ),
-                   _buildSettingItem(
+                 /*  _buildSettingItem(
                           icon: Icons.map,
                           title: "موقع العرض".tr,
                            onTap: () => showSidePopup(
@@ -119,7 +119,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       useSideAlignment: true,
                     ),
                          
-                        ),
+                        ),*/
                   _buildDivider(),
                   _buildSectionTitle("المظهر".tr),
                   _buildSettingItem(

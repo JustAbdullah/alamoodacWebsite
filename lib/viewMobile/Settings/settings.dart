@@ -131,13 +131,14 @@ class SettingsPage extends StatelessWidget {
                             settingsController.isShowAddCode.value = true;
                             Get.to(() => ShowAskAddCode());
                           },
-                        ), _buildSettingItem(
+                        ),
+                        /* _buildSettingItem(
                           icon: Icons.map,
                           title: "موقع العرض".tr,
                           onTap: () {
                               settingsController.showTheRoute.value = true;
                                Get.to(() => ChoseRoute());}
-                        ),
+                        ),*/
                         _buildDivider(),
                         _buildSectionTitle("المظهر".tr),
                         _buildSettingItem(

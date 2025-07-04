@@ -150,7 +150,7 @@ class ChoseLang extends StatelessWidget {
           final languages = [
             {'code': 'ar', 'label': "العربية".tr, 'flag': ImagesPath.flagArLe},
             {'code': 'ku', 'label': "Kurdî", 'flag': ImagesPath.flagKuLe},
-            {'code': 'tr', 'label': "Truk", 'flag': ImagesPath.flagTrLe},
+          {'code': 'tr', 'label': "Truk", 'flag': ImagesPath.flagTrLe},
             {'code': 'en', 'label': "English", 'flag': ImagesPath.flagEnLe},
           ];
           return _buildLanguageCard(languages[index]);
