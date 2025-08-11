@@ -65,7 +65,7 @@ class _DetailsLoadLinkState extends State<DetailsLoadLink> {
 
       // إذا لم يكن المنشور الحالي هو المطلوب، نجلب البيانات
       if (controller.selectedPost.value?.id.toString() != postId) {
-        controller.fetchPostDetails(int.parse(postId!)).whenComplete(() {
+        controller.fetchPostDetails(postId!).whenComplete(() {
           _timeoutTimer?.cancel();
           if (controller.selectedPost.value != null) {
             _navigateAfterDelay(() {

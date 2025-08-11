@@ -352,35 +352,35 @@ class _SortingIconsWithDropdownState extends State<SortingIconsWithDropdown> {
     switch (value) {
       case 'most_viewed':
         controller.fetchMostViewedPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'least_viewed':
         controller.fetchLeastViewedPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'most_expensive':
         controller.fetchMostExpensivePosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'cheapest':
         controller.fetchCheapestPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'latest':
         controller.fetchLatestPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'oldest':
         controller.fetchOldestPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'highest_rated':
         controller.fetchHighestRatedPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
       case 'lowest_rated':
         controller.fetchLowestRatedPosts(
-            language: lang, categoryId: controller.idCategories.value);
+            language: lang, categoryId: controller.idCategories.value,country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
         break;
     }
   }

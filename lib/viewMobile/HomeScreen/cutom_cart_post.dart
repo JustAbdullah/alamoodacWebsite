@@ -29,17 +29,15 @@ class CustomCardPost extends StatefulWidget {
 }
 
 class _CustomCardPostState extends State<CustomCardPost>
-    with AutomaticKeepAliveClientMixin {
+      {
   // استدعاء الـ Controllers مرة واحدة لتقليل التكرار
   final HomeController controller = Get.find();
   final ThemeController themeController = Get.find();
 
-  @override
-  bool get wantKeepAlive => true;
+  
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     // استخراج عرض الشاشة لتقليل استدعاءات MediaQuery
     final double screenWidth = MediaQuery.of(context).size.width;
     return _buildMainContainer(screenWidth);

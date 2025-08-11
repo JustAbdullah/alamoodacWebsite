@@ -1192,4 +1192,6 @@ const Map<String, String> enUS = {
     "مطاعم وكوفيهات": "Restaurants and Cafés",
     "الاعلانات الرسمية": "Official Advertisements",
     "لا توجد إعلانات ممولة حالياً": "There are no sponsored ads at the moment",
+    'إضافة إعلان مجاناً': 'Add Ad for Free', // English
+
 };

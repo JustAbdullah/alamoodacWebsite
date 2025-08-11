@@ -294,6 +294,7 @@ class _CategoryCardState extends State<_CategoryCard> {
                 .languageCode,
             null,
             null,
+             Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
           );
 
           searchcontroller.subCategories.clear();

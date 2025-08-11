@@ -23,7 +23,8 @@ class _ChoseRouteDesktopState extends State<ChoseRouteDesktop> {
     final Settingscontroller settingsController = Get.find();
 
     return Scaffold(
-      body: AnimatedContainer(
+      body: Obx(() {
+     return  AnimatedContainer(
             duration: const Duration(milliseconds: 0),
             curve: Curves.easeInOutQuint,
             width: MediaQuery.of(context).size.width,
@@ -128,7 +129,9 @@ class _ChoseRouteDesktopState extends State<ChoseRouteDesktop> {
                                         onTap: () {
                                           homeController.selectedRoute.value = "العراق";
                                           homeController.saveSelectedRoute( homeController.selectedRoute.value);
-                                       homeController.loadSelectedRoute();
+                                     homeController.loadSelectedRoute();
+                                     homeController.isGetDataFirstTime.value =false;
+                                    homeController. initializeData();
                                         },
                                         themeController: themeController,
                                       ),
@@ -139,7 +142,9 @@ class _ChoseRouteDesktopState extends State<ChoseRouteDesktop> {
                                         onTap: () {
                                           homeController.selectedRoute.value = "تركيا";
                                              homeController.saveSelectedRoute( homeController.selectedRoute.value);
-                                       homeController.loadSelectedRoute();
+                                      homeController.loadSelectedRoute();
+                                      homeController.isGetDataFirstTime.value =false;
+                                    homeController. initializeData();
                                         },
                                         themeController: themeController,
                                       ),
@@ -196,8 +201,8 @@ class _ChoseRouteDesktopState extends State<ChoseRouteDesktop> {
                 ),
               ),
             
-          ),
-    );
+          );
+  }));
       
    
   }

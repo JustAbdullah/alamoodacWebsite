@@ -1,4 +1,5 @@
 import 'dart:html' as html;
+import 'package:alamoadac_website/controllers/settingsController.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -58,40 +59,27 @@ class EnhancedNavigatorObserver extends NavigatorObserver {
     }
   }
 
-  String _normalizeRoute(String path) {
-    return path;
-  }
+  String _normalizeRoute(String path) => path;
 
   void _updateBrowserHistory(String route, {bool isPush = false}) {
-    // معالجة المسار بشكل آمن
     final currentPath = html.window.location.pathname;
     final pathSegments = currentPath?.split('/') ?? [];
     final dynamicId = pathSegments.isNotEmpty ? pathSegments.last : '';
 
-    // استبدال المعلمة الديناميكية
-    final browserPath = route.replaceFirst(':id', dynamicId);
+    final browserPath = route.contains(':id') 
+        ? route.replaceFirst(':id', dynamicId)
+        : route;
 
-    // استخدام التوابع المباشرة بدلاً من المُعامل []
+    final state = {
+      'type': 'flutter_route',
+      'path': route,
+      'stack': List<String>.from(_navigationStack)
+    };
+
     if (isPush) {
-      html.window.history.pushState(
-        {
-          'type': 'flutter_route',
-          'path': route,
-          'stack': List<String>.from(_navigationStack)
-        },
-        '',
-        browserPath,
-      );
+      html.window.history.pushState(state, '', browserPath);
     } else {
-      html.window.history.replaceState(
-        {
-          'type': 'flutter_route',
-          'path': route,
-          'stack': List<String>.from(_navigationStack)
-        },
-        '',
-        browserPath,
-      );
+      html.window.history.replaceState(state, '', browserPath);
     }
   }
 
@@ -178,7 +166,6 @@ Future<void> main() async {
   runApp(MyApp(initialUri: initialUri));
 }
 
-// هنا نقوم بتعديل الروتين الخاص بالروابط العميقة بحيث إذا كان الرابط يبدأ بـ “/post/…” نوجه المستخدم إلى واجهة DetailsLoadLink
 class MyApp extends StatelessWidget {
   final Uri initialUri;
 
@@ -189,11 +176,12 @@ class MyApp extends StatelessWidget {
     final langCtrl = Get.find<ChangeLanguageController>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // إذا كان المسار يحتوي على "post" فهذا يعني أننا دخلنا عبر رابط تفاصيل المنشور
       if (initialUri.pathSegments.length >= 2 &&
           initialUri.pathSegments[0] == 'post') {
-        // التوجيه إلى واجهة DetailsLoadLink مع تمرير معرف المنشور كمعامل (arguments)
-        Get.offAllNamed('/link', arguments: {'id': initialUri.pathSegments[1]});
+        final postId = initialUri.pathSegments[1];
+        if (Get.currentRoute != '/link' || Get.arguments['id'] != postId) {
+          Get.offAllNamed('/link', arguments: {'id': postId});
+        }
       }
     });
 
@@ -203,15 +191,16 @@ class MyApp extends StatelessWidget {
           navigatorObservers: [EnhancedNavigatorObserver()],
           title: 'على مودك',
           translations: AppTranslation(),
-  locale: langCtrl.currentLocale.value,
-  fallbackLocale: const Locale('ar'),
+          locale: langCtrl.currentLocale.value,
+          fallbackLocale: const Locale('ar'),
           initialBinding: BindingsBuilder(() {
             Get.put(HomeController(), permanent: true);
-            Get.put(Searchcontroller(), permanent: true);
-            Get.put(ThemeController(), permanent: true);
-            Get.put(LoadingController(), permanent: true);
+Get.put(Searchcontroller(), permanent: true);
+Get.put(ThemeController(), permanent: true);
+Get.put(LoadingController(), permanent: true);
+         Get.put(Settingscontroller(), permanent: true);
+
           }),
-          // يمكن ترك initialRoute كما هو أو تغييره حسب منطق التطبيق
           initialRoute: '/Decider',
           getPages: [
             GetPage(
@@ -228,15 +217,11 @@ class MyApp extends StatelessWidget {
               page: () => DetailsLoadLink(),
               transition: Transition.fadeIn,
             ),
-
-            GetPage(name: '/Decider', page: () => const HomeDeciderView()),
             GetPage(name: '/desktop', page: () => const HomeScreenDesktop()),
             GetPage(name: '/store/:id', page: () => StoreDetailsDeskTop()),
             GetPage(name: '/Category', page: () => SubCategoriesPageDeskTop()),
             GetPage(name: '/add-post', page: () => AddListDeskTop()),
             GetPage(name: '/search', page: () => SearchScreenDesktop()),
-
-            // صفحات الموبايل
             GetPage(name: '/mobile', page: () => const HomeScreen()),
             GetPage(name: '/post-mobile/:id', page: () => PostDetails()),
             GetPage(name: '/store-mobile/:id', page: () => StoreDetails()),
@@ -247,55 +232,50 @@ class MyApp extends StatelessWidget {
             GetPage(
                 name: '/dashboard-mobile/', page: () => HomeDashboardUser()),
           ],
-           builder: (context, child) {
-    // 1) استخرج كود اللغة وحدد RTL
-    final langCode = Get.find<ChangeLanguageController>()
-        .currentLocale
-        .value
-        .languageCode;
-    final isRtl = ['ar', 'ku', 'fa', 'ur'].contains(langCode);
+          builder: (context, child) {
+            final isRtl = Get.find<ChangeLanguageController>().currentLocale.value.languageCode =="ar";
 
-    // 2) لف الـ child في Directionality
-    return Directionality(
-      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-      child: WillPopScope(
-        onWillPop: () async {
-          if (EnhancedNavigatorObserver._navigationStack.length > 1) {
-            EnhancedNavigatorObserver._navigationStack.removeLast();
-            html.window.history.back();
-            return false;
-          }
-          _showExitConfirmation();
-          return false;
-        },
-        child: Scaffold(
-          body: MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaleFactor: 0.9,
-              padding: EdgeInsets.zero,
-              viewPadding: EdgeInsets.zero,
-              viewInsets: EdgeInsets.zero,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: MediaQuery.of(context).size.width,
-                maxWidth: MediaQuery.of(context).size.width,
-                minHeight: MediaQuery.of(context).size.height,
-                maxHeight: MediaQuery.of(context).size.height,
+            return Directionality(
+              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+              child: WillPopScope(
+                onWillPop: () async {
+                  if (EnhancedNavigatorObserver._navigationStack.length > 1) {
+                    EnhancedNavigatorObserver._navigationStack.removeLast();
+                    html.window.history.back();
+                    return false;
+                  }
+                  return await _showExitConfirmation();
+                },
+                child: Scaffold(
+                  body: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaleFactor: 0.9,
+                      padding: EdgeInsets.zero,
+                      viewPadding: EdgeInsets.zero,
+                      viewInsets: EdgeInsets.zero,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: MediaQuery.of(context).size.width,
+                        maxWidth: MediaQuery.of(context).size.width,
+                        minHeight: MediaQuery.of(context).size.height,
+                        maxHeight: MediaQuery.of(context).size.height,
+                      ),
+                      child: child,
+                    ),
+                  ),
+                ),
               ),
-              child: child,
-            ),
-          ),
-        ),
-      ),
-    );
-  }));
+            );
+          },
+        ));
   }
 
-  void _showExitConfirmation() {
-    if (Get.isDialogOpen ?? false) return;
+  Future<bool> _showExitConfirmation() async {
+    if (Get.isDialogOpen ?? false) return false;
 
-    Get.dialog(
+    bool exitConfirmed = false;
+    await Get.dialog(
       AlertDialog(
         title: const Text('تأكيد الخروج'),
         content: const Text('هل تريد حقًا الخروج من التطبيق؟'),
@@ -305,12 +285,17 @@ class MyApp extends StatelessWidget {
             child: const Text('إلغاء'),
           ),
           TextButton(
-            onPressed: () => html.window.close(),
+            onPressed: () {
+              exitConfirmed = true;
+              html.window.close();
+            },
             child: const Text('خروج'),
           ),
         ],
       ),
       barrierDismissible: false,
     );
+
+    return exitConfirmed;
   }
 }

@@ -69,230 +69,289 @@ class HomeController extends GetxController
       );
     }
   }
-/////.......//
- @override
-void onInit() {
-  super.onInit();
+ /// حالة التهيئة
+  bool isInitialized = false;
 
-  html.window.onPopState.listen((event) {
-    if (Get.currentRoute != '/') {
-      isSearchFromHome.value = false;
-      Get.back();
-    } else {
-      isSearchFromHome.value = false;
-      Get.toNamed('/confirm-exit');
-    }
-  });
-  
-  _initAnimations();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-  checkAndSetFullScreen();
-  
-  initializeData();
-}
+  String? pendingPostId;
 
-void checkAndSetFullScreen() {
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-    ),
-  );
-}
+  @override
+  void onInit() {
+    super.onInit();
 
-Future<void> initializeData() async {
-  try {
-    isInitialized = true;
-
-    // معالجة البند البيني بشكل غير متزامن
-    if (pendingPostId != null) {
-      final postId = int.parse(pendingPostId!);
-      pendingPostId = null;
-      unawaited(fetchPostDetails(postId));
-    }
-
-    // تشغيل المهام غير المعتمدة على بعضها بشكل متوازي
-    await Future.wait([
-      loadSelectedRoute(),
-      makeInitial(),
-    ]);
-
-    if (!isGetDataFirstTime.value) {
-      await fetchInitialData();
-    }
-  } catch (e, stackTrace) {
-    print('Initialization Error: $e\n$stackTrace');
-  }
-}
-
-Future<void> fetchInitialData() async {
-  print("geTOnfetchInitialData");
-
-  final languageCode =
-      Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
-  final countryCode = _getCountryCode(selectedRoute.value);
-
-  try {
-    // قائمة بمهام جلب البيانات الأساسية
-    final taskFunctions = [
-      () => _fetchWithRetry(() => fetchCategories(languageCode), retries: 2),
-      () => _fetchWithRetry(() => fetchLatestBannerAds()),
-      () => _fetchWithRetry(() => promotedadController.fetchAds('active', languageCode)),
-      () => _fetchWithRetry(() => fetchPostsMostView(languageCode), retries: 2),
-      () => _fetchWithRetry(() => fetchPostsMostRating(languageCode), retries: 2),
-      () => _fetchWithRetry(() => fetchPosts(languageCode), retries: 2),
-      () => _fetchWithRetry(() => Get.find<Settingscontroller>().fetchPackages(languageCode)),
-      () => _fetchWithRetry(() => fetchCities(countryCode, languageCode), retries: 2),
-    ];
-
-    // تنفيذ المهام مع 5 طلبات متزامنة كحد أقصى
-    await _runConcurrent(taskFunctions, concurrency: 5);
-
-    // جلب بيانات الفئات بشكل متوازي
-    await _fetchCategoriesConcurrently(languageCode, concurrency: 5);
-   await checkExpiredPosts();
-
-    isGetDataFirstTime.value = true;
-  } catch (e, stackTrace) {
-    print('Failed to load initial data: $e\n$stackTrace');
-    isGetDataFirstTime.value = false;
-  }
-}
-
-Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrency = 5}) async {
-  final queue = Queue.of(tasks);
-  final activeTasks = <Future>[];
-  
-  while (queue.isNotEmpty || activeTasks.isNotEmpty) {
-    // إضافة مهام جديدة إذا كان لدينا سعة
-    while (activeTasks.length < concurrency && queue.isNotEmpty) {
-      final task = queue.removeFirst();
-      final future = task().catchError((e) => print('Concurrent task error: $e'));
-      activeTasks.add(future);
-      future.whenComplete(() => activeTasks.remove(future));
-    }
-    
-    // الانتظار حتى يكتمل أحد المهام الحالية
-    if (activeTasks.isNotEmpty) {
-      await Future.any(activeTasks);
-    }
-  }
-}
-
-Future<void> _fetchCategoriesConcurrently(String lang, {int concurrency = 5}) async {
-  final totalCategories = 30;
-  final taskFunctions = <Future<void> Function()>[];
-  
-  for (int categoryId = 1; categoryId <= totalCategories; categoryId++) {
-    taskFunctions.add(() => _fetchCategoryPosts(categoryId, lang));
-  }
-  
-  await _runConcurrent(taskFunctions, concurrency: concurrency);
-}
-
-Future<void> _fetchWithRetry(Future<void> Function() request, {int retries = 2}) async {
-  for (int i = 0; i <= retries; i++) {
-    try {
-      await request();
-      return;
-    } catch (e) {
-      if (i == retries) {
-        print('Request failed after $retries attempts: $e');
-        rethrow;
+    // الاستماع لضغط زر الرجوع في المتصفح
+    html.window.onPopState.listen((event) {
+      if (Get.currentRoute != '/') {
+        isSearchFromHome.value = false;
+        Get.back();
+      } else {
+        isSearchFromHome.value = false;
+        Get.toNamed('/confirm-exit');
       }
-      await Future.delayed(Duration(seconds: 1));
+    });
+
+    _initAnimations();
+
+    // تشغيل وضع الشاشة الكاملة
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [],
+    );
+    checkAndSetFullScreen();
+
+    // بدء التهيئة وجلب البيانات
+    initializeData();
+  }
+
+
+  /// يعيد تشغيل جلب البيانات من الصفر
+  void replayData() {
+    isInitialized = false;
+    isGetDataFirstTime.value = false;
+    initializeData();
+  }
+
+  /// ضبط شاشة كاملة ولون شريط الحالة
+  void checkAndSetFullScreen() {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [],
+    );
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
+  }
+
+  /// الخطوة الأولى: تحميل المسار واللغة ثم البيانات الأساسية
+  Future<void> initializeData() async {
+    try {
+      isInitialized = true;
+
+      // إذا هناك منشور معلق، جلب تفاصيله أولاً
+      if (pendingPostId != null) {
+        await fetchPostDetails(pendingPostId!);
+        pendingPostId = null;
+      }
+
+      // 1. تحميل المسار المحفوظ
+      await loadSelectedRoute();
+
+      // 2. تهيئة إعدادات اللغة/التنسيق
+      await makeInitial();
+
+      // 3. جلب البيانات الأساسية لمرة واحدة
+      if (!isGetDataFirstTime.value) {
+        await fetchInitialData();
+      }
+    } catch (e, st) {
+      debugPrint('Initialization Error: $e\n$st');
     }
   }
-}
 
+  /// جلب البيانات الأساسية مع تحسينات التوازي وإلغاء التأخير
+  Future<void> fetchInitialData() async {
+    final lang = Get.find<ChangeLanguageController>()
+        .currentLocale
+        .value
+        .languageCode;
+    final country = getCountryCode(selectedRoute.value);
 
-Future<void> _fetchCategoryPosts(int categoryId, String languageCode) async {
-  final Map<int, Future<void> Function(String)> categoryFetchers = {
-    1: fetchPostsCateOne,
-    2: fetchPostsCateTwo,
-    3: fetchPostsCateThree,
-    4: fetchPostsCateFour,
-    5: fetchPostsCateFive,
-    6: fetchPostsCateSix,
-    7: fetchPostsCateSeven,
-    8: fetchPostsCateEight,
-    9: fetchPostsCateNine,
-    10: fetchPostsCateTen,
-    11: fetchPostsCateEleven,
-    12: fetchPostsCateTwelve,
-    13: fetchPostsCateThrteen,
-    14: fetchPostsCateFourTeen,
-    15: fetchPostsCateFifteen,
-    16: fetchPostsCateSixteen,
-    17: fetchPostsCateSeventeen,
-    18: fetchPostsCateEighteen,
-    19: fetchPostsCateNineteen,
-    20: fetchPostsCateTwenty,
-    21: fetchPostsCateTwentyOne,
-    22: fetchPostsCateTwentyTwo,
-    23: fetchPostsCateTwentyThree,
-    24: fetchPostsCateTwentyFour,   
-    25: fetchPostsCateTwentyFive,    
-    26: fetchPostsCateTwentySix,
-    27: fetchPostsCateTwentySeven,
-    28: fetchPostsCateTwentyEight,
-    29: fetchPostsCateTwentyNine,
-    30: fetchPostsCateThirty,
+    try {
+      // تجميع المهام في قائمة
+      final parallelTasks = <Future<void>>[
+        _fetchWithRetry(() => fetchCategories(lang), retries: 2),
+        _fetchWithRetry(() => promotedadController.fetchAds('active', lang)),
+        _fetchWithRetry(() => fetchLatestBannerAds()),
+        _fetchWithRetry(
+            () => fetchPosts(lang, country: country), retries: 2),
+        _fetchWithRetry(
+            () => fetchPostsMostView(lang, country: country), retries: 2),
+        _fetchWithRetry(
+            () => fetchPostsMostRating(lang, country: country), retries: 2),
+        _fetchWithRetry(
+            () => Get.find<Settingscontroller>().fetchPackages(lang)),
+        _fetchWithRetry(() => fetchCities(country, lang), retries: 2),
+      ];
 
+      // تنفيذ 8 طلبات في دفعة واحدة بدون تأخير
+      await runTaskBatches(
+        parallelTasks,
+        batchSize: 8,
+        delayBetweenBatches: Duration.zero,
+      );
 
-  };
+      // جلب 30 فئة بدفعات من 10 فئات لكل دفعة
+      await _fetchCategoriesInBatches(lang, country, batchSize: 10);
 
+      // التحقق من انتهاء صلاحية المنشورات
+      await checkExpiredPosts();
 
-  final fetcher = categoryFetchers[categoryId];
-  if (fetcher != null) {
-    return fetcher(languageCode);
-  } else {
-    throw Exception('Invalid category ID: $categoryId');
+      isGetDataFirstTime.value = true;
+    } catch (e, st) {
+      debugPrint('Failed to load initial data: $e\n$st');
+      isGetDataFirstTime.value = false;
+    }
   }
-}
 
-String _getCountryCode(String route) {
-  const routeMap = {
-    'العراق': 'IQ',
-    'تركيا': 'TR',
-  };
-  return routeMap[route] ?? 'SY';
-}
-
-Future<void> makeInitial() async {
-  final languageCode =
-      Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
-  await initializeDateFormatting(languageCode, null);
-}
-
-Future<void> loadSelectedRoute() async {
-
-  final prefs = await SharedPreferences.getInstance();
-  selectedRoute.value = prefs.getString('selectedRoute') ?? 'العراق';
-
-  print(selectedRoute.value);
-  
-  fetchCities(_getCountryCode(selectedRoute.value),Get.find<ChangeLanguageController>().currentLocale.value.languageCode);
-   
-    await    fetchCategories( Get.find<ChangeLanguageController>().currentLocale.value.languageCode);
-}
-
-Future<void> saveSelectedRoute(String route) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('selectedRoute', route);
-  selectedRoute.value = route;
-
-}
-
-Future<void> refreshData() async {
-  try {
-    isGetDataFirstTime.value = false;
-    await fetchInitialData();
-  } catch (e) {
-    Get.snackbar('Error'.tr, 'Failed to refresh data'.tr);
+  /// تنفيذ قائمة مهام في دفعات متزامنة لزيادة التوازي
+  Future<void> runTaskBatches(
+    List<Future<void>> tasks, {
+    int batchSize = 8,
+    Duration delayBetweenBatches = Duration.zero,
+  }) async {
+    for (int i = 0; i < tasks.length; i += batchSize) {
+      final end = (i + batchSize > tasks.length)
+          ? tasks.length
+          : i + batchSize;
+      final batch = tasks.sublist(i, end);
+      await Future.wait(batch);
+      if (end < tasks.length && delayBetweenBatches > Duration.zero) {
+        await Future.delayed(delayBetweenBatches);
+      }
+    }
   }
-}
+
+  /// آلية إعادة المحاولة لأي طلب
+  Future<void> _fetchWithRetry(
+    Future<void> Function() request, {
+    int retries = 2,
+  }) async {
+    for (int i = 0; i <= retries; i++) {
+      try {
+        await request();
+        return;
+      } catch (e) {
+        if (i == retries) rethrow;
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+  }
+
+  /// جلب 30 فئة في دفعات لتقليل عدد مرات wait
+  Future<void> _fetchCategoriesInBatches(
+    String lang,
+    String country, {
+    int batchSize = 10,
+  }) async {
+    const totalCategories = 30;
+    for (int start = 1; start <= totalCategories; start += batchSize) {
+      final end = (start + batchSize - 1).clamp(1, totalCategories);
+      final futures = List.generate(
+        end - start + 1,
+        (i) => _fetchWithRetry(
+          () => _fetchCategoryPosts(start + i, lang, country),
+          retries: 1,
+        ),
+      );
+      await Future.wait(futures);
+    }
+  }
+
+  /// جلب منشورات كل فئة كما في الأصل
+  Future<void> _fetchCategoryPosts(
+    int categoryId,
+    String languageCode,
+    String country,
+  ) {
+    final Map<int, Future<void> Function(String, String)> categoryFetchers =
+        {
+      1: fetchPostsCateOne,
+      2: fetchPostsCateTwo,
+      3: fetchPostsCateThree,
+      4: fetchPostsCateFour,
+      5: fetchPostsCateFive,
+      6: fetchPostsCateSix,
+      7: fetchPostsCateSeven,
+      8: fetchPostsCateEight,
+      9: fetchPostsCateNine,
+      10: fetchPostsCateTen,
+      11: fetchPostsCateEleven,
+      12: fetchPostsCateTwelve,
+      13: fetchPostsCateThrteen,
+      14: fetchPostsCateFourTeen,
+      15: fetchPostsCateFifteen,
+      16: fetchPostsCateSixteen,
+      17: fetchPostsCateSeventeen,
+      18: fetchPostsCateEighteen,
+      19: fetchPostsCateNineteen,
+      20: fetchPostsCateTwenty,
+      21: fetchPostsCateTwentyOne,
+      22: fetchPostsCateTwentyTwo,
+      23: fetchPostsCateTwentyThree,
+      24: fetchPostsCateTwentyFour,
+      25: fetchPostsCateTwentyFive,
+      26: fetchPostsCateTwentySix,
+      27: fetchPostsCateTwentySeven,
+      28: fetchPostsCateTwentyEight,
+      29: fetchPostsCateTwentyNine,
+      30: fetchPostsCateThirty,
+    };
+
+    final fetcher = categoryFetchers[categoryId];
+    if (fetcher != null) {
+      return fetcher(languageCode, country);
+    } else {
+      return Future.error(
+        Exception('Invalid category ID: $categoryId'),
+      );
+    }
+  }
+
+  /// استخراج رمز الدولة من اسم المسار
+  String getCountryCode(String route) {
+    const routeMap = {'العراق': 'IQ', 'تركيا': 'TR'};
+    return routeMap[route] ?? 'SY';
+  }
+
+  /// تهيئة تنسيق التاريخ حسب اللغة
+  Future<void> makeInitial() async {
+    final lang = Get.find<ChangeLanguageController>()
+        .currentLocale
+        .value
+        .languageCode;
+    await initializeDateFormatting(lang, null);
+  }
+
+  /// تحميل المسار المحفوظ واستدعاء جلب المدن والفئات
+  Future<void> loadSelectedRoute() async {
+    final prefs = await SharedPreferences.getInstance();
+    selectedRoute.value = prefs.getString('selectedRoute') ?? 'العراق';
+
+    await fetchCities(
+      getCountryCode(selectedRoute.value),
+      Get.find<ChangeLanguageController>()
+          .currentLocale
+          .value
+          .languageCode,
+    );
+
+    await fetchCategories(
+      Get.find<ChangeLanguageController>()
+          .currentLocale
+          .value
+          .languageCode,
+    );
+  }
+
+  /// حفظ المسار المختار
+  Future<void> saveSelectedRoute(String route) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedRoute', route);
+    selectedRoute.value = route;
+  }
+
+  /// إعادة تحميل البيانات عند السحب للتحديث
+  Future<void> refreshData() async {
+    try {
+      isGetDataFirstTime.value = false;
+      await fetchInitialData();
+    } catch (e) {
+      Get.snackbar('Error'.tr, 'Failed to refresh data'.tr);
+    }
+  }
+
 ////////////////////////////////..............Show The Cate...........////////////////////
    RxBool isShowTheCate = false.obs;
 
@@ -344,40 +403,72 @@ Future<void> refreshData() async {
 
   // إضافة قائمة `RxInt` لكل منشور
 
-  Future<void> fetchPosts(String language) async {
-    try {
-      LoadingPosts.value = true;
+  Future<void> fetchPosts(String language, {String? country}) async {
+  try {
+    LoadingPosts.value = true;
 
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts/$language'));
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts/$language',
+    );
 
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsList.value = jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPosts.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
     }
-  } ////////////////////////////////////.................... البوستات الاكثر مشاهدة..........................////////////
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      // تعديل هنا: فك الـ JSON من الحقل data
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+
+      postsList.value = jsonData
+          .map((post) => Post.fromJson(post))
+          .toList();
+    } else {
+      // طباعة الخطأ مع التنبيه
+      print('⚠️ فشل تحميل المنشورات. رمز الاستجابة: ${response.statusCode}');
+      print('🧾 محتوى الاستجابة: ${response.body}');
+      throw Exception('حدث خطأ أثناء تحميل المنشورات من الخادم.');
+    }
+  } catch (e, stacktrace) {
+    print('🚨 خطأ في الدالة fetchPosts: $e');
+    print('📌 تتبع الخطأ:\n$stacktrace');
+  } finally {
+    LoadingPosts.value = false;
+  }
+} ////////////////////////////////////.................... البوستات الاكثر مشاهدة..........................////////////
 
   RxBool LoadingPostsMostView = false.obs;
   var postsListMostView = <Post>[].obs;
 
-  Future<void> fetchPostsMostView(String language) async {
+  Future<void> fetchPostsMostView(String language ,{String ?country}) async {
     try {
       LoadingPostsMostView.value = true;
 
-      final response = await http.get(
-          Uri.parse('https://alamoodac.com/modac/public/top-posts/$language'));
+
+    // بناء URI وإضافة باراميتر الدولة إذا أرسلها المستخدم
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/top-posts/$language',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
+    }
+
+    final response = await http.get(uri);
+     
+
+
+
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListMostView.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListMostView.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
       } else {
         throw Exception('Failed to load posts');
@@ -392,16 +483,28 @@ Future<void> refreshData() async {
   RxBool LoadingPostsMostRating = false.obs;
   var postsListMostRating = <Post>[].obs;
 
-  Future<void> fetchPostsMostRating(String language) async {
+  Future<void> fetchPostsMostRating(String language,{String? country}) async {
     try {
       LoadingPostsMostRating.value = true;
 
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/top-rated-posts/$language'));
+
+    // بناء URI وإضافة باراميتر الدولة إذا أرسلها المستخدم
+    var uri = Uri.parse(
+        'https://alamoodac.com/modac/public/top-rated-posts/$language',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
+    }
+
+    final response = await http.get(uri);
+
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListMostRating.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListMostRating.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
 
         // تهيئة قيم `RxInt` لكل منشور
@@ -416,46 +519,55 @@ Future<void> refreshData() async {
   }
 ////////////////////////////////////.................... المنشورات حسب القسم الرئيسي والفرعي الاول والثاني .........................////////////
 
-  RxBool LoadingPostsAll = false.obs;
-  var postsListAll = <Post>[].obs;
+////////////////////////////////////.................... المنشورات حسب القسم الرئيسي والفرعي الاول والثاني .........................////////////
+RxBool LoadingPostsAll = false.obs;
+var postsListAll = <Post>[].obs;
 
-  Future<void> fetchPostsAll(
-    int categoryId,
-    String language,
-    int? subcategoryId,
-    int? subcategoryLevel2Id,
-  ) async {
-    try {
-      LoadingPostsAll.value = true;
-      // بناء رابط API
-      String url =
-          'https://alamoodac.com/modac/public/posts/$categoryId/$language';
+Future<void> fetchPostsAll(
+  int categoryId,
+  String language,
+  int? subcategoryId,
+  int? subcategoryLevel2Id,
+  String? country,
+) async {
+  try {
+    LoadingPostsAll.value = true;
 
-      if (subcategoryId != null) {
-        url += '/$subcategoryId';
-      }
-      if (subcategoryLevel2Id != null) {
-        url += '/$subcategoryLevel2Id';
-      }
+    // بناء الرابط الأساسي
+    String url = 'https://alamoodac.com/modac/public/posts/$categoryId/$language';
 
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-      print("Error loading posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    // إضافة المعرفات الفرعية إن وُجدت
+    if (subcategoryId != null) {
+      url += '/$subcategoryId';
     }
-  }
+    if (subcategoryLevel2Id != null) {
+      url += '/$subcategoryLevel2Id';
+    }
 
+    // تكوين الرابط الكامل باستخدام Uri
+    final uri = Uri.parse(url).replace(queryParameters: {
+      if (country != null && country.isNotEmpty) 'country': country,
+    });
+
+    print("🔗 Final URL: $uri"); // ✅ طباعة الرابط الكامل النهائي
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('📛 فشل في تحميل المنشورات. StatusCode: ${response.statusCode}');
+    }
+  } catch (e, stackTrace) {
+    print("❌⚠️ حدث خطأ أثناء تحميل المنشورات:");
+    print("🔴 الخطأ: $e");
+    print("🧵 تفاصيل الستاك:\n$stackTrace");
+  } finally {
+    LoadingPostsAll.value = false;
+  }
+}
   ////////////////////////////...............Show SubCategoriesPage................................///////////////////////////
   RxBool showTheSubCategories = false.obs;
   RxString nameCategories = "".obs;
@@ -621,11 +733,7 @@ Future<void> refreshData() async {
     isMenu.value = false;
     addPost.value = false;
     shouldShowDialog.value = false;
-    fetchSearchPosts(
-        language: Get.find<ChangeLanguageController>()
-            .currentLocale
-            .value
-            .languageCode);
+   
   }
 
   isChosedMenu() {
@@ -673,44 +781,7 @@ Future<void> refreshData() async {
   RxInt? idSubTwoForSearch;
 
 // لتخصيص الصفحة لكل منشور
-  RxList<RxInt> searchPostPageIndexes = <RxInt>[].obs;
-
-  Future<void> fetchSearchPosts({
-    required String language,
-    String? categoryId,
-    String? subcategoryId,
-    String? subcategoryLevel2Id,
-    String? searchTerm,
-  }) async {
-    try {
-      loadingSearchPosts.value = true;
-
-      // بناء الرابط الديناميكي
-      String url =
-          'https://alamoodac.com/modac/public/search-posts/$language/Null/Null/Null/';
-
-      if (searchTerm != null) url += '/${Uri.encodeComponent(searchTerm)}';
-
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-        searchPostPageIndexes.value =
-            List.generate(searchPostsList.length, (index) => 0.obs);
-      } else {
-        throw Exception('Failed to load search posts');
-      }
-    } catch (e) {
-      print("Error loading search posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
-    }
-  }
-
+  
   ////////////////........getCitys.............../////////
   final chosedIdCity = Rx<int?>(null); // يجب أن يكون Rx<int?> وليس RxInt?
   var citiesList = <TheCity>[].obs; // قائمة قابلة للمراقبة
@@ -1406,269 +1477,321 @@ Future<void> refreshData() async {
   }
 
   ////////////////////////////////////////الفلترة في الأقسام الداخلية .............../////
-  Future<void> fetchLatestPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
+ ////////////////////////////////////////الفلترة في الأقسام الداخلية .............../////
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
+Future<void> fetchLatestPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ أضف هذا السطر
+}) async {
+  try {
+    LoadingPostsAll.value = true;
 
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/f/latest/$language',
-        queryParameters: queryParams,
-      );
+    Map<String, String> queryParams = {}; // ✅ مهيأة فارغة بدل null
 
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load latest posts');
-      }
-    } catch (e) {
-      print("Error loading latest posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
     }
-  }
 
-  Future<void> fetchOldestPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/oldest/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load oldest posts');
-      }
-    } catch (e) {
-      print("Error loading oldest posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (country != null && country.isNotEmpty) {
+      queryParams['country'] = country; // ✅ أضف باراميتر الدولة
     }
-  }
 
-  Future<void> fetchCheapestPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/f/latest/$language',
+      queryParameters: queryParams, // ✅ استخدم الكائن الذي بنيناه
+    );
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
+    final response = await http.get(uri);
 
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/cheapest/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load cheapest posts');
-      }
-    } catch (e) {
-      print("Error loading cheapest posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load latest posts');
     }
+  } catch (e) {
+    print("⚠️ خطأ أثناء تحميل المنشورات المفلترة: $e");
+  } finally {
+    LoadingPostsAll.value = false;
   }
+}
+Future<void> fetchOldestPosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
 
-  Future<void> fetchMostExpensivePosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/most-expensive/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load most expensive posts');
-      }
-    } catch (e) {
-      print("Error loading most expensive posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
     }
-  }
-
-  Future<void> fetchHighestRatedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/highest-rated/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load highest rated posts');
-      }
-    } catch (e) {
-      print("Error loading highest rated posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
     }
-  }
 
-  Future<void> fetchLowestRatedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/oldest/$language',
+      queryParameters: queryParams,
+    );
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
+    final response = await http.get(uri);
 
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/lowest-rated/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load lowest rated posts');
-      }
-    } catch (e) {
-      print("Error loading lowest rated posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load oldest posts');
     }
+  } catch (e) {
+    print("Error loading oldest posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
   }
+}
 
-  Future<void> fetchMostViewedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
+Future<void> fetchCheapestPosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/most-viewed/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load most viewed posts');
-      }
-    } catch (e) {
-      print("Error loading most viewed posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
     }
-  }
-
-  Future<void> fetchLeastViewedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      LoadingPostsAll.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/least-viewed/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load least viewed posts');
-      }
-    } catch (e) {
-      print("Error loading least viewed posts: $e");
-    } finally {
-      LoadingPostsAll.value = false;
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
     }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/cheapest/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load cheapest posts');
+    }
+  } catch (e) {
+    print("Error loading cheapest posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
   }
+}
+
+Future<void> fetchMostExpensivePosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/most-expensive/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load most expensive posts');
+    }
+  } catch (e) {
+    print("Error loading most expensive posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
+  }
+}
+
+Future<void> fetchHighestRatedPosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/highest-rated/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load highest rated posts');
+    }
+  } catch (e) {
+    print("Error loading highest rated posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
+  }
+}
+
+Future<void> fetchLowestRatedPosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/lowest-rated/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load lowest rated posts');
+    }
+  } catch (e) {
+    print("Error loading lowest rated posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
+  }
+}
+
+Future<void> fetchMostViewedPosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/most-viewed/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load most viewed posts');
+    }
+  } catch (e) {
+    print("Error loading most viewed posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
+  }
+}
+
+Future<void> fetchLeastViewedPosts({
+  required String language,
+  String? categoryId,
+  required String country,
+}) async {
+  try {
+    LoadingPostsAll.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/least-viewed/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      postsListAll.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load least viewed posts');
+    }
+  } catch (e) {
+    print("Error loading least viewed posts: $e");
+  } finally {
+    LoadingPostsAll.value = false;
+  }
+}
 
   /////////////////////////////.........المنشورات القريبة...............////////////////
 
@@ -1708,7 +1831,8 @@ Future<void> refreshData() async {
               .value
               .languageCode,
           categoryId: idCategories.value,
-          context: context);
+          context: context, 
+          country: getCountryCode(selectedRoute.value));
     }
   }
 
@@ -1719,6 +1843,7 @@ Future<void> refreshData() async {
     double radius = 10.0,
     String? categoryId, // معرف القسم الرئيسي اختياري
     required BuildContext context,
+    required String? country,
   }) async {
     try {
       showDialog(
@@ -1742,6 +1867,11 @@ Future<void> refreshData() async {
       if (categoryId != null && categoryId.isNotEmpty) {
         url += '&category_id=$categoryId';
       }
+      
+
+    if (country != null && country.isNotEmpty) {
+     url += '/$country';
+    }
 
       print("Fetching nearby posts from URL: $url");
 
@@ -1757,8 +1887,8 @@ Future<void> refreshData() async {
 
       if (response.statusCode == 200) {
         // معالجة البيانات المستلمة وتحويلها إلى قائمة من المنشورات
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListAll.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListAll.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
         Get.snackbar(
           duration: Duration(seconds: 3),
@@ -1785,10 +1915,8 @@ Future<void> refreshData() async {
             ),
           ),
         );
-
         await Future.delayed(Duration(seconds: 3));
-
-        Get.back();
+        showMap.value = false;
       } else {
         Get.snackbar(
           duration: Duration(seconds: 3),
@@ -1826,6 +1954,7 @@ Future<void> refreshData() async {
       Navigator.of(context, rootNavigator: true).pop();
     }
   }
+ 
 
   /////////////////////////...............الان العرض لجميع الاقسام أحدث 5.....................................//
 
@@ -1835,16 +1964,28 @@ Future<void> refreshData() async {
 
   // إضافة قائمة `RxInt` لكل منشور
 
-  Future<void> fetchPostsCateOne(String language) async {
+  Future<void> fetchPostsCateOne(String language, String country) async {
     try {
       LoadingPostsCateOne.value = true;
 
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/1'));
+
+    // بناء URI وإضافة باراميتر الدولة إذا أرسلها المستخدم
+    var uri = Uri.parse(
+        'https://alamoodac.com/modac/public/latest-posts-by-category/$language/1',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
+    }
+
+    final response = await http.get(uri);
+    
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateOne.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListCateOne.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
 
         // تهيئة قيم `RxInt` لكل منشور
@@ -1862,16 +2003,27 @@ Future<void> refreshData() async {
 
   // إضافة قائمة `RxInt` لكل منشور
 
-  Future<void> fetchPostsCateTwo(String language) async {
+  Future<void> fetchPostsCateTwo(String language,String country) async {
     try {
       LoadingPostsCateTwo.value = true;
 
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/2'));
+      // بناء URI وإضافة باراميتر الدولة إذا أرسلها المستخدم
+    var uri = Uri.parse(
+        'https://alamoodac.com/modac/public/latest-posts-by-category/$language/2',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
+    }
+
+    final response = await http.get(uri);
+    
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwo.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListCateTwo.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
 
         // تهيئة قيم `RxInt` لكل منشور
@@ -1890,16 +2042,27 @@ Future<void> refreshData() async {
 
   // إضافة قائمة `RxInt` لكل منشور
 
-  Future<void> fetchPostsCateThree(String language) async {
+  Future<void> fetchPostsCateThree(String language,String country) async {
     try {
       LoadingPostsCateThree.value = true;
 
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/3'));
+      // بناء URI وإضافة باراميتر الدولة إذا أرسلها المستخدم
+    var uri = Uri.parse(
+        'https://alamoodac.com/modac/public/latest-posts-by-category/$language/3',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
+    }
+
+    final response = await http.get(uri);
+    
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateThree.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListCateThree.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
 
         // تهيئة قيم `RxInt` لكل منشور
@@ -1917,16 +2080,27 @@ Future<void> refreshData() async {
 
   // إضافة قائمة `RxInt` لكل منشور
 
-  Future<void> fetchPostsCateFour(String language) async {
+  Future<void> fetchPostsCateFour(String language,String country) async {
     try {
       LoadingPostsCateFour.value = true;
 
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/4'));
+     // بناء URI وإضافة باراميتر الدولة إذا أرسلها المستخدم
+    var uri = Uri.parse(
+        'https://alamoodac.com/modac/public/latest-posts-by-category/$language/4',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {
+        'country': country,
+      });
+    }
+
+    final response = await http.get(uri);
+    
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateFour.value =
+        final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        postsListCateFour.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
 
         // تهيئة قيم `RxInt` لكل منشور
@@ -1937,733 +2111,837 @@ Future<void> refreshData() async {
     } finally {
       LoadingPostsCateFour.value = false;
     }
-  } /////////////////.......................five.......................///////////////
+  } ///////////////.......................five.......................///////////////
 
-  RxBool LoadingPostsCateFive = false.obs;
-  var postsListCateFive = <Post>[].obs;
+RxBool LoadingPostsCateFive = false.obs;
+var postsListCateFive = <Post>[].obs;
 
-  // إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateFive(String language, String country) async {
+  try {
+    LoadingPostsCateFive.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/5',
+    );
 
-  Future<void> fetchPostsCateFive(String language) async {
-    try {
-      LoadingPostsCateFive.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/5'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateFive.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateFive.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
-  } /////////////////.......................الأول.......................///////////////
 
-  RxBool LoadingPostsCateSix = false.obs;
-  var postsListCateSix = <Post>[].obs;
+    final response = await http.get(uri);
 
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateSix(String language) async {
-    try {
-      LoadingPostsCateSix.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/6'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateSix.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateSix.value = false;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateFive.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
     }
-  } /////////////////.......................Seven.......................///////////////
-
-  RxBool LoadingPostsCateSeven = false.obs;
-  var postsListCateSeven = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateSeven(String language) async {
-    try {
-      LoadingPostsCateSeven.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/7'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateSeven.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateSeven.value = false;
-    }
-  } /////////////////.......................Eight.......................///////////////
-
-  RxBool LoadingPostsCateEight = false.obs;
-  var postsListCateEight = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateEight(String language) async {
-    try {
-      LoadingPostsCateEight.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/8'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateEight.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateEight.value = false;
-    }
-  } /////////////////.......................Nine.......................///////////////
-
-  RxBool LoadingPostsCateNine = false.obs;
-  var postsListCateNine = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateNine(String language) async {
-    try {
-      LoadingPostsCateNine.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/9'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateNine.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateNine.value = false;
-    }
-  } /////////////////.......................Ten.......................///////////////
-
-  RxBool LoadingPostsCateTen = false.obs;
-  var postsListCateTen = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateTen(String language) async {
-    try {
-      LoadingPostsCateTen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/10'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTen.value = false;
-    }
-  } /////////////////.......................eleven.......................///////////////
-
-  RxBool LoadingPostsCateEleven = false.obs;
-  var postsListCateEleven = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateEleven(String language) async {
-    try {
-      LoadingPostsCateEleven.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/11'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateEleven.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateEleven.value = false;
-    }
-  } /////////////////.......................Twelve.......................///////////////
-
-  RxBool LoadingPostsCateTwelve = false.obs;
-  var postsListCateTwelve = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateTwelve(String language) async {
-    try {
-      LoadingPostsCateTwelve.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/12'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwelve.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwelve.value = false;
-    }
-  } /////////////////.......................Thrteen.......................///////////////
-
-  RxBool LoadingPostsCateThrteen = false.obs;
-  var postsListCateThrteen = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateThrteen(String language) async {
-    try {
-      LoadingPostsCateThrteen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/13'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateThrteen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateThrteen.value = false;
-    }
-  } /////////////////.......................FourTeen.......................///////////////
-
-  RxBool LoadingPostsCateFourTeen = false.obs;
-  var postsListCateFourTeen = <Post>[].obs;
-
-  // إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateFourTeen(String language) async {
-    try {
-      LoadingPostsCateFourTeen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/14'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateFourTeen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateFourTeen.value = false;
-    }
-  } ///////////////.......................Fifteen.......................///////////////
-
-  RxBool LoadingPostsCateFifteen = false.obs;
-  var postsListCateFifteen = <Post>[].obs;
-
-// إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateFifteen(String language) async {
-    try {
-      LoadingPostsCateFifteen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/15'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateFifteen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateFifteen.value = false;
-    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateFive.value = false;
   }
+}
+
+///////////////.......................Six.......................///////////////
+
+RxBool LoadingPostsCateSix = false.obs;
+var postsListCateSix = <Post>[].obs;
+
+Future<void> fetchPostsCateSix(String language, String country) async {
+  try {
+    LoadingPostsCateSix.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/6',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateSix.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateSix.value = false;
+  }
+}
+
+///////////////.......................Seven.......................///////////////
+
+RxBool LoadingPostsCateSeven = false.obs;
+var postsListCateSeven = <Post>[].obs;
+
+Future<void> fetchPostsCateSeven(String language, String country) async {
+  try {
+    LoadingPostsCateSeven.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/7',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateSeven.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateSeven.value = false;
+  }
+}
+
+///////////////.......................Eight.......................///////////////
+
+RxBool LoadingPostsCateEight = false.obs;
+var postsListCateEight = <Post>[].obs;
+
+Future<void> fetchPostsCateEight(String language, String country) async {
+  try {
+    LoadingPostsCateEight.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/8',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateEight.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateEight.value = false;
+  }
+}
+
+///////////////.......................Nine.......................///////////////
+
+RxBool LoadingPostsCateNine = false.obs;
+var postsListCateNine = <Post>[].obs;
+
+Future<void> fetchPostsCateNine(String language, String country) async {
+  try {
+    LoadingPostsCateNine.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/9',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateNine.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateNine.value = false;
+  }
+}
+
+///////////////.......................Ten.......................///////////////
+
+RxBool LoadingPostsCateTen = false.obs;
+var postsListCateTen = <Post>[].obs;
+
+Future<void> fetchPostsCateTen(String language, String country) async {
+  try {
+    LoadingPostsCateTen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/10',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTen.value = false;
+  }
+}
+
+///////////////.......................eleven.......................///////////////
+
+RxBool LoadingPostsCateEleven = false.obs;
+var postsListCateEleven = <Post>[].obs;
+
+Future<void> fetchPostsCateEleven(String language, String country) async {
+  try {
+    LoadingPostsCateEleven.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/11',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateEleven.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateEleven.value = false;
+  }
+}
+
+///////////////.......................Twelve.......................///////////////
+
+RxBool LoadingPostsCateTwelve = false.obs;
+var postsListCateTwelve = <Post>[].obs;
+
+Future<void> fetchPostsCateTwelve(String language, String country) async {
+  try {
+    LoadingPostsCateTwelve.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/12',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwelve.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwelve.value = false;
+  }
+}
+
+///////////////.......................Thrteen.......................///////////////
+
+RxBool LoadingPostsCateThrteen = false.obs;
+var postsListCateThrteen = <Post>[].obs;
+
+Future<void> fetchPostsCateThrteen(String language, String country) async {
+  try {
+    LoadingPostsCateThrteen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/13',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateThrteen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateThrteen.value = false;
+  }
+}
+
+///////////////.......................FourTeen.......................///////////////
+
+RxBool LoadingPostsCateFourTeen = false.obs;
+var postsListCateFourTeen = <Post>[].obs;
+
+Future<void> fetchPostsCateFourTeen(String language, String country) async {
+  try {
+    LoadingPostsCateFourTeen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/14',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateFourTeen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateFourTeen.value = false;
+  }
+}
+
+///////////////.......................Fifteen.......................///////////////
+
+RxBool LoadingPostsCateFifteen = false.obs;
+var postsListCateFifteen = <Post>[].obs;
+
+Future<void> fetchPostsCateFifteen(String language, String country) async {
+  try {
+    LoadingPostsCateFifteen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/15',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateFifteen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateFifteen.value = false;
+  }
+}
 
 ///////////////.......................Sixteen.......................///////////////
 
-  RxBool LoadingPostsCateSixteen = false.obs;
-  var postsListCateSixteen = <Post>[].obs;
+RxBool LoadingPostsCateSixteen = false.obs;
+var postsListCateSixteen = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateSixteen(String language, String country) async {
+  try {
+    LoadingPostsCateSixteen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/16',
+    );
 
-  Future<void> fetchPostsCateSixteen(String language) async {
-    try {
-      LoadingPostsCateSixteen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/16'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateSixteen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateSixteen.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateSixteen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateSixteen.value = false;
   }
+}
 
 ///////////////.......................Seventeen.......................///////////////
 
-  RxBool LoadingPostsCateSeventeen = false.obs;
-  var postsListCateSeventeen = <Post>[].obs;
+RxBool LoadingPostsCateSeventeen = false.obs;
+var postsListCateSeventeen = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateSeventeen(String language, String country) async {
+  try {
+    LoadingPostsCateSeventeen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/17',
+    );
 
-  Future<void> fetchPostsCateSeventeen(String language) async {
-    try {
-      LoadingPostsCateSeventeen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/17'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateSeventeen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateSeventeen.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateSeventeen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateSeventeen.value = false;
   }
+}
 
 ///////////////.......................Eighteen.......................///////////////
 
-  RxBool LoadingPostsCateEighteen = false.obs;
-  var postsListCateEighteen = <Post>[].obs;
+RxBool LoadingPostsCateEighteen = false.obs;
+var postsListCateEighteen = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateEighteen(String language, String country) async {
+  try {
+    LoadingPostsCateEighteen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/18',
+    );
 
-  Future<void> fetchPostsCateEighteen(String language) async {
-    try {
-      LoadingPostsCateEighteen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/18'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateEighteen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateEighteen.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateEighteen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateEighteen.value = false;
   }
+}
 
 ///////////////.......................Nineteen.......................///////////////
 
-  RxBool LoadingPostsCateNineteen = false.obs;
-  var postsListCateNineteen = <Post>[].obs;
+RxBool LoadingPostsCateNineteen = false.obs;
+var postsListCateNineteen = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateNineteen(String language, String country) async {
+  try {
+    LoadingPostsCateNineteen.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/19',
+    );
 
-  Future<void> fetchPostsCateNineteen(String language) async {
-    try {
-      LoadingPostsCateNineteen.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/19'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateNineteen.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateNineteen.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateNineteen.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateNineteen.value = false;
   }
+}
 
 ///////////////.......................Twenty.......................///////////////
 
-  RxBool LoadingPostsCateTwenty = false.obs;
-  var postsListCateTwenty = <Post>[].obs;
+RxBool LoadingPostsCateTwenty = false.obs;
+var postsListCateTwenty = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwenty(String language, String country) async {
+  try {
+    LoadingPostsCateTwenty.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/20',
+    );
 
-  Future<void> fetchPostsCateTwenty(String language) async {
-    try {
-      LoadingPostsCateTwenty.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/20'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwenty.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwenty.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwenty.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwenty.value = false;
   }
+}
 
 ///////////////.......................TwentyOne.......................///////////////
 
-  RxBool LoadingPostsCateTwentyOne = false.obs;
-  var postsListCateTwentyOne = <Post>[].obs;
+RxBool LoadingPostsCateTwentyOne = false.obs;
+var postsListCateTwentyOne = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentyOne(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyOne.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/21',
+    );
 
-  Future<void> fetchPostsCateTwentyOne(String language) async {
-    try {
-      LoadingPostsCateTwentyOne.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/21'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyOne.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyOne.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyOne.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyOne.value = false;
   }
+}
 
 ///////////////.......................TwentyTwo.......................///////////////
 
-  RxBool LoadingPostsCateTwentyTwo = false.obs;
-  var postsListCateTwentyTwo = <Post>[].obs;
+RxBool LoadingPostsCateTwentyTwo = false.obs;
+var postsListCateTwentyTwo = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentyTwo(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyTwo.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/22',
+    );
 
-  Future<void> fetchPostsCateTwentyTwo(String language) async {
-    try {
-      LoadingPostsCateTwentyTwo.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/22'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyTwo.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyTwo.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyTwo.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyTwo.value = false;
   }
+}
 
 ///////////////.......................TwentyThree.......................///////////////
 
-  RxBool LoadingPostsCateTwentyThree = false.obs;
-  var postsListCateTwentyThree = <Post>[].obs;
+RxBool LoadingPostsCateTwentyThree = false.obs;
+var postsListCateTwentyThree = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentyThree(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyThree.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/23',
+    );
 
-  Future<void> fetchPostsCateTwentyThree(String language) async {
-    try {
-      LoadingPostsCateTwentyThree.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/23'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyThree.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyThree.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyThree.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyThree.value = false;
   }
+}
 
 ///////////////.......................TwentyFour.......................///////////////
 
-  RxBool LoadingPostsCateTwentyFour = false.obs;
-  var postsListCateTwentyFour = <Post>[].obs;
+RxBool LoadingPostsCateTwentyFour = false.obs;
+var postsListCateTwentyFour = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentyFour(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyFour.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/24',
+    );
 
-  Future<void> fetchPostsCateTwentyFour(String language) async {
-    try {
-      LoadingPostsCateTwentyFour.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/24'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyFour.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyFour.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyFour.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyFour.value = false;
   }
+}
 
 ///////////////.......................TwentyFive.......................///////////////
 
-  RxBool LoadingPostsCateTwentyFive = false.obs;
-  var postsListCateTwentyFive = <Post>[].obs;
+RxBool LoadingPostsCateTwentyFive = false.obs;
+var postsListCateTwentyFive = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentyFive(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyFive.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/25',
+    );
 
-  Future<void> fetchPostsCateTwentyFive(String language) async {
-    try {
-      LoadingPostsCateTwentyFive.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/25'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyFive.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyFive.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyFive.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyFive.value = false;
   }
+}
+
 ///////////////.......................TwentySix.......................///////////////
 
-  RxBool LoadingPostsCateTwentySix = false.obs;
-  var postsListCateTwentySix = <Post>[].obs;
+RxBool LoadingPostsCateTwentySix = false.obs;
+var postsListCateTwentySix = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentySix(String language, String country) async {
+  try {
+    LoadingPostsCateTwentySix.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/26',
+    );
 
-  Future<void> fetchPostsCateTwentySix(String language) async {
-    try {
-      LoadingPostsCateTwentySix.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/26'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentySix.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentySix.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
-  }///////////////.......................TwentySeven.......................///////////////
 
-  RxBool LoadingPostsCateTwentySeven = false.obs;
-  var postsListCateTwentySeven = <Post>[].obs;
+    final response = await http.get(uri);
 
-// إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateTwentySeven(String language) async {
-    try {
-      LoadingPostsCateTwentySeven.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/27'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentySeven.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentySeven.value = false;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentySix.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
     }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentySix.value = false;
   }
+}
+
+///////////////.......................TwentySeven.......................///////////////
+
+RxBool LoadingPostsCateTwentySeven = false.obs;
+var postsListCateTwentySeven = <Post>[].obs;
+
+Future<void> fetchPostsCateTwentySeven(String language, String country) async {
+  try {
+    LoadingPostsCateTwentySeven.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/27',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentySeven.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentySeven.value = false;
+  }
+}
+
 ///////////////.......................TwentyEight.......................///////////////
 
-  RxBool LoadingPostsCateTwentyEight = false.obs;
-  var postsListCateTwentyEight = <Post>[].obs;
+RxBool LoadingPostsCateTwentyEight = false.obs;
+var postsListCateTwentyEight = <Post>[].obs;
 
-// إضافة قائمة `RxInt` لكل منشور
+Future<void> fetchPostsCateTwentyEight(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyEight.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/28',
+    );
 
-  Future<void> fetchPostsCateTwentyEight(String language) async {
-    try {
-      LoadingPostsCateTwentyEight.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/28'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyEight.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyEight.value = false;
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
     }
-  }///////////////.......................TwentyNine.......................///////////////
 
-  RxBool LoadingPostsCateTwentyNine = false.obs;
-  var postsListCateTwentyNine = <Post>[].obs;
+    final response = await http.get(uri);
 
-// إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateTwentyNine(String language) async {
-    try {
-      LoadingPostsCateTwentyEight.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/29'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateTwentyNine.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateTwentyNine.value = false;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyEight.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
     }
-  }///////////////.......................Thirty.......................///////////////
-
-  RxBool LoadingPostsCateThirty = false.obs;
-  var postsListCateThirty = <Post>[].obs;
-
-// إضافة قائمة `RxInt` لكل منشور
-
-  Future<void> fetchPostsCateThirty(String language) async {
-    try {
-      LoadingPostsCateThirty.value = true;
-
-      final response = await http.get(Uri.parse(
-          'https://alamoodac.com/modac/public/latest-posts-by-category/$language/30'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        postsListCateThirty.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-
-        // تهيئة قيم `RxInt` لكل منشور
-      } else {
-        throw Exception('Failed to load posts');
-      }
-    } catch (e) {
-    } finally {
-      LoadingPostsCateThirty.value = false;
-    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyEight.value = false;
   }
-  
+}
 
+///////////////.......................TwentyNine.......................///////////////
+
+RxBool LoadingPostsCateTwentyNine = false.obs;
+var postsListCateTwentyNine = <Post>[].obs;
+
+Future<void> fetchPostsCateTwentyNine(String language, String country) async {
+  try {
+    LoadingPostsCateTwentyNine.value = true; // تم تصحيح الخطأ هنا
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/29',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateTwentyNine.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateTwentyNine.value = false;
+  }
+}
+
+///////////////.......................Thirty.......................///////////////
+
+RxBool LoadingPostsCateThirty = false.obs;
+var postsListCateThirty = <Post>[].obs;
+
+Future<void> fetchPostsCateThirty(String language, String country) async {
+  try {
+    LoadingPostsCateThirty.value = true;
+    
+    var uri = Uri.parse(
+      'https://alamoodac.com/modac/public/latest-posts-by-category/$language/30',
+    );
+
+    if (country != null && country.isNotEmpty) {
+      uri = uri.replace(queryParameters: {'country': country});
+    }
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      postsListCateThirty.value = jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load posts');
+    }
+  } catch (e) {
+    // Handle error
+  } finally {
+    LoadingPostsCateThirty.value = false;
+  }
+}
 
   /////////////////////////
   /////////////////////////
@@ -2736,12 +3014,12 @@ Future<void> refreshData() async {
   }
 
   // في HomeController
-  Future<void> fetchPostDetails(int postId) async {
+  Future<void> fetchPostDetails(String postId) async {
     // showDetailsPost.value = true;
     try {
       // جلب البيانات بشكل غير متزامن
       Post? post = await getPostById(
-        postId,
+       int.parse(postId) ,
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
       );
       if (post != null) {
@@ -2871,8 +3149,6 @@ Future<void> refreshData() async {
     }
   }
 
-  var isInitialized = false;
-  String? pendingPostId;
 
   void showSettingsPopup(BuildContext context) {
     // الحصول على المتحكم الخاص بتغيير اللغة

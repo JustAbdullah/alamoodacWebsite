@@ -23,7 +23,6 @@ class CategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-        final double maxHeight = MediaQuery.of(context).size.height *0.65;
 
     final Size size = MediaQuery.of(context).size; // تخزين أبعاد الشاشة محلياً
     return Container(
@@ -36,7 +35,7 @@ class CategoriesPage extends StatelessWidget {
           children: [
             _buildHeaderSection(context),
             SizedBox(height: 7.h),
-            _buildCategoriesListSection(context,maxHeight),
+            _buildCategoriesListSection(context,),
           ],
         ),
       ),
@@ -108,36 +107,33 @@ class CategoriesPage extends StatelessWidget {
   }
 
   // دمج الـ Obx بحيث يكون داخل كتلة واحدة لتفادي التداخل الغير ضروري
-  Widget _buildCategoriesListSection(BuildContext context,  final double maxHeight ) {
+  Widget _buildCategoriesListSection(BuildContext context, ) {
     return Obx(() {
       if (!controller.isShowTheCate.value) return const SizedBox.shrink();
 
-      if (controller.isLoadingCategories.value) return _buildSkeletonLoader(maxHeight);
+      if (controller.isLoadingCategories.value) return _buildSkeletonLoader();
 
-      if (controller.categoriesList.isEmpty) return _buildEmptyState(maxHeight);
+      if (controller.categoriesList.isEmpty) return _buildEmptyState();
 
-      return _buildCategoriesList(context,maxHeight);
+      return _buildCategoriesList(context);
     });
   }
 
-  Widget _buildSkeletonLoader(  final double maxHeight ) {
-    return SizedBox(
-                    height: maxHeight,
-                  
-      child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        itemCount: 9,
-        itemBuilder: (_, index) => ListTile(
-          title: Container(height: 20.h, color: Colors.grey[300]),
-          subtitle: Container(height: 15.h, color: Colors.grey[300]),
-        ),
+  Widget _buildSkeletonLoader( ) {
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: 9,
+      itemBuilder: (_, index) => ListTile(
+        title: Container(height: 20.h, color: Colors.grey[300]),
+        subtitle: Container(height: 15.h, color: Colors.grey[300]),
       ),
     );
   }
 
-  Widget _buildEmptyState(  final double maxHeight ) {
+  Widget _buildEmptyState(    ) {
     return SizedBox(
-                    height: maxHeight,
+                  height: 100.h,
                   
       child:
     Center(
@@ -153,15 +149,18 @@ class CategoriesPage extends StatelessWidget {
      ) );
   }
 
-  Widget _buildCategoriesList(BuildContext context,  final double maxHeight ) {
+  Widget _buildCategoriesList(BuildContext context,  ) {
     final Size size = MediaQuery.of(context)
         .size; // استخدام الحجم المحلي إذا كانت الحاجة ملحة
     return Container(
       color: AppColors.backgroundColor(themeController.isDarkMode.value),
-                        height: maxHeight,
+                       
 
       child: ListView.builder(
-          physics: const BouncingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics()
+          ,
+          shrinkWrap: true,
+
         itemCount: controller.categoriesList.length,
         itemBuilder: (context, index) {
           final Category category = controller.categoriesList[index];
@@ -297,7 +296,7 @@ class CategoriesPage extends StatelessWidget {
     controller.idCategories.value = categoryIdStr;
 
     controller.fetchSubcategories(category.id, languageCode);
-    controller.fetchPostsAll(category.id, languageCode, null, null);
+    controller.fetchPostsAll(category.id, languageCode, null, null, Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
 
     searchcontroller.subCategories.clear();
     searchcontroller.isChosedAndShowTheSub.value = false;

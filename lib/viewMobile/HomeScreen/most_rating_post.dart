@@ -17,16 +17,14 @@ class MostRatingPost extends StatefulWidget {
 }
 
 class _MostRatingPostState extends State<MostRatingPost>
-    with AutomaticKeepAliveClientMixin {
+      {
   final HomeController controller = Get.find();
   final ThemeController themeController = Get.find();
 
-  @override
-  bool get wantKeepAlive => true;
+  
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return _buildMainContainer();
   }
 

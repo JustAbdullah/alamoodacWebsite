@@ -116,29 +116,29 @@ class SettingsPage extends StatelessWidget {
                             Get.to(() => SaveAccount());
                           },
                         ),
-                        _buildSettingItem(
+                      /*  _buildSettingItem(
                           icon: Icons.work, // تغيير الأيقونة
                           title: "الباقات",
                           onTap: () {
                             settingsController.showPack.value = true;
                             Get.to(() => ShowPackages());
                           },
-                        ),
-                        _buildSettingItem(
+                        ),*/
+                     /*   _buildSettingItem(
                           icon: Icons.confirmation_number, // تغيير الأيقونة
                           title: "الاشتراك من خلال الاكواد".tr,
                           onTap: () {
                             settingsController.isShowAddCode.value = true;
                             Get.to(() => ShowAskAddCode());
                           },
-                        ),
-                        /* _buildSettingItem(
+                        ),*/
+                _buildSettingItem(
                           icon: Icons.map,
                           title: "موقع العرض".tr,
                           onTap: () {
                               settingsController.showTheRoute.value = true;
                                Get.to(() => ChoseRoute());}
-                        ),*/
+                        ),
                         _buildDivider(),
                         _buildSectionTitle("المظهر".tr),
                         _buildSettingItem(

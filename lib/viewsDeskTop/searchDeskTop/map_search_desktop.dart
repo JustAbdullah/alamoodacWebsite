@@ -9,6 +9,7 @@ import '../../../controllers/searchController.dart';
 import '../../../core/constant/appcolors.dart';
 import '../../../core/localization/changelanguage.dart';
 import '../../controllers/LoadingController.dart';
+import '../../controllers/home_controller.dart';
 import '../../controllers/settingsController.dart';
 
 
@@ -252,6 +253,8 @@ class _MapSearchDesktopState extends State<MapSearchDesktop> {
                                           .value
                                           .languageCode,
                                   context: context,
+                                  
+                                    country:Get.find<HomeController>().getCountryCode( Get.find<HomeController>().selectedRoute.value),
                                 );
                               } else {
                                 // وإلا، إذا كان الموقع محفوظًا في قاعدة البيانات يتم استخدامه لجلب المنشورات
@@ -268,6 +271,7 @@ class _MapSearchDesktopState extends State<MapSearchDesktop> {
                                           .value
                                           .languageCode,
                                   context: context,
+                                    country:Get.find<HomeController>().getCountryCode( Get.find<HomeController>().selectedRoute.value),
                                 );
                               }
                             }

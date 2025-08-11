@@ -48,7 +48,7 @@ class AddList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     // === Controllers (ثبات كما هو) ===
+    // === Controllers (ثبات كما هو) ===
     final SubscriptionController scriptionController =
         Get.put(SubscriptionController());
     final addpostUsedController = Get.put(AddpostUsedController());
@@ -96,9 +96,8 @@ class AddList extends StatelessWidget {
       26: 'باقة تجارية',
       27: 'باقة تجارية',
       28: 'باقة تجارية',
-          29: 'باقة تجارية',
+      29: 'باقة تجارية',
       30: 'باقة تجارية',
-
       // أضف باقي المعرفات حسب الحاجة
     };
 
@@ -137,7 +136,7 @@ class AddList extends StatelessWidget {
             ..showAdd.value = true;
           Get.to(() => AddRealEstates());
           break;
-           case 30:
+        case 30:
           addpostcontrollerrealestate
             ..idCate = category.id
             ..nameOfCatee.value = name
@@ -300,7 +299,6 @@ class AddList extends StatelessWidget {
                                         final loadingCtrl =
                                             Get.find<LoadingController>();
                                         final user = loadingCtrl.currentUser;
-                                       print("One In InkWell");
 
                                         // 1️⃣ التأكد من تسجيل الدخول
                                         if (user == null) {
@@ -355,33 +353,15 @@ class AddList extends StatelessWidget {
                                                 const Duration(seconds: 3),
                                           );
                                           return;
-                                        } // ➕ 1.1️⃣ شرط الإضافة المجانية: إذا لم يستخدم المستخدم فرصته المجانية بعد
-if (user.free_post_used == 0) {
-    // نعلم أنه استخدم الفرصة
-    // نفتح القسم مباشرة
-   if ((category.id == 9 || category.id == 10) &&
-                                    user.id != 80) {
-                                  Get.snackbar(
-                                    'غير مسموح'.tr,
-                                    'هذا القسم للأدمِن فقط'.tr,
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: Colors.redAccent,
-                                    colorText: Colors.white,
-                                    duration: const Duration(seconds: 3),
-                                  );
-                                  return;
-                                }
+                                        }
 
-                                // 6️⃣ كل الشروط تمام، افتح القسم
-                                _openCategory(category);
-    return;
-  }
-print("Two In InkWell");
-                                        // 2️⃣ حالة daily worker (category 18)
-                                        if (controller.showMessage.value)
-                                          return;
-                                       
-                                       print("Three In InkWell");
+                                        // -----------------------------
+                                        // تم تعطيل فحوصات الاشتراكات مؤقتًا — النشر مجاني
+                                        // تم الاحتفاظ بالكود الأصلي كاملاً في التعليق أسفل هذه الدالة
+                                        // -----------------------------
+
+                                        // 2️⃣ حالة daily worker (category 18) — لها معالجة خاصة
+                                        if (controller.showMessage.value) return;
                                         if (category.id == 18) {
                                           addpostdailyworkercontroller.idCate =
                                               category.id;
@@ -396,145 +376,7 @@ print("Two In InkWell");
                                           return;
                                         }
 
-                                        // 3️⃣ إذا كان الأدمِن (id == 80) يمر بلا قيود ويُفتح أي قسم
-                                        if (user.id == 80) {
-                                          _openCategory(category);
-                                          return;
-                                        }
-                                        // 4️⃣ لمستخدم عادي: جلب الاشتراكات وتصفية النشطة
-                                        final subs =
-                                            scriptionController.subscriptions;
-                                        if (subs.isEmpty) {
-                                          Get.snackbar(
-                                            'ليس لديك باقة نشطة'.tr,
-                                            'يجب الاشتراك لإنشاء منشور'.tr,
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: Colors.red,
-                                            colorText: Colors.white,
-                                            mainButton: TextButton(
-                                              style: TextButton.styleFrom(
-                                                backgroundColor:
-                                                    AppColors.TheMain,
-                                                foregroundColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 8),
-                                              ),
-                                              onPressed: () {
-                                                Get.find<Settingscontroller>()
-                                                    .showPack
-                                                    .value = true;
-                                                Get.to(() => ShowPackages());
-                                              },
-                                              child: Text('اشتري باقة'.tr,
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                            ),
-                                            duration:
-                                                const Duration(seconds: 3),
-                                          );
-                                          return;
-                                        }
-
-                                        final now = DateTime.now();
-                                        final activeSubs = subs
-                                            .where((sub) =>
-                                                sub.endDate.isAfter(now) &&
-                                                sub.usedAds < sub.adsLimit)
-                                            .toList();
-
-                                        if (activeSubs.isEmpty) {
-                                          Get.snackbar(
-                                            'لا يوجد باقات سارية'.tr,
-                                            'انتهت باقاتك أو استنفدت عدد المنشورات'
-                                                .tr,
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: Colors.orange,
-                                            colorText: Colors.white,
-                                            mainButton: TextButton(
-                                              style: TextButton.styleFrom(
-                                                backgroundColor:
-                                                    AppColors.TheMain,
-                                                foregroundColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 8),
-                                              ),
-                                              onPressed: () {
-                                                Get.find<Settingscontroller>()
-                                                    .showPack
-                                                    .value = true;
-                                                Get.to(() => ShowPackages());
-                                              },
-                                              child: Text('تجديد الباقة'.tr,
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                            ),
-                                            duration:
-                                                const Duration(seconds: 3),
-                                          );
-                                          return;
-                                        }
-
-                                        final hasAccess = activeSubs.any(
-                                            (sub) =>
-                                                sub.selectedTheId == null ||
-                                                sub.selectedTheId == 99 ||
-                                                sub.selectedTheId ==
-                                                    category.id);
-
-                                        if (!hasAccess) {
-                                          Get.snackbar(
-                                            'غير مسموح'.tr,
-                                            'باقتك لا تسمح بالنشر في هذا القسم'
-                                                .tr,
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: Colors.redAccent,
-                                            colorText: Colors.white,
-                                            mainButton: TextButton(
-                                              style: TextButton.styleFrom(
-                                                backgroundColor:
-                                                    AppColors.oragne,
-                                                foregroundColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 8),
-                                              ),
-                                              onPressed: () {
-                                                Get.find<Settingscontroller>()
-                                                    .showPack
-                                                    .value = true;
-                                                Get.to(() => ShowPackages());
-                                              },
-                                              child: Text('الباقات'.tr,
-                                                  style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                            ),
-                                            duration:
-                                                const Duration(seconds: 3),
-                                          );
-                                          return;
-                                        }
-
-                                        // 5️⃣ منع المستخدم العادي من الأقسام 9 و10 (للأدمِن فقط)
+                                        // 3️⃣ منع المستخدم العادي من الأقسام 9 و10 (للأدمِن فقط)
                                         if ((category.id == 9 ||
                                                 category.id == 10) &&
                                             user.id != 80) {
@@ -550,8 +392,191 @@ print("Two In InkWell");
                                           return;
                                         }
 
+                                        // bypass كامل: افتح القسم مباشرة (نشر مجاني مؤقتاً)
+                                        _openCategory(category);
+
+                                        // ===========================
+                                        // المقطع الأصلي الخاص بالاشتراكات تم الاحتفاظ به كاملاً أدناه
+                                        // (معلق) حتى تتمكن من إعادته وقتما تريد.
+                                        // ===========================
+
+                                        /*
+                                        // ➕ 1.1️⃣ شرط الإضافة المجانية: إذا لم يستخدم المستخدم فرصته المجانية بعد
+                                        if (user.free_post_used == 0) {
+                                          // نعلم أنه استخدم الفرصة
+                                          // نفتح القسم مباشرة
+                                          if ((category.id == 9 || category.id == 10) &&
+                                              user.id != 80) {
+                                            Get.snackbar(
+                                              'غير مسموح'.tr,
+                                              'هذا القسم للأدمِن فقط'.tr,
+                                              snackPosition: SnackPosition.BOTTOM,
+                                              backgroundColor: Colors.redAccent,
+                                              colorText: Colors.white,
+                                              duration: const Duration(seconds: 3),
+                                            );
+                                            return;
+                                          }
+
+                                          // 6️⃣ كل الشروط تمام، افتح القسم
+                                          _openCategory(category);
+                                          return;
+                                        }
+
+                                        // 2️⃣ حالة daily worker (category 18)
+                                        if (controller.showMessage.value) return;
+                                        if (category.id == 18) {
+                                          addpostdailyworkercontroller.idCate =
+                                              category.id;
+                                          addpostdailyworkercontroller.nameOfCatee
+                                              .value = category.translations.first.name;
+                                          addpostdailyworkercontroller
+                                              .fetchSubcategories(category.id);
+                                          addpostdailyworkercontroller.showAdd.value =
+                                              true;
+                                          return;
+                                        }
+
+                                        // 3️⃣ إذا كان الأدمِن (id == 80) يمر بلا قيود ويُفتح أي قسم
+                                        if (user.id == 80) {
+                                          _openCategory(category);
+                                          return;
+                                        }
+
+                                        // 4️⃣ لمستخدم عادي: جلب الاشتراكات وتصفية النشطة
+                                        final subs = scriptionController.subscriptions;
+                                        if (subs.isEmpty) {
+                                          Get.snackbar(
+                                            'ليس لديك باقة نشطة'.tr,
+                                            'يجب الاشتراك لإنشاء منشور'.tr,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: Colors.red,
+                                            colorText: Colors.white,
+                                            mainButton: TextButton(
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: AppColors.TheMain,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(8)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 16, vertical: 8),
+                                              ),
+                                              onPressed: () {
+                                                Get.find<Settingscontroller>()
+                                                    .showPack
+                                                    .value = true;
+                                                Get.to(() => ShowPackages());
+                                              },
+                                              child: Text('اشتري باقة'.tr,
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            duration: const Duration(seconds: 3),
+                                          );
+                                          return;
+                                        }
+
+                                        final now = DateTime.now();
+                                        final activeSubs = subs
+                                            .where((sub) =>
+                                                sub.endDate.isAfter(now) &&
+                                                sub.usedAds < sub.adsLimit)
+                                            .toList();
+
+                                        if (activeSubs.isEmpty) {
+                                          Get.snackbar(
+                                            'لا يوجد باقات سارية'.tr,
+                                            'انتهت باقاتك أو استنفدت عدد المنشورات'.tr,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: Colors.orange,
+                                            colorText: Colors.white,
+                                            mainButton: TextButton(
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: AppColors.TheMain,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(8)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 16, vertical: 8),
+                                              ),
+                                              onPressed: () {
+                                                Get.find<Settingscontroller>()
+                                                    .showPack
+                                                    .value = true;
+                                                Get.to(() => ShowPackages());
+                                              },
+                                              child: Text('تجديد الباقة'.tr,
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            duration: const Duration(seconds: 3),
+                                          );
+                                          return;
+                                        }
+
+                                        final hasAccess = activeSubs.any((sub) =>
+                                            sub.selectedTheId == null ||
+                                            sub.selectedTheId == 99 ||
+                                            sub.selectedTheId == category.id);
+
+                                        if (!hasAccess) {
+                                          Get.snackbar(
+                                            'غير مسموح'.tr,
+                                            'باقتك لا تسمح بالنشر في هذا القسم'.tr,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: Colors.redAccent,
+                                            colorText: Colors.white,
+                                            mainButton: TextButton(
+                                              style: TextButton.styleFrom(
+                                                backgroundColor: AppColors.oragne,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(8)),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 16, vertical: 8),
+                                              ),
+                                              onPressed: () {
+                                                Get.find<Settingscontroller>()
+                                                    .showPack
+                                                    .value = true;
+                                                Get.to(() => ShowPackages());
+                                              },
+                                              child: Text('الباقات'.tr,
+                                                  style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            duration: const Duration(seconds: 3),
+                                          );
+                                          return;
+                                        }
+
+                                        // 5️⃣ منع المستخدم العادي من الأقسام 9 و10 (للأدمِن فقط)
+                                        if ((category.id == 9 || category.id == 10) &&
+                                            user.id != 80) {
+                                          Get.snackbar(
+                                            'غير مسموح'.tr,
+                                            'هذا القسم للأدمِن فقط'.tr,
+                                            snackPosition: SnackPosition.BOTTOM,
+                                            backgroundColor: Colors.redAccent,
+                                            colorText: Colors.white,
+                                            duration: const Duration(seconds: 3),
+                                          );
+                                          return;
+                                        }
+
                                         // 6️⃣ كل الشروط تمام، افتح القسم
                                         _openCategory(category);
+                                        */
+
                                       },
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -691,12 +716,12 @@ print("Two In InkWell");
 
                                               // توضيح السعر كباقة منفردة
                                               if (price.isNotEmpty)
-                                                   Visibility(
-                                          visible: scriptionController.isHaveSubscriptions.value,
-                                         
+                                                // مؤقتاً نخفي عرض الباقة على الموبايل
+                                                Visibility(
+                                                  visible:
+                                                      false, // مخفي مؤقتًا
                                                   child: Column(
                                                     children: [
-                                                       
                                                       Container(
                                                         padding:
                                                             EdgeInsets.symmetric(
@@ -758,6 +783,40 @@ print("Two In InkWell");
                                                     ],
                                                   ),
                                                 ),
+
+                                              // الكود الأصلي لعرض السعر محفوظ كتعليق:
+                                              /*
+                                              if (price.isNotEmpty)
+                                                Visibility(
+                                                  visible: scriptionController.isHaveSubscriptions.value,
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                                        decoration: BoxDecoration(
+                                                          color: price == 'مجاني'.tr ? Colors.green.withOpacity(0.2)
+                                                              : price == 'غير متوفر'.tr ? Colors.red.withOpacity(0.2)
+                                                              : price == 'باقة اقتصادية'.tr ? Colors.orange.withOpacity(0.2)
+                                                              : Colors.blue.withOpacity(0.2),
+                                                          borderRadius: BorderRadius.circular(8.r),
+                                                        ),
+                                                        child: Text(
+                                                          price,
+                                                          style: TextStyle(
+                                                            fontFamily: AppTextStyles.DinarOne,
+                                                            fontSize: 14.sp,
+                                                            fontWeight: FontWeight.bold,
+                                                            color: price == 'مجاني'.tr ? Colors.green
+                                                                : price == 'غير متوفر'.tr ? Colors.red
+                                                                : price == 'باقة اقتصادية'.tr ? Colors.orange
+                                                                : Colors.blue,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              */
                                             ],
                                           ),
                                         ),

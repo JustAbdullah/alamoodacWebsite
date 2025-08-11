@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../controllers/ThemeController.dart';
 import '../../controllers/home_controller.dart';
 import '../../controllers/settingsController.dart';
 import '../../core/constant/appcolors.dart';
@@ -15,9 +16,11 @@ class TopSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final HomeController homeController = Get.find();
     final Settingscontroller settingsController = Get.find();
+    final ThemeController themeController = Get.find();
 
     return Container(
       width: MediaQuery.of(context).size.width,
+      color: AppColors.backgroundColor(themeController.isDarkMode.value),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Column(
         children: [
@@ -34,7 +37,7 @@ class TopSection extends StatelessWidget {
           ),
           
           // قسم اختيار الدولة أسفل الشعار
-      /*    Padding(
+         Padding(
             padding: EdgeInsets.only(top: 8.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -83,7 +86,7 @@ class TopSection extends StatelessWidget {
                 ),
               ],
             ),
-          ),*/
+          ),
           
           // خط فاصل
           Container(

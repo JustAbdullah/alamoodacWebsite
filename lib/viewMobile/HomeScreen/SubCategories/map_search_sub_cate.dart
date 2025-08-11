@@ -258,6 +258,7 @@ class _MapSearchInSubCateState extends State<MapSearchInSubCate> {
                                     categoryId:
                                         homeController.idCategories.value,
                                     context: context,
+                                    country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
                                   );
                                 } else {
                                   // وإلا، إذا كان الموقع محفوظًا في قاعدة البيانات يتم استخدامه لجلب المنشورات
@@ -277,7 +278,8 @@ class _MapSearchInSubCateState extends State<MapSearchInSubCate> {
                                               .languageCode,
                                       categoryId:
                                           homeController.idCategories.value,
-                                      context: context);
+                                      context: context,
+                                      country:  Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),);
                                 }
                               }
                             },

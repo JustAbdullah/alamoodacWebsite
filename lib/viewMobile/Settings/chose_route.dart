@@ -131,7 +131,9 @@ class _ChoseRouteState extends State<ChoseRoute> {
                                       onTap: () {
                                         homeController.selectedRoute.value = "العراق";
                                         homeController.saveSelectedRoute( homeController.selectedRoute.value);
-                                     homeController.loadSelectedRoute();
+                                    homeController.loadSelectedRoute();
+                                       homeController.isGetDataFirstTime.value =false;
+                                    homeController. initializeData();
                                       },
                                       themeController: themeController,
                                     ),
@@ -142,7 +144,9 @@ class _ChoseRouteState extends State<ChoseRoute> {
                                       onTap: () {
                                         homeController.selectedRoute.value = "تركيا";
                                            homeController.saveSelectedRoute( homeController.selectedRoute.value);
-                                     homeController.loadSelectedRoute();
+                                    homeController.loadSelectedRoute();
+                                       homeController.isGetDataFirstTime.value =false;
+                                    homeController. initializeData();
                                       },
                                       themeController: themeController,
                                     ),

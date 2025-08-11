@@ -89,7 +89,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       useSideAlignment: true,
                     ),
                   ),
-                  _buildSettingItem(
+               /*   _buildSettingItem(
                     icon: Icons.work,
                     title: "الباقات",
                     onTap: () => showSidePopup(
@@ -98,8 +98,8 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       widthPercent: 0.75,
                       useSideAlignment: false,
                     ),
-                  ),
-                  _buildSettingItem(
+                  ),*/
+                /*  _buildSettingItem(
                     icon: Icons.confirmation_number,
                     title: "الاشتراك من خلال الاكواد".tr,
                     onTap: () => showSidePopup(
@@ -108,8 +108,8 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       widthPercent: 0.30,
                       useSideAlignment: true,
                     ),
-                  ),
-                 /*  _buildSettingItem(
+                  ),*/
+                   _buildSettingItem(
                           icon: Icons.map,
                           title: "موقع العرض".tr,
                            onTap: () => showSidePopup(
@@ -119,7 +119,7 @@ class SettingsContentDeskTopPage extends StatelessWidget {
                       useSideAlignment: true,
                     ),
                          
-                        ),*/
+                        ),
                   _buildDivider(),
                   _buildSectionTitle("المظهر".tr),
                   _buildSettingItem(

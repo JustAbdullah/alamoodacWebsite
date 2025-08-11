@@ -9,9 +9,12 @@ import '../../controllers/settingsController.dart';
 import '../../core/constant/appcolors.dart';
 import '../../customWidgets/custom_flag_desktop.dart';
 import '../../customWidgets/custom_logo.dart';
+import '../AddPageDeskTop/add_list_desktop.dart';
 import '../AuthDeskTop/login_screen_desktop.dart';
 import '../SettingsDeskTop/chose_route_desktop.dart';
 import '../SidePopup.dart';
+
+// تم إضافة هذا الاستيراد ليتم الانتقال إلى شاشة إضافة الأقسام عند الضغط على الزر
 
 class TopSectionDeskTop extends StatefulWidget {
   const TopSectionDeskTop({super.key});
@@ -53,7 +56,7 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
                   _buildSettingsButton(homeController, context),
                   const SizedBox(width: 30),
                   // إضافة قسم اختيار الدولة هنا
-             //     _buildCountrySelector(homeController),
+                  _buildCountrySelector(homeController),
                   const SizedBox(width: 30),
                   _buildUserSection(
                       loadingController, themeController, context),
@@ -66,6 +69,9 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // ===== زر إضافة إعلان مجاناً =====
+                  _buildAddFreeButton(),
+                  const SizedBox(width: 16),
                   const CustomFlagDeskTop(),
                   const SizedBox(width: 25),
                   _buildThemeToggle(themeController),
@@ -80,19 +86,70 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
     });
   }
 
+  // دالة زر إضافة إعلان مجاناً
+  Widget _buildAddFreeButton() {
+    final loadingController = Get.find<LoadingController>();
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: Tooltip(
+        message: 'إضافة إعلان مجاناً'.tr,
+        child: TextButton.icon(
+          style: TextButton.styleFrom(
+            backgroundColor: AppColors.TheMain,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          ),
+          onPressed: () {
+            final user = loadingController.currentUser;
+            if (user == null) {
+              // إذا لم يُسجل الدخول، نطلب تسجيل الدخول
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (_) => const LoginPopup(),
+              );
+              return;
+            }
+
+            // المستخدم مسجل: ننتقل إلى صفحة اختيار القسم (AddListDeskTop)
+            // صفحة AddListDeskTop تحتوي على منطق النشر المجاني (bypass) كما طُلِب.
+            Get.to(() => AddListDeskTop());
+          },
+          icon: Icon(
+            Icons.post_add,
+            size: 18.sp,
+            color: Colors.white,
+          ),
+          label: Text(
+            'أضف إعلانًا مجانًا'.tr,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   // دالة لبناء قسم اختيار الدولة
-  /*Widget _buildCountrySelector(HomeController homeController) {
+  Widget _buildCountrySelector(HomeController homeController) {
     final Settingscontroller settingsController = Get.find();
-    
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-         showSidePopup(
-                      context: context,
-                      child: const ChoseRouteDesktop(),
-                      widthPercent: 0.30,
-                      useSideAlignment: true,);
+          showSidePopup(
+            context: context,
+            child: const ChoseRouteDesktop(),
+            widthPercent: 0.30,
+            useSideAlignment: true,
+          );
           settingsController.showTheRoute.value = true;
         },
         child: Container(
@@ -131,7 +188,7 @@ class _TopSectionDeskTopState extends State<TopSectionDeskTop> {
         ),
       ),
     );
-  }*/
+  }
 
   Widget _buildHoverLogo() {
     return MouseRegion(

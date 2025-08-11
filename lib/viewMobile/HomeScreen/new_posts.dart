@@ -17,16 +17,13 @@ class NewPosts extends StatefulWidget {
 }
 
 class _NewPostsState extends State<NewPosts>
-    with AutomaticKeepAliveClientMixin {
+      {
   final HomeController controller = Get.find();
   final ThemeController themeController = Get.find();
 
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     // تخزين عرض الشاشة محلياً لتقليل الاستدعاءات المتكررة
     final double screenWidth = MediaQuery.of(context).size.width;
     return _buildMainContainer(screenWidth);

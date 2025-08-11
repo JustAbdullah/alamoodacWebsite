@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen>
                 .value
                 .languageCode,
             null,
-            null,
+            null, Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
           );
 
           searchcontroller.subCategories.clear();
@@ -287,6 +287,7 @@ class _HomeScreenState extends State<HomeScreen>
         ];
 
         return Scaffold(
+          backgroundColor: AppColors.backgroundColor(themeController.isDarkMode.value),
           body: SafeArea(
             child: Column(
               children: [
@@ -295,14 +296,17 @@ class _HomeScreenState extends State<HomeScreen>
                   child: const TopSection(),
                 ),
                 SizedBox(height: 15.h),
-                CategoriesPage(),
-                SizedBox(height: 5.h),
+             
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                         SizedBox(height: 5.h),
+                      CategoriesPage(),
+                    SizedBox(height: 10.h),
+                SizedBox(height: 5.h),
                         const AdSection(),
                         SizedBox(height: 5.h),
                         const PromotedAdPage(),

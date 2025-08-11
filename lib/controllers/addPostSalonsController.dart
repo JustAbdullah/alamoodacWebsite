@@ -369,6 +369,7 @@ class Addpostsalonscontroller extends GetxController {
       'latitude': lat,
       'longitude': long,
       'translations': translatedTitles,
+       'country':Get.find<HomeController>().getCountryCode( Get.find<HomeController>().selectedRoute.value),
       'details': translatedDetails.map((detail) {
         // التحويل لحقل السعر فقط
         if (detail['detail_name'] == 'السعر') {

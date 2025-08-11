@@ -1016,4 +1016,6 @@ const Map<String, String> trTR = {
     "مطاعم وكوفيهات": "Restoranlar ve Kafeler",
     "الاعلانات الرسمية": "Resmi İlanlar",
     "لا توجد إعلانات ممولة حالياً": "Şu anda sponsorlu ilan yok",
+    'إضافة إعلان مجاناً': 'Ücretsiz İlan Ekle', // Turkish
+
 };

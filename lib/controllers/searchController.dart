@@ -117,9 +117,8 @@ Future<void> refreshData() async {
 
 /////////////////////////////...........Searching.............................///////////
 
-var searchPostsList = <Post>[].obs;
-RxBool loadingSearchPosts = false.obs;
-
+  var searchPostsList = <Post>[].obs;
+  RxBool loadingSearchPosts = false.obs;
 Future<void> fetchSearchPosts({
   required String language,
   var categoryId,
@@ -127,54 +126,42 @@ Future<void> fetchSearchPosts({
   var subcategoryLevel2Id,
   var searchTerm,
   var cityId,
+   String? country = "TR",
 }) async {
   try {
     loadingSearchPosts.value = true;
-    searchPostsList.clear(); // مسح النتائج السابقة قبل البدء
 
-    // بناء الرابط الديناميكي بشكل آمن وفعال
-    final params = [
-      language,
-      _sanitizeParam(categoryId),
-      _sanitizeParam(subcategoryId),
-      _sanitizeParam(subcategoryLevel2Id),
-      _sanitizeParam(searchTerm, isString: true),
-      _sanitizeParam(cityId),
-    ];
+    String url = 'https://alamoodac.com/modac/public/search-posts/$language';
+    url += '/${(categoryId != null && categoryId > 0) ? categoryId : 'NULL'}';
+    url += '/${(subcategoryId != null && subcategoryId > 0) ? subcategoryId : 'NULL'}';
+    url += '/${(subcategoryLevel2Id != null && subcategoryLevel2Id > 0) ? subcategoryLevel2Id : 'NULL'}';
+    url += '/${(searchTerm != null && searchTerm.isNotEmpty) ? searchTerm : 'NULL'}';
+    url += '/${(cityId != null && cityId > 0) ? cityId : 'NULL'}';
+    url += '/${country!.isNotEmpty ? country : 'NULL'}';
 
-    final url = 'https://alamoodac.com/modac/public/search-posts/${params.join('/')}';
-    print("Fetching posts from URL: $url");
+    print("🔍 [بحث]: يتم تحميل المنشورات من الرابط:\n$url");
+print('📡 رابط البحث: $url');
 
-    // إضافة مهلة للطلب
-    final response = await http.get(Uri.parse(url))
-        .timeout(const Duration(seconds: 15), onTimeout: () {
-      throw TimeoutException('Search request timed out');
-    });
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body) as List;
+      final Map<String, dynamic> body = json.decode(response.body);
+      final List<dynamic> jsonData = body['data'] as List<dynamic>;
       searchPostsList.value = jsonData.map((post) => Post.fromJson(post)).toList();
     } else {
-      throw Exception('Failed to load search posts: ${response.statusCode}');
+      print("❌ [بحث] فشل تحميل المنشورات. الكود: ${response.statusCode}");
+      print("📦 [الرد] محتوى الرد:\n${response.body}");
+      throw Exception("فشل في تحميل المنشورات. StatusCode: ${response.statusCode}");
     }
-  } on TimeoutException catch (_) {
-    Get.snackbar('Timeout'.tr, 'Search took too long'.tr);
-  } catch (e) {
-    print('Search Error: $e');
+  } catch (e, stackTrace) {
+    print("🔥 [خطأ] أثناء تحميل نتائج البحث: $e");
+    print("📍 StackTrace:\n$stackTrace");
   } finally {
     loadingSearchPosts.value = false;
   }
-}
 
-// دالة مساعدة لتنظيم المعاملات
-String _sanitizeParam(dynamic value, {bool isString = false}) {
-  if (value == null) return 'NULL';
+
   
-  if (isString) {
-    return (value is String && value.isNotEmpty) ? Uri.encodeComponent(value) : 'NULL';
-  } else {
-    return (value is num && value > 0) ? value.toString() : 'NULL';
-  }
 }
 
 // دالة جديدة لإدارة المهام المتزامنة
@@ -346,6 +333,8 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
       Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
       null,
       null,
+       Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
+
     );
 
     selectedTimeRange.value = "all_time";
@@ -441,7 +430,7 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
               .currentLocale
               .value
               .languageCode,
-          context: context);
+          context: context, country:Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value));
     }
   }
 
@@ -453,6 +442,7 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
     double radius = 10.0,
     String? categoryId, // معرف القسم الرئيسي اختياري
     required BuildContext context,
+    required String country,
   }) async {
     try {
       showDialog(
@@ -476,6 +466,9 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
       if (categoryId != null && categoryId.isNotEmpty) {
         url += '&category_id=$categoryId';
       }
+       if (country != null && country.isNotEmpty) {
+     url += '/$country';
+    }
 
       print("Fetching nearby posts from URL: $url");
 
@@ -491,8 +484,8 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
 
       if (response.statusCode == 200) {
         // معالجة البيانات المستلمة وتحويلها إلى قائمة من المنشورات
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;        searchPostsList.value =
             jsonData.map((post) => Post.fromJson(post)).toList();
 
         Get.snackbar(
@@ -521,7 +514,7 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
           ),
         );
         await Future.delayed(Duration(seconds: 3));
-        Get.back();
+        showMap.value = false;
       } else {
         Get.snackbar(
           duration: Duration(seconds: 3),
@@ -884,6 +877,9 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
     filters['language'] =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
 
+        filters['country'] = Get.find<HomeController>()
+    .getCountryCode(Get.find<HomeController>().selectedRoute.value);
+
     try {
       final response = await http.post(
         Uri.parse('https://alamoodac.com/modac/public/filter-posts'),
@@ -945,6 +941,7 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
                   .languageCode,
               null,
               null,
+               Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
             );
           }
         } else {
@@ -1078,6 +1075,9 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
     filters['language'] =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
 
+        filters['country'] = Get.find<HomeController>()
+    .getCountryCode(Get.find<HomeController>().selectedRoute.value);
+
     try {
       final response = await http.post(
         Uri.parse('https://alamoodac.com/modac/public/filter-posts'),
@@ -1137,7 +1137,7 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
                   .value
                   .languageCode,
               null,
-              null,
+              null, Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
             );
           }
         } else {
@@ -1248,6 +1248,10 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
     filters['language'] =
         Get.find<ChangeLanguageController>().currentLocale.value.languageCode;
 
+
+        filters['country'] = Get.find<HomeController>()
+    .getCountryCode(Get.find<HomeController>().selectedRoute.value);
+
     try {
       final response = await http.post(
         Uri.parse('https://alamoodac.com/modac/public/filter-posts'),
@@ -1308,6 +1312,7 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
                   .languageCode,
               null,
               null,
+               Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
             );
           }
         } else {
@@ -1340,273 +1345,321 @@ Future<void> _runConcurrent(List<Future<void> Function()> tasks, {int concurrenc
     }
   }
 
-///////////////........فلترة بقية الاقسام....................///////
-
   ///////.........العرض حسب.............................................................///////////////
-  Future<void> fetchLatestPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
+ Future<void> fetchLatestPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {}; // ✅ تهيئة فارغة بدل null
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/f/latest/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load latest posts');
-      }
-    } catch (e) {
-      print("Error loading latest posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
     }
-  }
-
-  Future<void> fetchOldestPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/oldest/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load oldest posts');
-      }
-    } catch (e) {
-      print("Error loading oldest posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (country.isNotEmpty) {
+      queryParams['country'] = country; // ✅ إضافة معامل الدولة
     }
-  }
 
-  Future<void> fetchCheapestPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/f/latest/$language',
+      queryParameters: queryParams,
+    );
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
+    final response = await http.get(uri);
 
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/cheapest/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load cheapest posts');
-      }
-    } catch (e) {
-      print("Error loading cheapest posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (response.statusCode == 200) {
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load latest posts');
     }
+  } catch (e) {
+    print("Error loading latest posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
   }
+}
 
-  Future<void> fetchMostExpensivePosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
+Future<void> fetchOldestPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/most-expensive/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load most expensive posts');
-      }
-    } catch (e) {
-      print("Error loading most expensive posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
     }
-  }
-
-  Future<void> fetchHighestRatedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/highest-rated/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load highest rated posts');
-      }
-    } catch (e) {
-      print("Error loading highest rated posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
     }
-  }
 
-  Future<void> fetchLowestRatedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/oldest/$language',
+      queryParameters: queryParams,
+    );
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
+    final response = await http.get(uri);
 
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/lowest-rated/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load lowest rated posts');
-      }
-    } catch (e) {
-      print("Error loading lowest rated posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (response.statusCode == 200) {
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load oldest posts');
     }
+  } catch (e) {
+    print("Error loading oldest posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
   }
+}
 
-  Future<void> fetchMostViewedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
+Future<void> fetchCheapestPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
 
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/most-viewed/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load most viewed posts');
-      }
-    } catch (e) {
-      print("Error loading most viewed posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
     }
-  }
-
-  Future<void> fetchLeastViewedPosts(
-      {required String language, String? categoryId}) async {
-    try {
-      loadingSearchPosts.value = true;
-
-      Map<String, String>? queryParams;
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryParams = {'category_id': categoryId};
-      }
-
-      Uri uri = Uri(
-        scheme: 'https',
-        host: 'alamoodac.com',
-        path: '/modac/public/least-viewed/$language',
-        queryParameters: queryParams,
-      );
-
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> jsonData = json.decode(response.body);
-        searchPostsList.value =
-            jsonData.map((post) => Post.fromJson(post)).toList();
-      } else {
-        throw Exception('Failed to load least viewed posts');
-      }
-    } catch (e) {
-      print("Error loading least viewed posts: $e");
-    } finally {
-      loadingSearchPosts.value = false;
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
     }
-  }
 
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/cheapest/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load cheapest posts');
+    }
+  } catch (e) {
+    print("Error loading cheapest posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
+  }
+}
+
+Future<void> fetchMostExpensivePosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/most-expensive/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load most expensive posts');
+    }
+  } catch (e) {
+    print("Error loading most expensive posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
+  }
+}
+
+Future<void> fetchHighestRatedPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/highest-rated/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load highest rated posts');
+    }
+  } catch (e) {
+    print("Error loading highest rated posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
+  }
+}
+
+Future<void> fetchLowestRatedPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/lowest-rated/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load lowest rated posts');
+    }
+  } catch (e) {
+    print("Error loading lowest rated posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
+  }
+}
+
+Future<void> fetchMostViewedPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/most-viewed/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+   final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load most viewed posts');
+    }
+  } catch (e) {
+    print("Error loading most viewed posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
+  }
+}
+
+Future<void> fetchLeastViewedPosts({
+  required String language,
+  String? categoryId,
+  required String country, // ✅ إضافة معامل الدولة
+}) async {
+  try {
+    loadingSearchPosts.value = true;
+    Map<String, String> queryParams = {};
+
+    if (categoryId != null && categoryId.isNotEmpty) {
+      queryParams['category_id'] = categoryId;
+    }
+    if (country.isNotEmpty) {
+      queryParams['country'] = country;
+    }
+
+    Uri uri = Uri(
+      scheme: 'https',
+      host: 'alamoodac.com',
+      path: '/modac/public/least-viewed/$language',
+      queryParameters: queryParams,
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+   final Map<String, dynamic> body = json.decode(response.body);
+final List<dynamic> jsonData = body['data'] as List<dynamic>;
+      searchPostsList.value =
+          jsonData.map((post) => Post.fromJson(post)).toList();
+    } else {
+      throw Exception('Failed to load least viewed posts');
+    }
+  } catch (e) {
+    print("Error loading least viewed posts: $e");
+  } finally {
+    loadingSearchPosts.value = false;
+  }
+}
+  
 ///////////////////////////////////////////////
 
 ////////////////////////////////////////////////

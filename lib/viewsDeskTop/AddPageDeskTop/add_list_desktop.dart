@@ -1,5 +1,4 @@
 import 'package:alamoadac_website/viewMobile/AddPostsPage/AddAllPost/add_post.dart';
-import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddAllPostDesktop/add_post_desktop.dart';
 import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddAuctionsPageDesktop/add_auctions_desktop.dart';
 import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddEducationalDesktop/add_educational_desktop.dart';
 import 'package:alamoadac_website/viewsDeskTop/AddPageDeskTop/AddProfessionsDesktop/add_professions_desktop.dart';
@@ -38,6 +37,7 @@ import '../SettingsDeskTop/show_packages_desktop.dart';
 import '../SidePopup.dart';
 import '../homeDeskTop/top_section_desktop.dart';
 import '../show_message_info_desktop.dart';
+import 'AddAllPostDesktop/add_post_desktop.dart';
 import 'AddCarDesktop/add_car_desktop.dart';
 import 'AddDailyWorkerDesktop/add_daily_worker_desktop.dart';
 import 'AddUsedFurnitureDesktop/add_used_desktop.dart';
@@ -77,13 +77,13 @@ class AddListDeskTop extends StatelessWidget {
     Addpostrestaurantcontroller addpostrestaurantcontroller =
         Get.put(Addpostrestaurantcontroller());
 
-////////////////////..............15...............دليل الشركات .....///////////////////
+    ////////////////////..............15...............دليل الشركات .....///////////////////
     Addpostcontrollercompany addpostcontrollercompany =
         Get.put(Addpostcontrollercompany());
     ////////////////////..............17............... التعليمية.....///////////////////
     Addpostcontrollereducational addpostcontrollereducational =
         Get.put(Addpostcontrollereducational());
-//////.............................23 صالونات...........//////////
+    //////.............................23 صالونات...........//////////
     Addpostsalonscontroller addpostsalonscontroller =
         Get.put(Addpostsalonscontroller());
 
@@ -160,8 +160,8 @@ class AddListDeskTop extends StatelessWidget {
             ..showAdd.value = true;
           Get.to(() => AddRealEstatesDesktop());
 
-          break; 
-          case 30:
+          break;
+        case 30:
           addpostcontrollerrealestate
             ..idCate = category.id
             ..nameOfCatee.value = name
@@ -382,6 +382,12 @@ class AddListDeskTop extends StatelessWidget {
                                 return;
                               }
 
+                              // -----------------------------
+                              // هنا نقوم بتجاوز (تعطيل) فحوصات الاشتراكات مؤقتًا
+                              // الطريقة: نحتفظ بكل الكود الأصلي كاملاً كتعليق
+                              // ثم نضع منطق مبسّط يسمح بفتح القسم مباشرة
+                              // -----------------------------
+
                               // 2️⃣ حالة daily worker (category 18)
                               if (homeController.showMessage.value) return;
                               if (category.id == 18) {
@@ -397,6 +403,29 @@ class AddListDeskTop extends StatelessWidget {
                                 return;
                               }
 
+                              // 3️⃣ منع المستخدم العادي من الأقسام 9 و10 (للأدمِن فقط)
+                              if ((category.id == 9 || category.id == 10) &&
+                                  user.id != 80) {
+                                Get.snackbar(
+                                  'غير مسموح'.tr,
+                                  'هذا القسم للأدمِن فقط'.tr,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  backgroundColor: Colors.redAccent,
+                                  colorText: Colors.white,
+                                  duration: const Duration(seconds: 3),
+                                );
+                                return;
+                              }
+
+                              // bypass كامل: افتح القسم مباشرة (نشر مجاني مؤقتاً)
+                              _openCategory(category);
+
+                              // ===========================
+                              // المقطع الأصلي الخاص بالاشتراكات تم الاحتفاظ به كاملاً أدناه
+                              // (معلق) حتى تتمكن من إعادته وقتما تريد.
+                              // ===========================
+
+                              /*
                               // 3️⃣ إذا كان الأدمِن (id == 80) يمر بلا قيود ويُفتح أي قسم
                               if (user.id == 80) {
                                 _openCategory(category);
@@ -532,6 +561,7 @@ class AddListDeskTop extends StatelessWidget {
 
                               // 6️⃣ كل الشروط تمام، افتح القسم
                               _openCategory(category);
+                              */
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -629,11 +659,11 @@ class AddListDeskTop extends StatelessWidget {
 
                                   // عرض السعر
                                   if (price.isNotEmpty)
-                                       Visibility(
-                                          visible: scriptionController.isHaveSubscriptions.value,
-                                          child: Column(
+                                    // مؤقتاً نخفي عرض الباقة على سطح المكتب
+                                    Visibility(
+                                      visible: false, // مخفي مؤقتًا
+                                      child: Column(
                                         children: [
-                                        
                                           Container(
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 8.w, vertical: 4.h),
@@ -671,6 +701,40 @@ class AddListDeskTop extends StatelessWidget {
                                         ],
                                       ),
                                     ),
+
+                                  // الكود الأصلي لعرض السعر محفوظ كتعليق:
+                                  /*
+                                  if (price.isNotEmpty)
+                                    Visibility(
+                                      visible: scriptionController.isHaveSubscriptions.value,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            decoration: BoxDecoration(
+                                              color: price == 'مجاني'.tr ? Colors.green.withOpacity(0.2)
+                                                  : price == 'غير متوفر'.tr ? Colors.red.withOpacity(0.2)
+                                                  : price == 'باقة اقتصادية' ? Colors.orange.withOpacity(0.2)
+                                                  : Colors.blue.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(8.r),
+                                            ),
+                                            child: Text(
+                                              price,
+                                              style: TextStyle(
+                                                fontFamily: AppTextStyles.DinarOne,
+                                                fontSize: 14.sp,
+                                                fontWeight: FontWeight.bold,
+                                                color: price == 'مجاني'.tr ? Colors.green
+                                                    : price == 'غير متوفر'.tr ? Colors.red
+                                                    : price == 'باقة اقتصادية' ? Colors.orange
+                                                    : Colors.blue,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  */
                                 ],
                               ),
                             ),

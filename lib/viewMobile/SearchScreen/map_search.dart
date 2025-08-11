@@ -257,6 +257,7 @@ class _MapSearchState extends State<MapSearch> {
                                             .value
                                             .languageCode,
                                     context: context,
+                                    country:Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
                                   );
                                 } else {
                                   // وإلا، إذا كان الموقع محفوظًا في قاعدة البيانات يتم استخدامه لجلب المنشورات
@@ -273,6 +274,7 @@ class _MapSearchState extends State<MapSearch> {
                                             .value
                                             .languageCode,
                                     context: context,
+                                      country:Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
                                   );
                                 }
                               }

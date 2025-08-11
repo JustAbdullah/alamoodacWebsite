@@ -71,15 +71,15 @@ class _HomeScreenDesktopState extends State<HomeScreenDesktop> {
                       SizedBox(
                         height: 7.h,
                       ),
-                      Padding(
+                   /*   Padding(
                         padding: EdgeInsets.symmetric(horizontal: 100.w),
                         child: PromotionInfoSection(),
-                      ),
+                      ),*/
                       SizedBox(
                         height: 7.h,
                       ),
                       // Featured Ads Section
-                      _buildFeaturedAdsSection(isRTL, themeController),
+                  _buildFeaturedAdsSection(isRTL, themeController),
                       SizedBox(
                         height: 7.h,
                       ),
@@ -593,6 +593,7 @@ Widget _buildCategoryDesktop(
             Get.find<ChangeLanguageController>().currentLocale.value.languageCode,
             null,
             null,
+             Get.find<HomeController>().         getCountryCode( Get.find<HomeController>().selectedRoute.value),
           );
 
           searchcontroller.subCategories.clear();
